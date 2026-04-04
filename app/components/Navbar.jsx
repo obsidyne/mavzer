@@ -4,9 +4,9 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 const NAV_LINKS = [
-  { label: 'Corporate',  href: '/corporate'  },
+  { label: 'About',  href: '/about'  },
   { label: 'Services',   href: '/services'   },
-  { label: 'Production', href: '/production' },
+  { label: 'Products', href: '/products' },
   { label: 'References', href: '/references' },
   { label: 'Contact',    href: '/contact'    },
 ];
@@ -94,7 +94,7 @@ export default function Navbar() {
       >
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 no-underline">
-          <div className="w-20 h-10 bg-[#0a4c8a] rounded-lg flex items-center justify-center shrink-0">
+          <div className="w-20 h-10 --bg-[#0a4c8a] rounded-lg flex items-center justify-center shrink-0">
             {/* <svg viewBox="0 0 24 24" fill="white" width="20" height="20"> */}
               {/* <path d="M4 4h6v6H4V4zm10 0h6v6h-6V4zM4 14h6v6H4v-6zm10 3h2v-3h3v3h3v2h-3v3h-2v-3h-3v-2z" /> */}
 

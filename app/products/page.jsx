@@ -40,11 +40,9 @@ export default function ProductsPage() {
     if (!search.trim()) {
       setFilteredProducts(products);
     } else {
-      setFilteredProducts(
-        products.filter((p) =>
-          p.name.toLowerCase().includes(search.toLowerCase())
-        )
-      );
+      setFilteredProducts(products.filter((p) =>
+        p.name.toLowerCase().includes(search.toLowerCase())
+      ));
     }
   }, [search, products]);
 
@@ -54,7 +52,6 @@ export default function ProductsPage() {
     setContext({ type, id, label });
     setLayer(currentLayer);
     setBreadcrumbs([...chain, { label, id, type, layer: currentLayer }]);
-
     try {
       const url = type === "category"
         ? `${API}/api/public/products?categoryId=${id}`
@@ -79,7 +76,16 @@ export default function ProductsPage() {
 
   function handleBreadcrumbClick(crumb, index) {
     const newChain = breadcrumbs.slice(0, index);
-    loadProducts(crumb.type, crumb.id, crumb.label, newChain, crumb.layer);
+    if (crumb.type === "sector") {
+      // clicking sector just resets — sectors don't have products directly
+      setContext(null);
+      setProducts([]);
+      setFilteredProducts([]);
+      setBreadcrumbs([]);
+      setLayer(3);
+    } else {
+      loadProducts(crumb.type, crumb.id, crumb.label, newChain, crumb.layer);
+    }
   }
 
   function handleCategorySelect(id, label, chain) {
@@ -87,31 +93,38 @@ export default function ProductsPage() {
     loadProducts("category", id, label, chain, 3);
   }
 
+  function resetAll() {
+    setContext(null);
+    setProducts([]);
+    setFilteredProducts([]);
+    setBreadcrumbs([]);
+    setLayer(3);
+    setSearch("");
+  }
+
   return (
     <div className="min-h-screen bg-[#f4f6fa]">
       <Navbar />
 
-      {/* Page Hero */}
+      {/* Page header */}
       <div className="pt-[66px] bg-white border-b border-[#dde4ef]">
-        <div className="max-w-5xl mx-auto px-8 py-10">
-          <div className="flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase text-[#1e88e5] mb-2">
-            <span className="block w-5 h-0.5 bg-[#1e88e5]" />
+        <div className="max-w-5xl mx-auto px-8 py-8">
+          <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase text-[#1e88e5] mb-2">
+            <span className="block w-5 h-px bg-[#1e88e5]" />
             Our Catalogue
           </div>
-          <h1 className="font-condensed text-[38px] font-extrabold uppercase text-[#071e3d] leading-tight tracking-wide">
+          <h1 className="font-condensed text-[34px] font-extrabold uppercase text-[#071e3d] leading-tight tracking-wide">
             All Products
           </h1>
-          <p className="text-sm text-[#9aa3af] mt-1">
+          <p className="text-[13px] text-[#9aa3af] mt-1">
             Browse our full range of packaging solutions across all sectors.
           </p>
         </div>
       </div>
 
-      {/* Main Layout */}
-      <div className="max-w-5xl mx-auto px-8 py-10">
+      <div className="max-w-5xl mx-auto px-8 py-8">
         <div className="flex gap-8 items-start">
 
-          {/* Sidebar */}
           <ProductsSidebar
             sectors={sectors}
             loading={loading}
@@ -119,13 +132,11 @@ export default function ProductsPage() {
             onSelectCategory={handleCategorySelect}
           />
 
-          {/* Right */}
           <div className="flex-1 min-w-0">
-
             {/* Search */}
-            <div className="relative mb-4">
-              <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#b0b8c4]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="15" height="15">
-                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" strokeLinecap="round" />
+            <div className="relative mb-3">
+              <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#b0b8c4]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35" strokeLinecap="round"/>
               </svg>
               <input
                 type="text"
@@ -133,33 +144,35 @@ export default function ProductsPage() {
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={context ? `Search in ${context.label}...` : "Select a category to search..."}
                 disabled={!context}
-                className="w-full pl-10 pr-4 py-2.5 text-sm border border-[#dde4ef] rounded-lg bg-white text-[#071e3d] placeholder:text-[#b0b8c4] outline-none focus:border-[#1e88e5] focus:shadow-[0_0_0_3px_rgba(30,136,229,0.08)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full pl-10 pr-4 py-2.5 text-[13px] border border-[#dde4ef] rounded-lg bg-white text-[#071e3d] placeholder:text-[#b0b8c4] outline-none focus:border-[#0a4c8a] focus:shadow-[0_0_0_3px_rgba(10,76,138,0.08)] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
               />
             </div>
 
             {/* Breadcrumbs */}
-            {breadcrumbs.length > 0 && (
-              <div className="flex items-center gap-2 text-xs text-[#9aa3af] mb-5 flex-wrap">
-                <button
-                  onClick={() => { setContext(null); setProducts([]); setFilteredProducts([]); setBreadcrumbs([]); setLayer(3); setSearch(""); }}
-                  className="hover:text-[#071e3d] transition-colors font-medium"
-                >
-                  All
-                </button>
-                {breadcrumbs.map((crumb, i) => (
-                  <span key={i} className="flex items-center gap-2">
-                    <span className="text-[#dde4ef]">›</span>
-                    {i === breadcrumbs.length - 1 ? (
-                      <span className="text-[#071e3d] font-semibold">{crumb.label}</span>
-                    ) : (
-                      <button onClick={() => handleBreadcrumbClick(crumb, i)} className="hover:text-[#071e3d] transition-colors">
-                        {crumb.label}
-                      </button>
-                    )}
-                  </span>
-                ))}
-              </div>
-            )}
+            <div className="flex items-center gap-1.5 text-[11px] text-[#9aa3af] mb-5 flex-wrap min-h-[20px]">
+              {breadcrumbs.length > 0 && (
+                <>
+                  <button onClick={resetAll} className="hover:text-[#0a4c8a] transition-colors font-medium">
+                    All Products
+                  </button>
+                  {breadcrumbs.map((crumb, i) => (
+                    <span key={i} className="flex items-center gap-1.5">
+                      <span className="text-[#dde4ef]">›</span>
+                      {i === breadcrumbs.length - 1 ? (
+                        <span className="text-[#071e3d] font-semibold">{crumb.label}</span>
+                      ) : (
+                        <button
+                          onClick={() => handleBreadcrumbClick(crumb, i)}
+                          className="hover:text-[#0a4c8a] hover:underline transition-colors"
+                        >
+                          {crumb.label}
+                        </button>
+                      )}
+                    </span>
+                  ))}
+                </>
+              )}
+            </div>
 
             <ProductsGrid
               products={filteredProducts}
