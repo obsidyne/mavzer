@@ -93,16 +93,14 @@ export default function ClientsSection() {
 
     return (
         <section className="bg-white py-16 border-t border-[#dde4ef] overflow-hidden">
-            <div className="text-center mb-12 px-8">
+            <div className="text-center mb-5 --px-8 --bg-blue-200">
                 <div className="flex items-center justify-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase text-[#1e88e5] mb-3">
-                    <span className="inline-block w-5 h-0.5 bg-[#1e88e5]" />
-                    Referanslarımız
-                    <span className="inline-block w-5 h-0.5 bg-[#1e88e5]" />
+                  
                 </div>
-                <h2 className="font-condensed text-[36px] font-extrabold uppercase text-[#071e3d] tracking-wide leading-tight mb-3">
-                    Trusted by <span className="text-[#1e88e5]">Leading Brands</span>
+                <h2 className="font-condensed text-[36px] font-extrabold uppercase text-[#000000] tracking-wide leading-tight mb-3">
+<span className="text-[#000000]">REFERANSLARIMIZ</span>
                 </h2>
-                <p className="text-sm text-[#6b7380] leading-relaxed max-w-md mx-auto">
+                <p className="text-[13px] --bg-red-200 text-[#6b7380] w-[800px] leading-relaxed max-w-md mx-auto">
                     Farklı sektörlerden önde gelen kurumlar ve şirketler tarafından güvenilen çözüm ortağınız
                 </p>
             </div>

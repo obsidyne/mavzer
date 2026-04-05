@@ -72,6 +72,10 @@ export default function HeroSection() {
                     0%, 100% { transform: translateY(0); }
                     50% { transform: translateY(-4px); }
                 }
+                @keyframes clockTick {
+                    0%, 100% { transform: rotate(0deg); }
+                    50% { transform: rotate(15deg); }
+                }
                 @keyframes chevronBlink {
                     0%, 100% { opacity: 0.15; }
                     50% { opacity: 1; }
@@ -79,6 +83,7 @@ export default function HeroSection() {
                 .truck-anim { animation: truckMove 1.6s ease-in-out infinite; }
                 .pulse-anim { animation: pulse30 1.8s ease-in-out infinite; }
                 .badge-anim { animation: badgeBounce 2s ease-in-out infinite; }
+                .clock-anim { animation: clockTick 2s ease-in-out infinite; }
             `}</style>
 
             <div className="mt-[66px]" style={{ height: 'calc(100vh - 66px)', display: 'flex', flexDirection: 'column' }}>
@@ -113,71 +118,92 @@ export default function HeroSection() {
                 </section>
 
                 {/* ── Badges — 16% ── */}
-                <div className="px-10 shrink-0 m-[auto] w-[70%] flex flex-col items-center justify-center" style={{ height: '16%', background: 'linear-gradient(135deg, #0a3a6e 0%, #1565c0 50%, #0a3a6e 100%)', gap: '4px' }}>
-                    <div className="flex items-center justify-center divide-x divide-white/20" style={{ width: '60%', maxWidth: '700px' }}>
+                <div className="shrink-0 w-full flex flex-col items-center justify-center" style={{ height: '11%', background: 'linear-gradient(135deg, #0a3a6e 0%, #1565c0 50%, #0a3a6e 100%)', gap: '4px' }}>
 
-                        <div className="flex flex-col items-center flex-1" style={{ gap: '4px' }}>
-                            <div className="truck-anim text-white/90">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="22" height="22">
-                                    <path d="M1 3h15v13H1zM16 8h4l3 3v5h-7V8z" strokeLinecap="round" strokeLinejoin="round"/>
-                                    <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
-                                </svg>
+                    {/* Top row — 4 badges, 2 on each side with sentence in center */}
+                    <div className="flex items-center justify-center w-full" style={{ gap: '0px' }}>
+
+                        {/* Left 2 badges */}
+                        <div className="flex items-center divide-x divide-white/20 flex-1 justify-end">
+                            <div className="flex flex-col items-center flex-1 max-w-[160px]" style={{ gap: '3px' }}>
+                                <div className="truck-anim text-white/90">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="20" height="20">
+                                        <path d="M1 3h15v13H1zM16 8h4l3 3v5h-7V8z" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+                                    </svg>
+                                </div>
+                                <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: '10px', letterSpacing: '0.12em', padding: '1px 6px' }}>
+                                    Hızlı Teslimat
+                                </span>
                             </div>
-                            <span className="text-white font-extrabold uppercase border border-white/40 px-2 whitespace-nowrap" style={{ fontSize: '10px', letterSpacing: '0.15em', padding: '1px 8px' }}>
-                                Hızlı Teslimat
-                            </span>
+                            <div className="flex flex-col items-center flex-1 max-w-[160px]" style={{ gap: '3px' }}>
+                                <div className="pulse-anim text-white/90">
+                                    <div className="w-6 h-6 rounded-full border-2 border-white/80 flex items-center justify-center">
+                                        <span className="text-white font-extrabold" style={{ fontSize: '9px' }}>30+</span>
+                                    </div>
+                                </div>
+                                <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: '10px', letterSpacing: '0.12em', padding: '1px 6px' }}>
+                                    30+ Yıllık Tecrübe
+                                </span>
+                            </div>
                         </div>
 
-                        <div className="flex flex-col items-center flex-1" style={{ gap: '4px' }}>
-                            <div className="pulse-anim text-white/90">
-                                <div className="w-7 h-7 rounded-full border-2 border-white/80 flex items-center justify-center">
-                                    <span className="text-white font-extrabold" style={{ fontSize: '11px' }}>30+</span>
+                        {/* Center sentence */}
+                        <div className="flex flex-col items-center px-6 shrink-0">
+                            <div className="flex items-center gap-2">
+                                <div className="flex flex-col items-center" style={{ gap: '0px' }}>
+                                    {[0, 1, 2].map((i) => (
+                                        <svg key={i} viewBox="0 0 24 24" fill="currentColor" width="10" height="10"
+                                            style={{ animation: 'chevronBlink 1.2s ease-in-out infinite', animationDelay: `${i * 0.2}s` }}>
+                                            <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+                                        </svg>
+                                    ))}
+                                </div>
+                                <span className="font-bold uppercase text-white/80 whitespace-nowrap" style={{ fontSize: '13px', letterSpacing: '0.12em' }}>
+                                    Sektörünüzü Seçerek İhtiyacınız Olabilecek Ürünleri Keşfedin
+                                </span>
+                                <div className="flex flex-col items-center" style={{ gap: '0px' }}>
+                                    {[0, 1, 2].map((i) => (
+                                        <svg key={i} viewBox="0 0 24 24" fill="currentColor" width="10" height="10"
+                                            style={{ animation: 'chevronBlink 1.2s ease-in-out infinite', animationDelay: `${i * 0.2}s` }}>
+                                            <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+                                        </svg>
+                                    ))}
                                 </div>
                             </div>
-                            <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: '10px', letterSpacing: '0.15em', padding: '1px 8px' }}>
-                                30+ Yıllık Tecrübe
-                            </span>
                         </div>
 
-                        <div className="flex flex-col items-center flex-1" style={{ gap: '4px' }}>
-                            <div className="badge-anim text-white/90">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="22" height="22">
-                                    <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" strokeLinecap="round" strokeLinejoin="round"/>
-                                    <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round"/>
-                                </svg>
+                        {/* Right 2 badges */}
+                        <div className="flex items-center divide-x divide-white/20 flex-1 justify-start">
+                            <div className="flex flex-col items-center flex-1 max-w-[160px]" style={{ gap: '3px' }}>
+                                <div className="badge-anim text-white/90">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="20" height="20">
+                                        <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                </div>
+                                <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: '9px', letterSpacing: '0.12em', padding: '1px 6px' }}>
+                                    Kaliteli Üretimi
+                                </span>
                             </div>
-                            <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: '10px', letterSpacing: '0.15em', padding: '1px 8px' }}>
-                                Kaliteli Üretimi
-                            </span>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 text-white/90">
-                        <div className="flex flex-col items-center" style={{ gap: '0px' }}>
-                            {[0, 1, 2].map((i) => (
-                                <svg key={i} viewBox="0 0 24 24" fill="currentColor" width="11" height="11"
-                                    style={{ animation: 'chevronBlink 1.2s ease-in-out infinite', animationDelay: `${i * 0.2}s` }}>
-                                    <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
-                                </svg>
-                            ))}
-                        </div>
-                        <span className="font-bold uppercase text-white/80 whitespace-nowrap" style={{ fontSize: '9px', letterSpacing: '0.15em' }}>
-                            Sektörünüzü Seçerek İhtiyacınız Olabilecek Ürünleri Keşfedin
-                        </span>
-                        <div className="flex flex-col items-center" style={{ gap: '0px' }}>
-                            {[0, 1, 2].map((i) => (
-                                <svg key={i} viewBox="0 0 24 24" fill="currentColor" width="11" height="11"
-                                    style={{ animation: 'chevronBlink 1.2s ease-in-out infinite', animationDelay: `${i * 0.2}s` }}>
-                                    <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
-                                </svg>
-                            ))}
+                            <div className="flex flex-col items-center flex-1 max-w-[160px]" style={{ gap: '3px' }}>
+                                <div className="clock-anim text-white/90">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="20" height="20">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <path d="M12 6v6l4 2" strokeLinecap="round"/>
+                                    </svg>
+                                </div>
+                                <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: '9px', letterSpacing: '0.12em', padding: '1px 6px' }}>
+                                    Zamanında Üretim
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* ── Sectors — 36% ── */}
+                {/* ── Sectors — 34% ── */}
                 <div className="flex-1 flex items-center bg-white overflow-hidden">
-                    <div className="w-full max-w-5xl mx-auto px-6">
+                    <div className="w-full max-w-[1150px] mx-auto px-6">
                         <div className="grid grid-cols-6 gap-3">
                             {CATEGORIES.map((cat) => (
                                 <Link key={cat.key} href={cat.href} className="no-underline block group">
@@ -203,7 +229,7 @@ export default function HeroSection() {
             </div>
 
             {/* ── Section Title ── */}
-            <div className="max-w-5xl mx-auto px-8 pt-10">
+            {/* <div className="max-w-5xl mx-auto px-8 pt-10">
                 <div className="border-b-2 border-[#dde4ef] pb-8 flex items-end justify-between gap-6">
                     <div>
                         <div className="flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase text-[#1e88e5] mb-2">
@@ -222,7 +248,7 @@ export default function HeroSection() {
                         View All Products
                     </Link>
                 </div>
-            </div>
+            </div> */}
         </>
     );
 }

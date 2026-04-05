@@ -12,10 +12,10 @@ export default function HomePage() {
       <Navbar />
       <main>
         <HeroSection />
-        <AboutSection />
-        <Products/>
+        {/* <AboutSection /> */}
+        {/* <Products/> */}
         <ClientsSection/>
-        <ContactSection />
+        {/* <ContactSection /> */}
         <Footer/>
       </main>
     </>

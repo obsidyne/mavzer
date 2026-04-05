@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "../components/Navbar";
@@ -8,7 +9,7 @@ import ProductsGrid from "../components/ProductsGrid";
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
-export default function ProductsPage() {
+function ProductsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const sectorParam = searchParams.get("sector");
@@ -31,8 +32,6 @@ export default function ProductsPage() {
         const data = await res.json();
         const list = Array.isArray(data) ? data : [];
         setSectors(list);
-
-        // if sector query param exists, find matching sector by slug/name
         if (sectorParam) {
           const matched = list.find(
             (s) => s.slug === sectorParam ||
@@ -118,7 +117,6 @@ export default function ProductsPage() {
     <div className="min-h-screen bg-[#f4f6fa]">
       <Navbar />
 
-      {/* Page header */}
       <div className="pt-[66px] bg-white border-b border-[#dde4ef]">
         <div className="max-w-5xl mx-auto px-8 py-8">
           <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase text-[#1e88e5] mb-2">
@@ -136,7 +134,6 @@ export default function ProductsPage() {
 
       <div className="max-w-5xl mx-auto px-8 py-8">
         <div className="flex gap-8 items-start">
-
           <ProductsSidebar
             sectors={sectors}
             loading={loading}
@@ -146,7 +143,6 @@ export default function ProductsPage() {
           />
 
           <div className="flex-1 min-w-0">
-            {/* Search */}
             <div className="relative mb-3">
               <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#b0b8c4]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
                 <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35" strokeLinecap="round"/>
@@ -161,7 +157,6 @@ export default function ProductsPage() {
               />
             </div>
 
-            {/* Breadcrumbs */}
             <div className="flex items-center gap-1.5 text-[11px] text-[#9aa3af] mb-5 flex-wrap min-h-[20px]">
               {breadcrumbs.length > 0 && (
                 <>
@@ -174,10 +169,7 @@ export default function ProductsPage() {
                       {i === breadcrumbs.length - 1 ? (
                         <span className="text-[#071e3d] font-semibold">{crumb.label}</span>
                       ) : (
-                        <button
-                          onClick={() => handleBreadcrumbClick(crumb, i)}
-                          className="hover:text-[#0a4c8a] hover:underline transition-colors"
-                        >
+                        <button onClick={() => handleBreadcrumbClick(crumb, i)} className="hover:text-[#0a4c8a] hover:underline transition-colors">
                           {crumb.label}
                         </button>
                       )}
@@ -199,5 +191,17 @@ export default function ProductsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#f4f6fa] flex items-center justify-center">
+        <div className="text-[#9aa3af] text-sm">Loading...</div>
+      </div>
+    }>
+      <ProductsContent />
+    </Suspense>
   );
 }
