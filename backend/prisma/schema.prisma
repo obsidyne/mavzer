@@ -62,6 +62,7 @@ model Product {
   isActive    Boolean           @default(true)
   order       Int               @default(0)
   depth       Int               @default(0)      // 0 = root, 1 = child, 2 = grandchild
+  isFeatured  Boolean           @default(false)
 
   // many-to-many with categories — only used when depth = 0
   categories  ProductCategory[]

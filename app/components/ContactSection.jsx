@@ -45,29 +45,28 @@ export default function ContactSection() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Wire up to your backend / email service here
     setSent(true);
   };
 
   return (
-    <section className="bg-[#071e3d] relative overflow-hidden">
-      {/* Subtle diagonal accent */}
+    <section className="bg-[#0d1117] relative overflow-hidden">
+      {/* Accent */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute -top-32 -right-32 w-[520px] h-[520px] rounded-full bg-[#1e88e5]/5 blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-px h-full bg-gradient-to-b from-transparent via-[#1e88e5]/20 to-transparent" style={{ left: '42%' }} />
+        <div className="absolute -top-32 -right-32 w-[520px] h-[520px] rounded-full bg-[#1e88e5]/8 blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-px h-full bg-gradient-to-b from-transparent via-[#1e88e5]/15 to-transparent" style={{ left: '42%' }} />
       </div>
 
       <div className="relative max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[1fr_1.15fr] min-h-[520px]">
 
-        {/* ── LEFT: info panel ── */}
-        <div className="flex flex-col justify-between px-12 py-16 ">
+        {/* ── LEFT ── */}
+        <div className="flex flex-col justify-between px-12 py-16">
           <div>
             <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#5bb8ff] mb-5">Get in touch</p>
             <h2 className="font-condensed text-[42px] font-extrabold uppercase text-white leading-[1.05] mb-4">
               Ready to Work{' '}
               <span className="text-[#5bb8ff]">Together?</span>
             </h2>
-            <p className="text-sm text-white/45 font-light leading-relaxed max-w-xs">
+            <p className="text-sm text-white/40 font-light leading-relaxed max-w-xs">
               Reach out for packaging solutions tailored precisely to your sector and scale.
             </p>
           </div>
@@ -75,19 +74,18 @@ export default function ContactSection() {
           <div className="flex flex-col gap-7 mt-12">
             {INFO.map((item) => (
               <div key={item.label} className="flex items-start gap-4">
-                <div className="mt-0.5 w-8 h-8 rounded-md bg-[#1e88e5]/15 --border border-[#1e88e5]/25 flex items-center justify-center text-[#5bb8ff] shrink-0">
+                <div className="mt-0.5 w-8 h-8 rounded-md bg-[#1e88e5]/10 flex items-center justify-center text-[#5bb8ff] shrink-0">
                   {item.icon}
                 </div>
                 <div>
-                  <div className="text-[9px] font-bold tracking-[0.25em] uppercase text-white/30 mb-0.5">
+                  <div className="text-[9px] font-bold tracking-[0.25em] uppercase text-white/25 mb-0.5">
                     {item.label}
                   </div>
-                  {/* FIX 1: was missing the opening <a tag */}
                   <a
                     href={item.href}
                     target={item.href.startsWith('https') ? '_blank' : undefined}
                     rel={item.href.startsWith('https') ? 'noreferrer' : undefined}
-                    className="text-[14px] font-semibold text-white/85 no-underline transition-colors duration-200 hover:text-[#5bb8ff]"
+                    className="text-[14px] font-semibold text-white/70 no-underline transition-colors duration-200 hover:text-[#5bb8ff]"
                   >
                     {item.value}
                   </a>
@@ -96,9 +94,8 @@ export default function ContactSection() {
             ))}
           </div>
 
-          <div className="mt-12 pt-8 --border-t --border-white/[0.07]">
+          {/* <div className="mt-12">
             <p className="text-[10px] tracking-widest uppercase text-white/20 mb-3">Or message us directly</p>
-            {/* FIX 2: was missing the opening <a tag */}
             <a
               href="https://api.whatsapp.com/send?phone=905336819127"
               target="_blank"
@@ -107,20 +104,20 @@ export default function ContactSection() {
             >
               {INFO[1].icon} WhatsApp
             </a>
-          </div>
+          </div> */}
         </div>
 
-        {/* ── RIGHT: form panel ── */}
-        <div className="flex items-center px-12 py-16">
+        {/* ── RIGHT ── */}
+        <div className="flex items-center px-12 py-16 border-l border-white/5">
           {sent ? (
             <div className="w-full text-center py-16">
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-[#1e88e5]/15 --border border-[#1e88e5]/30 mb-6">
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-[#1e88e5]/10 mb-6">
                 <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#5bb8ff" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                 </svg>
               </div>
               <h3 className="font-condensed text-2xl font-extrabold uppercase text-white mb-2">Message Sent!</h3>
-              <p className="text-sm text-white/45">We'll get back to you as soon as possible.</p>
+              <p className="text-sm text-white/40">We'll get back to you as soon as possible.</p>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="w-full flex flex-col gap-5">
@@ -131,12 +128,12 @@ export default function ContactSection() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[9px] font-bold tracking-[0.25em] uppercase text-white/35">Sector</label>
+                  <label className="text-[9px] font-bold tracking-[0.25em] uppercase text-white/30">Sector</label>
                   <select
                     name="sector"
                     value={form.sector}
                     onChange={handleChange}
-                    className="bg-white/[0.05] --border border-white/[0.1] rounded px-3 py-2.5 text-sm text-white/80 outline-none focus:border-[#1e88e5]/60 focus:bg-white/[0.08] transition-all appearance-none cursor-pointer"
+                    className="bg-white/[0.08] border border-white/[0.08] rounded px-3 py-2.5 text-sm text-white/70 outline-none focus:border-[#1e88e5]/50 focus:bg-white/[0.12] transition-all appearance-none cursor-pointer"
                     style={{ colorScheme: 'dark' }}
                   >
                     <option value="" disabled>Select sector…</option>
@@ -147,7 +144,7 @@ export default function ContactSection() {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[9px] font-bold tracking-[0.25em] uppercase text-white/35">Message</label>
+                <label className="text-[9px] font-bold tracking-[0.25em] uppercase text-white/30">Message</label>
                 <textarea
                   name="message"
                   value={form.message}
@@ -155,13 +152,13 @@ export default function ContactSection() {
                   rows={4}
                   required
                   placeholder="Tell us about your packaging needs…"
-                  className="bg-white/[0.05] --border border-white/[0.1] rounded px-3 py-2.5 text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-[#1e88e5]/60 focus:bg-white/[0.08] transition-all resize-none"
+                  className="bg-white/[0.08] border border-white/[0.08] rounded px-3 py-2.5 text-sm text-white/70 placeholder:text-white/20 outline-none focus:border-[#1e88e5]/50 focus:bg-white/[0.12] transition-all resize-none"
                 />
               </div>
 
               <button
                 type="submit"
-                className="self-start inline-flex items-center gap-2 bg-[#1e88e5] text-white px-8 py-3 rounded text-xs font-bold tracking-widest uppercase transition-all duration-200 hover:bg-[#1565c0] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(30,136,229,0.35)]"
+                className="self-start inline-flex items-center gap-2 bg-[#1e88e5] text-white px-8 py-3 rounded text-xs font-bold tracking-widest uppercase transition-all duration-200 hover:bg-[#1565c0] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(30,136,229,0.25)]"
               >
                 Send Message
                 <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -176,11 +173,10 @@ export default function ContactSection() {
   );
 }
 
-// Reusable input field
 function Field({ label, name, value, onChange, placeholder, type = 'text', required = false }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[9px] font-bold tracking-[0.25em] uppercase text-white/35">{label}</label>
+      <label className="text-[9px] font-bold tracking-[0.25em] uppercase text-white/30">{label}</label>
       <input
         type={type}
         name={name}
@@ -188,7 +184,7 @@ function Field({ label, name, value, onChange, placeholder, type = 'text', requi
         onChange={onChange}
         placeholder={placeholder}
         required={required}
-        className="bg-white/[0.05] border border-white/[0.1] rounded px-3 py-2.5 text-sm text-white/80 placeholder:text-white/20 outline-none focus:border-[#1e88e5]/60 focus:bg-white/[0.08] transition-all"
+        className="bg-white/[0.08] border border-white/[0.08] rounded px-3 py-2.5 text-sm text-white/70 placeholder:text-white/20 outline-none focus:border-[#1e88e5]/50 focus:bg-white/[0.12] transition-all"
       />
     </div>
   );

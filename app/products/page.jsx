@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "../components/Navbar";
 import ProductsSidebar from "../components/ProductSidebar";
 import ProductsGrid from "../components/ProductsGrid";
@@ -10,6 +10,8 @@ const API = process.env.NEXT_PUBLIC_API_URL;
 
 export default function ProductsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const sectorParam = searchParams.get("sector");
 
   const [sectors, setSectors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,13 +22,24 @@ export default function ProductsPage() {
   const [productsLoading, setProductsLoading] = useState(false);
   const [breadcrumbs, setBreadcrumbs] = useState([]);
   const [search, setSearch] = useState("");
+  const [autoOpenSector, setAutoOpenSector] = useState(null);
 
   useEffect(() => {
     async function fetchSectors() {
       try {
         const res = await fetch(`${API}/api/public/sectors`);
         const data = await res.json();
-        setSectors(Array.isArray(data) ? data : []);
+        const list = Array.isArray(data) ? data : [];
+        setSectors(list);
+
+        // if sector query param exists, find matching sector by slug/name
+        if (sectorParam) {
+          const matched = list.find(
+            (s) => s.slug === sectorParam ||
+                   s.name.toLowerCase().replace(/\s+/g, '') === sectorParam.toLowerCase()
+          );
+          if (matched) setAutoOpenSector(matched.id);
+        }
       } catch (err) {
         console.error(err);
       } finally {
@@ -34,7 +47,7 @@ export default function ProductsPage() {
       }
     }
     fetchSectors();
-  }, []);
+  }, [sectorParam]);
 
   useEffect(() => {
     if (!search.trim()) {
@@ -77,7 +90,6 @@ export default function ProductsPage() {
   function handleBreadcrumbClick(crumb, index) {
     const newChain = breadcrumbs.slice(0, index);
     if (crumb.type === "sector") {
-      // clicking sector just resets — sectors don't have products directly
       setContext(null);
       setProducts([]);
       setFilteredProducts([]);
@@ -129,6 +141,7 @@ export default function ProductsPage() {
             sectors={sectors}
             loading={loading}
             activeId={context?.id}
+            autoOpenSectorId={autoOpenSector}
             onSelectCategory={handleCategorySelect}
           />
 

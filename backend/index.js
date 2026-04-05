@@ -13,6 +13,7 @@ import categoryRoutes  from "./server//routes/categories.routes.js";
 import productRoutes   from "./server/routes/products.routes.js";
 import publicRoutes   from "./server/routes/public.routes.js";
 import uploadRoutes    from "./server/routes/upload.routes.js";
+import featuredRoutes    from "./server/routes/featured.routes.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -44,6 +45,7 @@ app.use("/api/categories", auth, categoryRoutes);
 app.use("/api/products",   auth, productRoutes);
 
 app.use("/api/upload",     auth, uploadRoutes);
+app.use("/api/featured",     auth, featuredRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, "0.0.0.0" , () => console.log(`Server running on port ${PORT}`));

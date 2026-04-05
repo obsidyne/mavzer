@@ -1,3 +1,7 @@
+// COMPONENT: Sidebar
+// Fixed left sidebar shown on all admin pages except /admin/auth.
+// Shows nav links and a sign out button.
+
 "use client";
 
 import Link from "next/link";
@@ -5,7 +9,8 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "../../context/authContext";
 
 const navItems = [
-  { label: "Products", href: "/admin/products", icon: "▦" },
+  { label: "Products",  href: "/admin/products",  icon: "▦" },
+  { label: "Featured",  href: "/admin/featured",  icon: "★" },
   // { label: "Banners",  href: "/admin/banners",  icon: "▬" },
   // { label: "Clients",  href: "/admin/clients",  icon: "◈" },
 ];
@@ -17,13 +22,11 @@ export default function Sidebar() {
   return (
     <aside className="fixed top-0 left-0 w-[220px] min-h-screen bg-[#0a0a0a] border-r border-[#1a1a1a] flex flex-col py-8">
 
-      {/* Brand */}
       <div className="px-6 pb-8 border-b border-[#1a1a1a]">
         <h1 className="text-white text-lg font-bold tracking-[5px]">MAVZER</h1>
         <p className="text-[#333] text-[9px] tracking-[3px] mt-1 uppercase">Admin</p>
       </div>
 
-      {/* Nav */}
       <nav className="flex flex-col gap-1 px-3 py-6 flex-1">
         {navItems.map((item) => {
           const active = pathname.startsWith(item.href);
@@ -44,7 +47,6 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Footer */}
       <div className="px-6 pt-6 border-t border-[#1a1a1a] flex flex-col gap-3">
         <span className="text-[#333] text-[11px] break-all">{admin?.email}</span>
         <button

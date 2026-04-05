@@ -1,9 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-export default function ProductsSidebar({ sectors, loading, activeId, onSelectCategory }) {
+export default function ProductsSidebar({ sectors, loading, activeId, autoOpenSectorId, onSelectCategory }) {
   const [openSectors, setOpenSectors] = useState({});
+
+  // auto open sector when coming from hero section
+  useEffect(() => {
+    if (autoOpenSectorId) {
+      setOpenSectors((prev) => ({ ...prev, [autoOpenSectorId]: true }));
+    }
+  }, [autoOpenSectorId]);
 
   function toggleSector(id) {
     setOpenSectors((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -13,7 +20,7 @@ export default function ProductsSidebar({ sectors, loading, activeId, onSelectCa
     return (
       <div className="w-56 shrink-0">
         {[1,2,3,4].map((i) => (
-          <div key={i} className="h-11 bg-[#eef1f6] rounded mb-1.5 animate-pulse" />
+          <div key={i} className="h-11 bg-[#eef1f6] rounded-lg mb-1.5 animate-pulse" />
         ))}
       </div>
     );

@@ -94,3 +94,25 @@ router.get("/products/:id", async (req, res) => {
 });
 
 export default router;
+
+// GET /api/public/featured — featured products for homepage
+router.get("/featured", async (req, res) => {
+  try {
+    const products = await prisma.product.findMany({
+      where: { isFeatured: true, isActive: true },
+      orderBy: { updatedAt: "desc" },
+      select: {
+        id: true, name: true, description: true,
+        image: true, isGroup: true, price: true,
+        _count: { select: { subProducts: true } },
+        categories: {
+          include: { category: { include: { sector: true } } },
+        },
+      },
+    });
+    return res.json(products);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Failed to fetch featured products" });
+  }
+});
