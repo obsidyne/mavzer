@@ -60,7 +60,7 @@ export default function HeroSection() {
     return (
         <>
             {/* ── Banner Slider ── */}
-            <section className="mt-[66px] relative h-[350px] overflow-hidden bg-[#071e3d]">
+            <section className="mt-[66px] relative h-[480px] overflow-hidden bg-[#071e3d]">
 
                 {SLIDES.map((slide, i) => (
                     <div
@@ -108,16 +108,16 @@ export default function HeroSection() {
             </section>
 
             {/* ── Categories Card ── */}
-            <div className="relative z-10 px-12 -mt-9">
+            <div className="--bg-red-200 relative z-10 max-w-5xl mx-auto px-0 -mt-10">
                 <div className="bg-white rounded-xl shadow-[0_8px_48px_rgba(7,30,61,0.13)] px-8 pt-6 pb-6 border border-[#dde4ef]">
 
                     {/* Header */}
                     <div className="flex items-center justify-between mb-5">
-                        <div className="flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase text-[#6b7380]">
+                        {/* <div className="flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase text-[#6b7380]">
                             <span className="block w-5 h-0.5 bg-[#1e88e5] shrink-0" />
                             Explore by Sector
-                        </div>
-                        <Link
+                        </div> */}
+                        {/* <Link
                             href="/products"
                             className="flex items-center gap-1 text-[10.5px] font-bold tracking-widest uppercase text-[#0a4c8a] no-underline transition-all duration-200 hover:gap-2"
                         >
@@ -125,7 +125,7 @@ export default function HeroSection() {
                             <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12">
                                 <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z" />
                             </svg>
-                        </Link>
+                        </Link> */}
                     </div>
 
                     {/* Grid */}
@@ -159,7 +159,7 @@ export default function HeroSection() {
             </div>
 
             {/* ── Section Title ── */}
-            <div className="px-12 pt-12">
+            <div className="max-w-5xl mx-auto px-8 pt-12">
                 <div className="border-b-2 border-[#dde4ef] pb-8 flex items-end justify-between gap-6">
                     <div>
                         <div className="flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase text-[#1e88e5] mb-2">

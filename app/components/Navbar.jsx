@@ -120,18 +120,7 @@ export default function Navbar() {
         </ul>
 
         {/* Menu button */}
-        <button
-          ref={btnRef}
-          onClick={() => setMenuOpen((o) => !o)}
-          className="flex items-center gap-2 bg-[#0a4c8a] text-white border-none px-5 py-2 font-barlow text-[11px] font-bold tracking-widest uppercase cursor-pointer rounded transition-all duration-200 hover:bg-[#071e3d] hover:-translate-y-px"
-        >
-          <svg viewBox="0 0 14 10" fill="none" width="14" height="10">
-            <rect width="14" height="1.5" rx=".75" fill="white" />
-            <rect y="4.25" width="10" height="1.5" rx=".75" fill="white" />
-            <rect y="8.5" width="14" height="1.5" rx=".75" fill="white" />
-          </svg>
-          Menu
-        </button>
+   
       </nav>
 
       {/* ── Mega Menu Dropdown ── */}
