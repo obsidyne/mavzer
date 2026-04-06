@@ -219,7 +219,7 @@ export default function HeroSection() {
                                 <Link key={cat.key} href={cat.href} className="no-underline block group">
                                     <div
                                         className="relative rounded-xl overflow-hidden border border-[#dde4ef] transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_14px_32px_rgba(10,76,138,0.2)]"
-                                        style={{ aspectRatio: '1 / 1' }}
+                                        style={{ aspectRatio: '4 / 5' }}
                                     >
                                         <img src={cat.img} alt={cat.label} className="absolute inset-0 w-full h-full object-cover" />
                                         <div

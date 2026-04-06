@@ -164,7 +164,7 @@ export default function Navbar() {
           ))}
 
           <Link href="/" className="flex items-center justify-center no-underline shrink-0 px-4">
-            <img src="/logo.png" alt="Mavzer" className="h-10 object-contain" />
+            <img src="/logo2.png" alt="Mavzer" className="h-10 object-contain" />
           </Link>
 
           {RIGHT_LINKS.map((l) => (
