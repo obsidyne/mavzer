@@ -4,8 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 const LEFT_LINKS = [
-  { label: 'Kurumsal', href: '/corporate' },
-  { label: 'Üretim', href: '/production' },
+  { label: 'Kurumsal', href: '/about' },
+  { label: 'Üretim', href: '/products' },
 ];
 
 const RIGHT_LINKS = [
@@ -79,8 +79,8 @@ export default function Navbar() {
                     Mavzer Ambalaj
                   </div>
                   {[
-                    { label: 'Kurumsal', href: '/corporate' },
-                    { label: 'Üretim', href: '/production' },
+                    { label: 'Kurumsal', href: '/about' },
+                    { label: 'Üretim', href: '/products' },
                     { label: 'Referanslar', href: '/clients' },
                     { label: 'İletişim', href: '/contact' },
                   ].map((item) => (

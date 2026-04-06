@@ -33,11 +33,13 @@ export default function Footer() {
                     {/* Video */}
                     <div className="relative bg-black" style={{ aspectRatio: '16/9' }}>
                         <video
-                            src="/video.mp4"
                             controls
                             className="w-full h-full object-cover"
-                            poster="/slider1.png"
-                        />
+                            // poster="/slider1.png"
+                        >
+                            <source src="mavzer.webm" type="video/mp4"></source>
+                        </video>
+
                     </div>
 
                     {/* Fake YouTube bottom bar */}

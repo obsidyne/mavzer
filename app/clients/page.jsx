@@ -15,15 +15,16 @@ export default function ReferencesPage() {
       {/* Header */}
       <div className="pt-[66px] bg-white border-b border-[#dde4ef]">
         <div className="max-w-5xl mx-auto px-8 py-10">
-          <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase text-[#1e88e5] mb-2">
+          {/* <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase text-[#1e88e5] mb-2">
             <span className="block w-5 h-px bg-[#1e88e5]" />
             Referanslarımız
-          </div>
+          </div> */}
           <h1 className="font-condensed text-[36px] font-extrabold uppercase text-[#071e3d] leading-tight tracking-wide">
-            Müşterilerimiz
+            Referanslarımız
           </h1>
           <p className="text-[13px] text-[#9aa3af] mt-1">
-            Birlikte çalışmaktan gurur duyduğumuz markalar.
+                                Farklı sektörlerden önde gelen kurumlar ve şirketler tarafından güvenilen çözüm ortağınız
+
           </p>
         </div>
       </div>

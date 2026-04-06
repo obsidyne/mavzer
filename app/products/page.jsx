@@ -1,7 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useCallback, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "../components/Navbar";
 import ProductsSidebar from "../components/ProductSidebar";
@@ -24,20 +23,35 @@ function ProductsContent() {
   const [breadcrumbs, setBreadcrumbs] = useState([]);
   const [search, setSearch] = useState("");
   const [autoOpenSector, setAutoOpenSector] = useState(null);
+  const [sectorCategories, setSectorCategories] = useState(null);
+  const fetchedRef = useRef(false);
 
   useEffect(() => {
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
+
     async function fetchSectors() {
       try {
         const res = await fetch(`${API}/api/public/sectors`);
         const data = await res.json();
         const list = Array.isArray(data) ? data : [];
         setSectors(list);
-        if (sectorParam) {
+
+        if (sectorParam && list.length > 0) {
           const matched = list.find(
             (s) => s.slug === sectorParam ||
                    s.name.toLowerCase().replace(/\s+/g, '') === sectorParam.toLowerCase()
           );
-          if (matched) setAutoOpenSector(matched.id);
+          if (matched) {
+            setAutoOpenSector(matched.id);
+            setSectorCategories({ sectorId: matched.id, sectorName: matched.name, categories: matched.categories || [] });
+            return;
+          }
+        }
+
+        // default: show first sector categories
+        if (list.length > 0) {
+          setSectorCategories({ sectorId: list[0].id, sectorName: list[0].name, categories: list[0].categories || [] });
         }
       } catch (err) {
         console.error(err);
@@ -46,7 +60,7 @@ function ProductsContent() {
       }
     }
     fetchSectors();
-  }, [sectorParam]);
+  }, []);
 
   useEffect(() => {
     if (!search.trim()) {
@@ -58,9 +72,10 @@ function ProductsContent() {
     }
   }, [search, products]);
 
-  async function loadProducts(type, id, label, chain = [], currentLayer = 3) {
+  const loadProducts = useCallback(async (type, id, label, chain = [], currentLayer = 3) => {
     setProductsLoading(true);
     setSearch("");
+    setSectorCategories(null);
     setContext({ type, id, label });
     setLayer(currentLayer);
     setBreadcrumbs([...chain, { label, id, type, layer: currentLayer }]);
@@ -76,17 +91,26 @@ function ProductsContent() {
     } finally {
       setProductsLoading(false);
     }
-  }
+  }, []);
 
-  function handleProductClick(product) {
+  const handleSectorClick = useCallback((sector) => {
+    setSectorCategories({ sectorId: sector.id, sectorName: sector.name, categories: sector.categories || [] });
+    setContext(null);
+    setProducts([]);
+    setFilteredProducts([]);
+    setBreadcrumbs([]);
+    setSearch("");
+  }, []);
+
+  const handleProductClick = useCallback((product) => {
     if (layer === 3 && product.isGroup) {
       loadProducts("group", product.id, product.name, breadcrumbs, 4);
     } else {
       router.push(`/products/${product.id}`);
     }
-  }
+  }, [layer, breadcrumbs, loadProducts, router]);
 
-  function handleBreadcrumbClick(crumb, index) {
+  const handleBreadcrumbClick = useCallback((crumb, index) => {
     const newChain = breadcrumbs.slice(0, index);
     if (crumb.type === "sector") {
       setContext(null);
@@ -97,21 +121,23 @@ function ProductsContent() {
     } else {
       loadProducts(crumb.type, crumb.id, crumb.label, newChain, crumb.layer);
     }
-  }
+  }, [breadcrumbs, loadProducts]);
 
-  function handleCategorySelect(id, label, chain) {
-    setLayer(3);
+  const handleCategorySelect = useCallback((id, label, chain) => {
     loadProducts("category", id, label, chain, 3);
-  }
+  }, [loadProducts]);
 
-  function resetAll() {
+  const resetAll = useCallback(() => {
     setContext(null);
     setProducts([]);
     setFilteredProducts([]);
     setBreadcrumbs([]);
     setLayer(3);
     setSearch("");
-  }
+    if (sectors.length > 0) {
+      setSectorCategories({ sectorId: sectors[0].id, sectorName: sectors[0].name, categories: sectors[0].categories || [] });
+    }
+  }, [sectors]);
 
   return (
     <div className="min-h-screen bg-[#f4f6fa]">
@@ -140,6 +166,7 @@ function ProductsContent() {
             activeId={context?.id}
             autoOpenSectorId={autoOpenSector}
             onSelectCategory={handleCategorySelect}
+            onSelectSector={handleSectorClick}
           />
 
           <div className="flex-1 min-w-0">
@@ -179,14 +206,56 @@ function ProductsContent() {
               )}
             </div>
 
-            <ProductsGrid
-              products={filteredProducts}
-              loading={productsLoading}
-              context={context}
-              layer={layer}
-              search={search}
-              onProductClick={handleProductClick}
-            />
+            {/* Sector categories grid */}
+            {sectorCategories && !context && (
+              <div>
+                <p className="text-[11px] font-bold tracking-widest uppercase text-[#9aa3af] mb-4">
+                  {sectorCategories.sectorName} — Kategoriler
+                </p>
+                <div className="grid grid-cols-3 gap-5">
+                  {sectorCategories.categories.map((cat) => (
+                    <div
+                      key={cat.id}
+                      onClick={() => handleCategorySelect(cat.id, cat.name, [{ label: sectorCategories.sectorName, id: sectorCategories.sectorId, type: "sector" }])}
+                      className="group cursor-pointer rounded-xl border border-[#dde4ef] bg-white overflow-hidden hover:border-[#1e88e5] hover:shadow-[0_8px_32px_rgba(30,136,229,0.1)] transition-all duration-200"
+                    >
+                      <div className="h-52 bg-[#f4f6fa] flex items-center justify-center overflow-hidden">
+                        {cat.image ? (
+                          <img src={cat.image} alt={cat.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        ) : (
+                          <svg viewBox="0 0 24 24" fill="none" stroke="#dde4ef" strokeWidth="1" width="40" height="40">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+                          </svg>
+                        )}
+                      </div>
+                      <div className="p-3.5">
+                        <h3 className="text-[12px] font-bold uppercase tracking-wide text-[#071e3d] leading-tight group-hover:text-[#1e88e5] transition-colors">
+                          {cat.name}
+                        </h3>
+                        <p className="text-[11px] text-[#9aa3af] mt-1.5 flex items-center gap-1">
+                          Browse products
+                          <svg viewBox="0 0 24 24" fill="currentColor" width="10" height="10">
+                            <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
+                          </svg>
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Products grid */}
+            {context && (
+              <ProductsGrid
+                products={filteredProducts}
+                loading={productsLoading}
+                context={context}
+                layer={layer}
+                search={search}
+                onProductClick={handleProductClick}
+              />
+            )}
           </div>
         </div>
       </div>
