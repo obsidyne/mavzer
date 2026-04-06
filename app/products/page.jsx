@@ -8,6 +8,31 @@ import ProductsGrid from "../components/ProductsGrid";
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
+// mapping from hero section param keys to possible sector name variations in DB
+const SECTOR_PARAM_MAP = {
+  restoran: ['restoran', 'restaurant', 'restorant'],
+  kafe: ['kafe', 'cafe', 'kafé'],
+  otel: ['otel', 'hotel'],
+  kurum: ['kurum', 'resmi kurum', 'resmi', 'government', 'kurumsal'],
+  medikal: ['medikal', 'medical', 'sağlık'],
+  endustri: ['endustri', 'endüstri', 'endüstriyel', 'industrial', 'industry'],
+};
+
+function matchSector(list, param) {
+  if (!param) return null;
+  const p = param.toLowerCase();
+  // try slug first
+  let match = list.find((s) => s.slug === p);
+  if (match) return match;
+  // try mapping
+  const aliases = SECTOR_PARAM_MAP[p] || [p];
+  match = list.find((s) => aliases.includes(s.name.toLowerCase().replace(/\s+/g, ' ').trim()));
+  if (match) return match;
+  // try partial match
+  match = list.find((s) => s.name.toLowerCase().includes(p) || p.includes(s.name.toLowerCase().replace(/\s+/g, '')));
+  return match || null;
+}
+
 function ProductsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -38,10 +63,7 @@ function ProductsContent() {
         setSectors(list);
 
         if (sectorParam && list.length > 0) {
-          const matched = list.find(
-            (s) => s.slug === sectorParam ||
-                   s.name.toLowerCase().replace(/\s+/g, '') === sectorParam.toLowerCase()
-          );
+          const matched = matchSector(list, sectorParam);
           if (matched) {
             setAutoOpenSector(matched.id);
             setSectorCategories({ sectorId: matched.id, sectorName: matched.name, categories: matched.categories || [] });
