@@ -163,18 +163,18 @@ export default function HeroSection() {
                     <div className="flex items-center gap-2 shrink-0 px-4">
                         <div className="flex flex-col items-center" style={{ gap: '0px' }}>
                             {[0, 1, 2].map((i) => (
-                                <svg key={i} viewBox="0 0 24 24" fill="white" width="10" height="10"
+                                <svg key={i} viewBox="0 0 24 24" fill="white" width="16" height="16"
                                     style={{ animation: 'chevronBlink 1.2s ease-in-out infinite', animationDelay: `${i * 0.2}s` }}>
                                     <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
                                 </svg>
                             ))}
                         </div>
-                        <span className="font-bold uppercase text-white whitespace-nowrap" style={{ fontSize: '12px', letterSpacing: '0.12em' }}>
+                        <span className="font-bold uppercase text-white whitespace-nowrap" style={{ fontSize: '20px', letterSpacing: '0.12em' }}>
                             Sektörünüzü Seçerek İhtiyacınız Olabilecek Ürünleri Keşfedin
                         </span>
                         <div className="flex flex-col items-center" style={{ gap: '0px' }}>
                             {[0, 1, 2].map((i) => (
-                                <svg key={i} viewBox="0 0 24 24" fill="white" width="10" height="10"
+                                <svg key={i} viewBox="0 0 24 24" fill="white" width="16" height="16"
                                     style={{ animation: 'chevronBlink 1.2s ease-in-out infinite', animationDelay: `${i * 0.2}s` }}>
                                     <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
                                 </svg>
