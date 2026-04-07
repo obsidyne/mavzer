@@ -250,13 +250,15 @@ export default function ProductsGridPage() {
                     <div className="border-t border-[#1f1f1f]" />
                   </>
                 )}
-                <button
-                  onClick={handleAddExisting}
-                  className="w-full text-left px-4 py-3 text-sm text-white hover:bg-[#1a1a1a] transition-colors"
-                >
-                  <p className="font-medium">Add Existing Product</p>
-                  <p className="text-[#555] text-xs mt-0.5">Link a product from another category</p>
-                </button>
+                {isCategory && (
+                  <button
+                    onClick={handleAddExisting}
+                    className="w-full text-left px-4 py-3 text-sm text-white hover:bg-[#1a1a1a] transition-colors"
+                  >
+                    <p className="font-medium">Add Existing Product</p>
+                    <p className="text-[#555] text-xs mt-0.5">Link a product from another category</p>
+                  </button>
+                )}
               </div>
             </>
           )}
