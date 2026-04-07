@@ -243,18 +243,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// DELETE /api/products/:id
-router.delete("/:id", async (req, res) => {
-  try {
-    await prisma.product.delete({ where: { id: req.params.id } });
-    return res.json({ message: "Product deleted" });
-  } catch (err) {
-    if (err.code === "P2025") return res.status(404).json({ message: "Product not found" });
-    return res.status(500).json({ message: "Failed to delete product" });
-  }
-});
-
-// DELETE /api/products/unlink — unlink product from category
+// DELETE /api/products/unlink — unlink product from category (must be before /:id)
 router.delete("/unlink", async (req, res) => {
   try {
     const { productId, categoryId } = req.body;
@@ -267,4 +256,18 @@ router.delete("/unlink", async (req, res) => {
   }
 });
 
+// DELETE /api/products/:id
+router.delete("/:id", async (req, res) => {
+  try {
+    await prisma.product.delete({ where: { id: req.params.id } });
+    return res.json({ message: "Product deleted" });
+  } catch (err) {
+    if (err.code === "P2025") return res.status(404).json({ message: "Product not found" });
+    return res.status(500).json({ message: "Failed to delete product" });
+  }
+});
+
 export default router;
+
+// GET /api/products/featured — get all featured products
+// PUT /api/products/:id/featured — toggle featured status
