@@ -73,6 +73,29 @@ router.get("/", async (req, res) => {
   }
 });
 
+// GET /api/products/all — all layer 3 (depth=0) products with categories and sub-product count
+router.get("/all", async (req, res) => {
+  try {
+    const { q } = req.query;
+    const products = await prisma.product.findMany({
+      where: {
+        depth: 0,
+        ...(q ? { name: { contains: q, mode: "insensitive" } } : {}),
+      },
+      orderBy: { name: "asc" },
+      include: {
+        _count: { select: { subProducts: true } },
+        categories: {
+          include: { category: { include: { sector: true } } },
+        },
+      },
+    });
+    return res.json(products);
+  } catch (err) {
+    return res.status(500).json({ message: "Failed to fetch products" });
+  }
+});
+
 // GET /api/products/search?q=x&exclude=id1,id2
 // Search existing products to add to a category/group
 router.get("/search", async (req, res) => {

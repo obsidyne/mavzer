@@ -116,3 +116,16 @@ router.get("/featured", async (req, res) => {
     return res.status(500).json({ message: "Failed to fetch featured products" });
   }
 });
+
+// GET /api/public/banners
+router.get("/banners", async (req, res) => {
+  try {
+    const banners = await prisma.banner.findMany({
+      where: { isActive: true },
+      orderBy: { order: "asc" },
+    });
+    return res.json(banners);
+  } catch (err) {
+    return res.status(500).json({ message: "Failed to fetch banners" });
+  }
+});
