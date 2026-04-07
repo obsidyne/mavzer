@@ -28,7 +28,7 @@ export default function AuthPage() {
       <div className="w-full max-w-sm bg-[#111] border border-[#1f1f1f] rounded-xl p-10">
 
         <div className="mb-10">
-          <h1 className="text-white text-2xl font-bold tracking-[6px]">MAVZER</h1>
+          <h1 className="text-wxhite text-2xl font-bold tracking-[6px]">MAVZER</h1>
           <p className="text-[#444] text-[10px] tracking-[3px] mt-1 uppercase">Admin Panel</p>
         </div>
 

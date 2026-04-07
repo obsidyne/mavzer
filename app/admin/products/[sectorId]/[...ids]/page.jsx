@@ -28,6 +28,7 @@ export default function ProductsGridPage() {
   const [breadcrumbs, setBreadcrumbs] = useState([]);
   const [currentNode, setCurrentNode] = useState(null); // { type: "category"|"group", data: {} }
   const [products, setProducts] = useState([]);
+  const [deleteModal, setDeleteModal] = useState(null); // { product, categoryCount, currentCategoryId }
   const [loading, setLoading] = useState(true);
   const [addMenuOpen, setAddMenuOpen] = useState(false);
   const [groupModalOpen, setGroupModalOpen] = useState(false);
@@ -123,9 +124,44 @@ export default function ProductsGridPage() {
   }
 
   async function handleDelete(id) {
-    if (!confirm("Delete this product? This will also delete all its sub-products.")) return;
-    await fetch(`${API}/api/products/${id}`, { method: "DELETE", credentials: "include" });
-    setProducts((prev) => prev.filter((p) => p.id !== id));
+    // fetch full product to check category count
+    const res = await fetch(`${API}/api/products/${id}`, { credentials: "include" });
+    const data = await res.json();
+    const categoryCount = data.categories?.length ?? 0;
+
+    // resolve current node fresh to get its type and id
+    const nodeRes = await fetch(`${API}/api/products/resolve/${currentId}`, { credentials: "include" });
+    const node = await nodeRes.json();
+    const currentCategoryId = node.type === "category" ? currentId : null;
+
+    console.log("[DELETE DEBUG]", { categoryCount, categories: data.categories, nodeType: node.type, currentCategoryId });
+
+    if (categoryCount > 1 && currentCategoryId) {
+      setDeleteModal({ product: data, categoryCount, currentCategoryId });
+    } else {
+      if (!confirm(`Delete this product? (debug: categoryCount=${categoryCount}, currentCategoryId=${currentCategoryId})\nThis will also delete all its sub-products.`)) return;
+      await fetch(`${API}/api/products/${id}`, { method: "DELETE", credentials: "include" });
+      setProducts((prev) => prev.filter((p) => p.id !== id));
+    }
+  }
+
+  async function handleDeleteHere() {
+    const { product, currentCategoryId } = deleteModal;
+    setDeleteModal(null);
+    await fetch(`${API}/api/products/unlink`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ productId: product.id, categoryId: currentCategoryId }),
+    });
+    setProducts((prev) => prev.filter((p) => p.id !== product.id));
+  }
+
+  async function handleDeleteEverywhere() {
+    const { product } = deleteModal;
+    setDeleteModal(null);
+    await fetch(`${API}/api/products/${product.id}`, { method: "DELETE", credentials: "include" });
+    setProducts((prev) => prev.filter((p) => p.id !== product.id));
   }
 
   function handleSavedGroup(product) {
@@ -271,6 +307,68 @@ export default function ProductsGridPage() {
           onClose={() => setExistingModalOpen(false)}
           onLinked={handleLinkedExisting}
         />
+      )}
+
+      {/* ── Smart Delete Modal ── */}
+      {deleteModal && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center shrink-0">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" width="20" height="20">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-[15px] font-bold text-[#071e3d]">Delete Product</h3>
+                <p className="text-[12px] text-[#9aa3af]">This product exists in {deleteModal.categoryCount} categories</p>
+              </div>
+            </div>
+
+            <p className="text-[13px] text-[#4a5568] mb-6 leading-relaxed">
+              <span className="font-semibold text-[#071e3d]">&quot;{deleteModal.product.name}&quot;</span> is linked to {deleteModal.categoryCount} categories. How would you like to remove it?
+            </p>
+
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={handleDeleteHere}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-[#dde4ef] hover:border-orange-300 hover:bg-orange-50 transition-all text-left"
+              >
+                <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center shrink-0">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2" width="15" height="15">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-[13px] font-semibold text-[#071e3d]">Remove from this category only</p>
+                  <p className="text-[11px] text-[#9aa3af]">Product stays in other categories</p>
+                </div>
+              </button>
+
+              <button
+                onClick={handleDeleteEverywhere}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-[#dde4ef] hover:border-red-300 hover:bg-red-50 transition-all text-left"
+              >
+                <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center shrink-0">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" width="15" height="15">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-[13px] font-semibold text-[#071e3d]">Delete from everywhere</p>
+                  <p className="text-[11px] text-[#9aa3af]">Permanently removes the product and all sub-products</p>
+                </div>
+              </button>
+
+              <button
+                onClick={() => setDeleteModal(null)}
+                className="w-full px-4 py-2.5 text-[12px] text-[#9aa3af] hover:text-[#071e3d] transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
