@@ -9,6 +9,7 @@ const SLIDES = [
     // { url: '/slider3.png', alt: 'Food' },
 ];
 
+
 const CATEGORIES = [
     {
         key: 'restoran', label: 'Restoran', href: '/products?sector=restoran', from: '#2c1810', to: '#7a4520',
