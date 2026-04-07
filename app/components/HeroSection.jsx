@@ -4,10 +4,11 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 const SLIDES = [
-    { url: '/slider1.png', alt: 'Restaurant' },
-    { url: '/slider2.png', alt: 'Hotel' },
-    { url: '/slider3.png', alt: 'Food' },
+    { url: '/slider1.jpeg', alt: 'Restaurant' },
+    { url: '/slider2.jpeg', alt: 'Hotel' },
+    // { url: '/slider3.png', alt: 'Food' },
 ];
+
 
 const CATEGORIES = [
     {
@@ -101,7 +102,7 @@ export default function HeroSection() {
             <div className="mt-[66px]" style={{ height: 'calc(100vh - 66px)', display: 'flex', flexDirection: 'column' }}>
 
                 {/* ── Banner — 50% ── */}
-                <section className="relative w-full overflow-hidden bg-[#071e3d] shrink-0" style={{ height: '50%' }}>
+                <section className="relative w-full overflow-hidden bg-[#071e3d] shrink-0" style={{ height: '55%' }}>
                     {SLIDES.map((slide, i) => (
                         <div key={i} className={`absolute inset-0 transition-opacity duration-1000 ${i === current ? 'opacity-100' : 'opacity-0'}`}>
                             <img src={slide.url} alt={slide.alt} className="w-full h-full object-cover" />
@@ -163,18 +164,18 @@ export default function HeroSection() {
                     <div className="flex items-center gap-2 shrink-0 px-4">
                         <div className="flex flex-col items-center" style={{ gap: '0px' }}>
                             {[0, 1, 2].map((i) => (
-                                <svg key={i} viewBox="0 0 24 24" fill="white" width="10" height="10"
+                                <svg key={i} viewBox="0 0 24 24" fill="white" width="16" height="16"
                                     style={{ animation: 'chevronBlink 1.2s ease-in-out infinite', animationDelay: `${i * 0.2}s` }}>
                                     <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
                                 </svg>
                             ))}
                         </div>
-                        <span className="font-bold uppercase text-white whitespace-nowrap" style={{ fontSize: '12px', letterSpacing: '0.12em' }}>
+                        <span className="font-bold uppercase text-white whitespace-nowrap" style={{ fontSize: '20px', letterSpacing: '0.12em' }}>
                             Sektörünüzü Seçerek İhtiyacınız Olabilecek Ürünleri Keşfedin
                         </span>
                         <div className="flex flex-col items-center" style={{ gap: '0px' }}>
                             {[0, 1, 2].map((i) => (
-                                <svg key={i} viewBox="0 0 24 24" fill="white" width="10" height="10"
+                                <svg key={i} viewBox="0 0 24 24" fill="white" width="16" height="16"
                                     style={{ animation: 'chevronBlink 1.2s ease-in-out infinite', animationDelay: `${i * 0.2}s` }}>
                                     <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
                                 </svg>
@@ -212,7 +213,7 @@ export default function HeroSection() {
                 </div>
 
                 {/* ── Sectors — remaining ── */}
-                <div className="flex-1 flex items-center bg-white overflow-hidden">
+                <div className="flex-1 flex items-start pt-4 bg-white overflow-hidden">
                     <div className="w-full max-w-[1150px] mx-auto px-6">
                         <div className="grid grid-cols-6 gap-3">
                             {CATEGORIES.map((cat) => (
