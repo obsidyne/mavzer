@@ -212,7 +212,7 @@ export default function HeroSection() {
                 </div>
 
                 {/* ── Sectors — remaining ── */}
-                <div className="flex-1 flex items-center bg-white overflow-hidden">
+                <div className="flex-1 flex items-start pt-4 bg-white overflow-hidden">
                     <div className="w-full max-w-[1150px] mx-auto px-6">
                         <div className="grid grid-cols-6 gap-3">
                             {CATEGORIES.map((cat) => (
