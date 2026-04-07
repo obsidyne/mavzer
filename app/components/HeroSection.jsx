@@ -4,9 +4,9 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 const SLIDES = [
-    { url: '/slider1.png', alt: 'Restaurant' },
-    { url: '/slider2.png', alt: 'Hotel' },
-    { url: '/slider3.png', alt: 'Food' },
+    { url: '/slider1.jpeg', alt: 'Restaurant' },
+    { url: '/slider2.jpeg', alt: 'Hotel' },
+    // { url: '/slider3.png', alt: 'Food' },
 ];
 
 const CATEGORIES = [
@@ -101,7 +101,7 @@ export default function HeroSection() {
             <div className="mt-[66px]" style={{ height: 'calc(100vh - 66px)', display: 'flex', flexDirection: 'column' }}>
 
                 {/* ── Banner — 50% ── */}
-                <section className="relative w-full overflow-hidden bg-[#071e3d] shrink-0" style={{ height: '50%' }}>
+                <section className="relative w-full overflow-hidden bg-[#071e3d] shrink-0" style={{ height: '55%' }}>
                     {SLIDES.map((slide, i) => (
                         <div key={i} className={`absolute inset-0 transition-opacity duration-1000 ${i === current ? 'opacity-100' : 'opacity-0'}`}>
                             <img src={slide.url} alt={slide.alt} className="w-full h-full object-cover" />
