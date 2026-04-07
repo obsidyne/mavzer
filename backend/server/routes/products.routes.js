@@ -82,7 +82,7 @@ router.get("/search", async (req, res) => {
 
     const products = await prisma.product.findMany({
       where: {
-        isGroup: false,
+        depth: 0,
         name: { contains: q || "", mode: "insensitive" },
         id: { notIn: excludeIds },
       },
