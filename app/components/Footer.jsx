@@ -35,6 +35,8 @@ export default function Footer() {
                         <video
                             controls
                             loop
+                            autoPlay
+                            muted
                             className="w-full h-full object-cover"
                             // poster="/slider1.png"
                         >
