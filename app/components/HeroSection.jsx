@@ -3,12 +3,12 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
-const SLIDES = [
+const API = process.env.NEXT_PUBLIC_API_URL;
+
+const FALLBACK_SLIDES = [
     { url: '/slider1.jpeg', alt: 'Restaurant' },
     { url: '/slider2.jpeg', alt: 'Hotel' },
-    // { url: '/slider3.png', alt: 'Food' },
 ];
-
 
 const CATEGORIES = [
     {
@@ -38,23 +38,40 @@ const CATEGORIES = [
 ];
 
 export default function HeroSection() {
+    const [slides, setSlides] = useState(FALLBACK_SLIDES);
     const [current, setCurrent] = useState(0);
     const timerRef = useRef(null);
+
+    useEffect(() => {
+        async function fetchBanners() {
+            try {
+                const res = await fetch(`${API}/api/public/banners`);
+                const data = await res.json();
+                if (Array.isArray(data) && data.length > 0) {
+                    setSlides(data.map((b) => ({ url: b.image, alt: b.title || 'Banner' })));
+                }
+            } catch (err) {
+                // keep fallback slides
+            }
+        }
+        fetchBanners();
+    }, []);
 
     const startTimer = () => {
         if (timerRef.current) clearInterval(timerRef.current);
         timerRef.current = setInterval(() => {
-            setCurrent((c) => (c + 1) % SLIDES.length);
+            setCurrent((c) => (c + 1) % slides.length);
         }, 5000);
     };
 
     useEffect(() => {
+        setCurrent(0);
         startTimer();
         return () => clearInterval(timerRef.current);
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [slides]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const goTo = (n) => {
-        setCurrent((n + SLIDES.length) % SLIDES.length);
+        setCurrent((n + slides.length) % slides.length);
         startTimer();
     };
 
@@ -101,15 +118,15 @@ export default function HeroSection() {
 
             <div className="mt-[66px]" style={{ height: 'calc(100vh - 66px)', display: 'flex', flexDirection: 'column' }}>
 
-                {/* ── Banner — 50% ── */}
+                {/* ── Banner — 55% ── */}
                 <section className="relative w-full overflow-hidden bg-[#071e3d] shrink-0" style={{ height: '55%' }}>
-                    {SLIDES.map((slide, i) => (
+                    {slides.map((slide, i) => (
                         <div key={i} className={`absolute inset-0 transition-opacity duration-1000 ${i === current ? 'opacity-100' : 'opacity-0'}`}>
                             <img src={slide.url} alt={slide.alt} className="w-full h-full object-cover" />
                         </div>
                     ))}
                     <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2">
-                        {SLIDES.map((_, i) => (
+                        {slides.map((_, i) => (
                             <button key={i} onClick={() => goTo(i)} aria-label={`Slide ${i + 1}`}
                                 style={{ width: i === current ? '44px' : '28px' }}
                                 className={`h-[3px] border-none cursor-pointer p-0 rounded-sm transition-all duration-300 ${i === current ? 'bg-[#1e88e5]' : 'bg-white/30'}`}
@@ -133,9 +150,7 @@ export default function HeroSection() {
                 {/* ── Badges — 11% ── */}
                 <div className="shrink-0 w-full flex items-center justify-between" style={{ height: '11%', background: 'linear-gradient(135deg, #0a3a6e 0%, #1565c0 50%, #0a3a6e 100%)' }}>
 
-                    {/* Left 2 badges — slide in from left */}
                     <div className="flex items-center h-full divide-x divide-white/20">
-                        {/* Badge 1 */}
                         <div className="slide-left flex flex-col items-center justify-center h-full px-10" style={{ gap: '3px', minWidth: '160px' }}>
                             <div className="truck-anim text-white/90">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="22" height="22">
@@ -147,7 +162,6 @@ export default function HeroSection() {
                                 Hızlı Teslimat
                             </span>
                         </div>
-                        {/* Badge 2 */}
                         <div className="slide-left-2 flex flex-col items-center justify-center h-full px-10" style={{ gap: '3px', minWidth: '160px' }}>
                             <div className="pulse-anim text-white/90" style={{ width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <div className="rounded-full border-2 border-white/80 flex items-center justify-center" style={{ width: '22px', height: '22px' }}>
@@ -160,7 +174,6 @@ export default function HeroSection() {
                         </div>
                     </div>
 
-                    {/* Center sentence */}
                     <div className="flex items-center gap-2 shrink-0 px-4">
                         <div className="flex flex-col items-center" style={{ gap: '0px' }}>
                             {[0, 1, 2].map((i) => (
@@ -183,9 +196,7 @@ export default function HeroSection() {
                         </div>
                     </div>
 
-                    {/* Right 2 badges — slide in from right */}
                     <div className="flex items-center h-full divide-x divide-white/20">
-                        {/* Badge 3 */}
                         <div className="slide-right flex flex-col items-center justify-center h-full px-10" style={{ gap: '3px', minWidth: '160px' }}>
                             <div className="badge-anim text-white/90">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="22" height="22">
@@ -197,7 +208,6 @@ export default function HeroSection() {
                                 Kaliteli Üretimi
                             </span>
                         </div>
-                        {/* Badge 4 */}
                         <div className="slide-right-2 flex flex-col items-center justify-center h-full px-10" style={{ gap: '3px', minWidth: '160px' }}>
                             <div className="clock-anim text-white/90">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="22" height="22">
@@ -212,7 +222,7 @@ export default function HeroSection() {
                     </div>
                 </div>
 
-                {/* ── Sectors — remaining ── */}
+                {/* ── Sectors ── */}
                 <div className="flex-1 flex items-start pt-4 bg-white overflow-hidden">
                     <div className="w-full max-w-[1150px] mx-auto px-6">
                         <div className="grid grid-cols-6 gap-3">
