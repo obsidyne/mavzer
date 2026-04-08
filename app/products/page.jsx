@@ -49,6 +49,8 @@ function ProductsContent() {
   const [search, setSearch] = useState("");
   const [autoOpenSector, setAutoOpenSector] = useState(null);
   const [sectorCategories, setSectorCategories] = useState(null);
+  const [generalProducts, setGeneralProducts] = useState(null); // all layer3 products
+  const [isGeneralActive, setIsGeneralActive] = useState(false);
   const fetchedRef = useRef(false);
 
   useEffect(() => {
@@ -116,12 +118,31 @@ function ProductsContent() {
   }, []);
 
   const handleSectorClick = useCallback((sector) => {
+    setIsGeneralActive(false);
+    setGeneralProducts(null);
     setSectorCategories({ sectorId: sector.id, sectorName: sector.name, categories: sector.categories || [] });
     setContext(null);
     setProducts([]);
     setFilteredProducts([]);
     setBreadcrumbs([]);
     setSearch("");
+  }, []);
+
+  const handleSelectGeneral = useCallback(async () => {
+    setIsGeneralActive(true);
+    setSectorCategories(null);
+    setContext(null);
+    setProducts([]);
+    setFilteredProducts([]);
+    setBreadcrumbs([]);
+    setSearch("");
+    try {
+      const res = await fetch(`${API}/api/products/all`, { credentials: "include" });
+      const data = await res.json();
+      setGeneralProducts(Array.isArray(data) ? data : []);
+    } catch (err) {
+      setGeneralProducts([]);
+    }
   }, []);
 
   const handleProductClick = useCallback((product) => {
@@ -146,6 +167,8 @@ function ProductsContent() {
   }, [breadcrumbs, loadProducts]);
 
   const handleCategorySelect = useCallback((id, label, chain) => {
+    setIsGeneralActive(false);
+    setGeneralProducts(null);
     loadProducts("category", id, label, chain, 3);
   }, [loadProducts]);
 
@@ -156,6 +179,8 @@ function ProductsContent() {
     setBreadcrumbs([]);
     setLayer(3);
     setSearch("");
+    setIsGeneralActive(false);
+    setGeneralProducts(null);
     if (sectors.length > 0) {
       setSectorCategories({ sectorId: sectors[0].id, sectorName: sectors[0].name, categories: sectors[0].categories || [] });
     }
@@ -189,6 +214,8 @@ function ProductsContent() {
             autoOpenSectorId={autoOpenSector}
             onSelectCategory={handleCategorySelect}
             onSelectSector={handleSectorClick}
+            onSelectGeneral={handleSelectGeneral}
+            isGeneralActive={isGeneralActive}
           />
 
           <div className="flex-1 min-w-0">
@@ -228,8 +255,52 @@ function ProductsContent() {
               )}
             </div>
 
+            {/* General products grid */}
+            {isGeneralActive && generalProducts && (
+              <div>
+                <p className="text-[11px] font-bold tracking-widest uppercase text-[#9aa3af] mb-4">
+                  Tüm Ürünler — {generalProducts.length} ürün
+                </p>
+                <div className="grid grid-cols-3 gap-5">
+                  {generalProducts.map((product) => (
+                    <div
+                      key={product.id}
+                      onClick={() => handleProductClick(product)}
+                      className="group cursor-pointer rounded-xl border border-[#dde4ef] bg-white overflow-hidden hover:border-[#1e88e5] hover:shadow-[0_8px_32px_rgba(30,136,229,0.1)] transition-all duration-200"
+                    >
+                      <div className="h-52 bg-[#f4f6fa] flex items-center justify-center overflow-hidden relative">
+                        {product.image ? (
+                          <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        ) : (
+                          <svg viewBox="0 0 24 24" fill="none" stroke="#dde4ef" strokeWidth="1" width="40" height="40">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+                          </svg>
+                        )}
+                        {product.isGroup && (
+                          <div className="absolute top-2.5 right-2.5 bg-[#071e3d] text-white text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full">
+                            Series
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-3.5">
+                        <h3 className="text-[12px] font-bold uppercase tracking-wide text-[#071e3d] leading-tight group-hover:text-[#1e88e5] transition-colors line-clamp-2">
+                          {product.name}
+                        </h3>
+                        <p className="text-[11px] text-[#9aa3af] mt-1.5 flex items-center gap-1">
+                          {product.isGroup ? `${product._count?.subProducts ?? 0} variants` : "View details"}
+                          <svg viewBox="0 0 24 24" fill="currentColor" width="10" height="10">
+                            <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
+                          </svg>
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Sector categories grid */}
-            {sectorCategories && !context && (
+            {sectorCategories && !context && !isGeneralActive && (
               <div>
                 <p className="text-[11px] font-bold tracking-widest uppercase text-[#9aa3af] mb-4">
                   {sectorCategories.sectorName} — Kategoriler
