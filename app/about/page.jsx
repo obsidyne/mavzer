@@ -1,12 +1,12 @@
 import Navbar from "../components/Navbar";
 
 const STOCK = {
-  factory1: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80",
-  factory2: "https://images.unsplash.com/photo-1565793979681-3e07e5c46462?w=800&q=80",
-  factory3: "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=800&q=80",
-  team1:    "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&q=80",
-  team2:    "https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=800&q=80",
-  team3:    "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&q=80",
+  factory1: "image1.jpg",
+  factory2: "image2.jpg",
+  factory3: "image3.jpg",
+  team1:    "image4.webp",
+  team2:    "image5.webp",
+  team3:    "image6.jpg",
 };
 
 export default function CorporatePage() {

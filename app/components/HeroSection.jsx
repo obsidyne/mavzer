@@ -147,74 +147,77 @@ export default function HeroSection() {
                 </section>
 
                 {/* ── Badges — 11% ── */}
-                <div className="shrink-0 w-full flex items-center justify-between" style={{ height: '11%', background: 'linear-gradient(135deg, #0a3a6e 0%, #1565c0 50%, #0a3a6e 100%)' }}>
+                <div className="shrink-0 w-full flex items-center justify-between overflow-hidden" style={{ height: '11%', background: 'linear-gradient(135deg, #0a3a6e 0%, #1565c0 50%, #0a3a6e 100%)' }}>
 
-                    <div className="flex items-center h-full divide-x divide-white/20">
-                        <div className="slide-left flex flex-col items-center justify-center h-full px-10" style={{ gap: '3px', minWidth: '160px' }}>
+                    {/* Left badges */}
+                    <div className="flex items-center h-full divide-x divide-white/20 shrink-0">
+                        <div className="slide-left flex flex-col items-center justify-center h-full" style={{ gap: '3px', padding: '0 2.5vw', minWidth: '10vw' }}>
                             <div className="truck-anim text-white/90">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="22" height="22">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width: '1.4vw', height: '1.4vw', minWidth: '16px', minHeight: '16px' }}>
                                     <path d="M1 3h15v13H1zM16 8h4l3 3v5h-7V8z" strokeLinecap="round" strokeLinejoin="round"/>
                                     <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
                                 </svg>
                             </div>
-                            <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: '10px', letterSpacing: '0.12em', padding: '1px 8px' }}>
+                            <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: 'clamp(8px, 0.65vw, 11px)', letterSpacing: '0.12em', padding: '1px 0.5vw' }}>
                                 Hızlı Teslimat
                             </span>
                         </div>
-                        <div className="slide-left-2 flex flex-col items-center justify-center h-full px-10" style={{ gap: '3px', minWidth: '160px' }}>
-                            <div className="pulse-anim text-white/90" style={{ width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <div className="rounded-full border-2 border-white/80 flex items-center justify-center" style={{ width: '22px', height: '22px' }}>
-                                    <span className="text-white font-extrabold" style={{ fontSize: '9px', lineHeight: 1 }}>30+</span>
+                        <div className="slide-left-2 flex flex-col items-center justify-center h-full" style={{ gap: '3px', padding: '0 2.5vw', minWidth: '10vw' }}>
+                            <div className="pulse-anim text-white/90" style={{ width: '1.4vw', height: '1.4vw', minWidth: '16px', minHeight: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <div className="rounded-full border-2 border-white/80 flex items-center justify-center w-full h-full">
+                                    <span className="text-white font-extrabold" style={{ fontSize: 'clamp(7px, 0.6vw, 10px)', lineHeight: 1 }}>30+</span>
                                 </div>
                             </div>
-                            <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: '10px', letterSpacing: '0.12em', padding: '1px 8px' }}>
+                            <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: 'clamp(8px, 0.65vw, 11px)', letterSpacing: '0.12em', padding: '1px 0.5vw' }}>
                                 30+ Yıllık Tecrübe
                             </span>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-2 shrink-0 px-4">
-                        <div className="flex flex-col items-center" style={{ gap: '0px' }}>
+                    {/* Center sentence */}
+                    <div className="flex items-center flex-1 justify-center min-w-0 px-2" style={{ gap: '0.5vw' }}>
+                        <div className="flex flex-col items-center shrink-0" style={{ gap: '0px' }}>
                             {[0, 1, 2].map((i) => (
-                                <svg key={i} viewBox="0 0 24 24" fill="white" width="16" height="16"
-                                    style={{ animation: 'chevronBlink 1.2s ease-in-out infinite', animationDelay: `${i * 0.2}s` }}>
+                                <svg key={i} viewBox="0 0 24 24" fill="white"
+                                    style={{ width: 'clamp(10px, 1vw, 16px)', height: 'clamp(10px, 1vw, 16px)', animation: 'chevronBlink 1.2s ease-in-out infinite', animationDelay: `${i * 0.2}s` }}>
                                     <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
                                 </svg>
                             ))}
                         </div>
-                        <span className="font-bold uppercase text-white whitespace-nowrap" style={{ fontSize: '20px', letterSpacing: '0.12em' }}>
+                        <span className="font-bold uppercase text-white whitespace-nowrap" style={{ fontSize: '14px', letterSpacing: '0.08em' }}>
                             Sektörünüzü Seçerek İhtiyacınız Olabilecek Ürünleri Keşfedin
                         </span>
-                        <div className="flex flex-col items-center" style={{ gap: '0px' }}>
+                        <div className="flex flex-col items-center shrink-0" style={{ gap: '0px' }}>
                             {[0, 1, 2].map((i) => (
-                                <svg key={i} viewBox="0 0 24 24" fill="white" width="16" height="16"
-                                    style={{ animation: 'chevronBlink 1.2s ease-in-out infinite', animationDelay: `${i * 0.2}s` }}>
+                                <svg key={i} viewBox="0 0 24 24" fill="white"
+                                    style={{ width: 'clamp(10px, 1vw, 16px)', height: 'clamp(10px, 1vw, 16px)', animation: 'chevronBlink 1.2s ease-in-out infinite', animationDelay: `${i * 0.2}s` }}>
                                     <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
                                 </svg>
                             ))}
                         </div>
                     </div>
 
-                    <div className="flex items-center h-full divide-x divide-white/20">
-                        <div className="slide-right flex flex-col items-center justify-center h-full px-10" style={{ gap: '3px', minWidth: '160px' }}>
+                    {/* Right badges */}
+                    <div className="flex items-center h-full divide-x divide-white/20 shrink-0">
+                        <div className="slide-right flex flex-col items-center justify-center h-full" style={{ gap: '3px', padding: '0 2.5vw', minWidth: '10vw' }}>
                             <div className="badge-anim text-white/90">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="22" height="22">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width: '1.4vw', height: '1.4vw', minWidth: '16px', minHeight: '16px' }}>
                                     <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" strokeLinecap="round" strokeLinejoin="round"/>
                                     <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round"/>
                                 </svg>
                             </div>
-                            <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: '10px', letterSpacing: '0.12em', padding: '1px 8px' }}>
+                            <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: 'clamp(8px, 0.65vw, 11px)', letterSpacing: '0.12em', padding: '1px 0.5vw' }}>
                                 Kaliteli Üretimi
                             </span>
                         </div>
-                        <div className="slide-right-2 flex flex-col items-center justify-center h-full px-10" style={{ gap: '3px', minWidth: '160px' }}>
+                        <div className="slide-right-2 flex flex-col items-center justify-center h-full" style={{ gap: '3px', padding: '0 2.5vw', minWidth: '10vw' }}>
                             <div className="clock-anim text-white/90">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="22" height="22">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width: '1.4vw', height: '1.4vw', minWidth: '16px', minHeight: '16px' }}>
                                     <circle cx="12" cy="12" r="10"/>
                                     <path d="M12 6v6l4 2" strokeLinecap="round"/>
                                 </svg>
                             </div>
-                            <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: '10px', letterSpacing: '0.12em', padding: '1px 8px' }}>
+                            <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: 'clamp(8px, 0.65vw, 11px)', letterSpacing: '0.12em', padding: '1px 0.5vw' }}>
                                 Zamanında Üretim
                             </span>
                         </div>
