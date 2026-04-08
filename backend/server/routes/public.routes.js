@@ -129,3 +129,16 @@ router.get("/banners", async (req, res) => {
     return res.status(500).json({ message: "Failed to fetch banners" });
   }
 });
+
+// GET /api/public/clients
+router.get("/clients", async (req, res) => {
+  try {
+    const clients = await prisma.client.findMany({
+      where: { isActive: true },
+      orderBy: { order: "asc" },
+    });
+    return res.json(clients);
+  } catch (err) {
+    return res.status(500).json({ message: "Failed to fetch clients" });
+  }
+});
