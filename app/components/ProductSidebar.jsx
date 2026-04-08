@@ -51,14 +51,7 @@ export default function ProductsSidebar({ sectors, loading, activeId, autoOpenSe
       <div className="border border-[#dde4ef] rounded-lg overflow-hidden bg-white divide-y divide-[#dde4ef]">
 
         {/* General — no dropdown, just a button */}
-        <button
-          onClick={onSelectGeneral}
-          className={`w-full flex items-center justify-between px-4 py-3 transition-colors text-left ${isGeneralActive ? "bg-[#0a4c8a]" : "hover:bg-[#f8fafc]"}`}
-        >
-          <span className={`text-[11px] font-bold uppercase tracking-wider ${isGeneralActive ? "text-white" : "text-[#071e3d]"}`}>
-            Tüm Ürünler
-          </span>
-        </button>
+     
 
         {sectors.map((sector) => (
           <div key={sector.id}>
@@ -97,6 +90,14 @@ export default function ProductsSidebar({ sectors, loading, activeId, autoOpenSe
             )}
           </div>
         ))}
+           <button
+          onClick={onSelectGeneral}
+          className={`w-full flex items-center justify-between px-4 py-3 transition-colors text-left ${isGeneralActive ? "bg-[#0a4c8a]" : "hover:bg-[#f8fafc]"}`}
+        >
+          <span className={`text-[11px] font-bold uppercase tracking-wider ${isGeneralActive ? "text-white" : "text-[#071e3d]"}`}>
+            Tüm Ürünler
+          </span>
+        </button>
       </div>
     </div>
   );
