@@ -194,13 +194,13 @@ function ProductsContent() {
         <div className="max-w-5xl mx-auto px-8 py-8">
           <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase text-[#1e88e5] mb-2">
             <span className="block w-5 h-px bg-[#1e88e5]" />
-            Our Catalogue
+            HIZLI TESLİMAT
           </div>
           <h1 className="font-condensed text-[34px] font-extrabold uppercase text-[#071e3d] leading-tight tracking-wide">
-            All Products
+            KALİTELİ ÜRETİM
           </h1>
           <p className="text-[13px] text-[#9aa3af] mt-1">
-            Browse our full range of packaging solutions across all sectors.
+            Tüm sektörlere yönelik ambalaj çözümlerimizin tamamını inceleyin.
           </p>
         </div>
       </div>
