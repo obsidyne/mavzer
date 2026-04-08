@@ -10,35 +10,18 @@ const FALLBACK_SLIDES = [
     { url: '/slider2.jpeg', alt: 'Hotel' },
 ];
 
-const CATEGORIES = [
-    {
-        key: 'restoran', label: 'Restoran', href: '/products?sector=restoran', from: '#2c1810', to: '#7a4520',
-        img: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&q=80'
-    },
-    {
-        key: 'kafe', label: 'Kafe', href: '/products?sector=kafe', from: '#1a0e06', to: '#6b3d18',
-        img: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400&q=80'
-    },
-    {
-        key: 'otel', label: 'Otel', href: '/products?sector=otel', from: '#0a1628', to: '#2a5080',
-        img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80'
-    },
-    {
-        key: 'kurum', label: 'Resmi Kurum', href: '/products?sector=kurum', from: '#0e1422', to: '#2a3a60',
-        img: 'https://images.unsplash.com/photo-1568992687947-868a62a9f521?w=400&q=80'
-    },
-    {
-        key: 'medikal', label: 'Medikal', href: '/products?sector=medikal', from: '#081e2a', to: '#186080',
-        img: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&q=80'
-    },
-    {
-        key: 'endustri', label: 'Endüstriyel', href: '/products?sector=endustri', from: '#141814', to: '#3a4a2a',
-        img: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&q=80'
-    },
+const SECTOR_COLORS = [
+    { from: '#2c1810', to: '#7a4520' },
+    { from: '#1a0e06', to: '#6b3d18' },
+    { from: '#0a1628', to: '#2a5080' },
+    { from: '#0e1422', to: '#2a3a60' },
+    { from: '#081e2a', to: '#186080' },
+    { from: '#141814', to: '#3a4a2a' },
 ];
 
 export default function HeroSection() {
     const [slides, setSlides] = useState(FALLBACK_SLIDES);
+    const [sectors, setSectors] = useState([]);
     const [current, setCurrent] = useState(0);
     const timerRef = useRef(null);
 
@@ -47,6 +30,7 @@ export default function HeroSection() {
             try {
                 const res = await fetch(`${API}/api/public/banners`);
                 const data = await res.json();
+                console.log('[Banners]', data);
                 if (Array.isArray(data) && data.length > 0) {
                     setSlides(data.map((b) => ({ url: b.image, alt: b.title || 'Banner' })));
                 }
@@ -54,8 +38,29 @@ export default function HeroSection() {
                 // keep fallback slides
             }
         }
+        async function fetchSectors() {
+            try {
+                const res = await fetch(`${API}/api/public/sectors`);
+                const data = await res.json();
+                if (Array.isArray(data) && data.length > 0) {
+                    setSectors(data);
+                }
+            } catch (err) {
+                // keep empty
+            }
+        }
         fetchBanners();
+        fetchSectors();
     }, []);
+
+    useEffect(() => {
+        setCurrent(0);
+        if (timerRef.current) clearInterval(timerRef.current);
+        timerRef.current = setInterval(() => {
+            setCurrent((c) => (c + 1) % slides.length);
+        }, 5000);
+        return () => clearInterval(timerRef.current);
+    }, [slides]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const startTimer = () => {
         if (timerRef.current) clearInterval(timerRef.current);
@@ -63,12 +68,6 @@ export default function HeroSection() {
             setCurrent((c) => (c + 1) % slides.length);
         }, 5000);
     };
-
-    useEffect(() => {
-        setCurrent(0);
-        startTimer();
-        return () => clearInterval(timerRef.current);
-    }, [slides]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const goTo = (n) => {
         setCurrent((n + slides.length) % slides.length);
@@ -226,23 +225,30 @@ export default function HeroSection() {
                 <div className="flex-1 flex items-start pt-4 bg-white overflow-hidden">
                     <div className="w-full max-w-[1150px] mx-auto px-6">
                         <div className="grid grid-cols-6 gap-3">
-                            {CATEGORIES.map((cat) => (
-                                <Link key={cat.key} href={cat.href} className="no-underline block group">
-                                    <div
-                                        className="relative rounded-xl overflow-hidden border border-[#dde4ef] transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_14px_32px_rgba(10,76,138,0.2)]"
-                                        style={{ aspectRatio: '4 / 5' }}
-                                    >
-                                        <img src={cat.img} alt={cat.label} className="absolute inset-0 w-full h-full object-cover" />
+                            {sectors.map((sector, idx) => {
+                                const colors = SECTOR_COLORS[idx % SECTOR_COLORS.length];
+                                return (
+                                    <Link key={sector.id} href={`/products?sector=${sector.slug}`} className="no-underline block group">
                                         <div
-                                            className="absolute inset-0 opacity-40 group-hover:opacity-50 transition-opacity duration-300"
-                                            style={{ background: `linear-gradient(160deg, ${cat.from} 0%, ${cat.to} 100%)` }}
-                                        />
-                                    </div>
-                                    <p className="text-center text-[11px] font-semibold text-[#4a5568] mt-1 tracking-wide uppercase">
-                                        {cat.label}
-                                    </p>
-                                </Link>
-                            ))}
+                                            className="relative rounded-xl overflow-hidden border border-[#dde4ef] transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_14px_32px_rgba(10,76,138,0.2)]"
+                                            style={{ aspectRatio: '4 / 5' }}
+                                        >
+                                            {sector.image ? (
+                                                <img src={sector.image} alt={sector.name} className="absolute inset-0 w-full h-full object-cover" />
+                                            ) : (
+                                                <div className="absolute inset-0 bg-[#dde4ef]" />
+                                            )}
+                                            <div
+                                                className="absolute inset-0 opacity-40 group-hover:opacity-50 transition-opacity duration-300"
+                                                style={{ background: `linear-gradient(160deg, ${colors.from} 0%, ${colors.to} 100%)` }}
+                                            />
+                                        </div>
+                                        <p className="text-center text-[11px] font-semibold text-[#4a5568] mt-1 tracking-wide uppercase">
+                                            {sector.name}
+                                        </p>
+                                    </Link>
+                                );
+                            })}
                         </div>
                     </div>
                 </div>
