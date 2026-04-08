@@ -11,9 +11,9 @@ import { useAuth } from "../../context/authContext";
 const navItems = [
   { label: "Products",     href: "/admin/products",     icon: "▦" },
   { label: "All Products", href: "/admin/all-products", icon: "☰" },
-  { label: "Featured",     href: "/admin/featured",     icon: "★" },
+  // { label: "Featured",     href: "/admin/featured",     icon: "★" },
   { label: "Banners",      href: "/admin/banners",      icon: "▬" },
-  { label: "About",        href: "/admin/about",        icon: "✦" },
+  // { label: "About",        href: "/admin/about",        icon: "✦" },
   { label: "Clients",      href: "/admin/clients",      icon: "◈" },
   // { label: "Clients",  href: "/admin/clients",  icon: "◈" },
 ];
