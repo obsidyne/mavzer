@@ -18,10 +18,22 @@ export default function ReferencesPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#f4f6fa]">
+    <div className="min-h-screen --bg-[#f4f6fa]">
+         <div
+        className="fixed inset-0 z-[-1]"
+        style={{
+          backgroundImage: 'url(/background.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed',
+        }}
+      />
+      {/* Overlay so text stays readable */}
+      <div className="fixed inset-0 z-[-1] bg-white/70" />
+      
       <Navbar />
 
-      <div className="pt-[66px] bg-white border-b border-[#dde4ef]">
+      <div className="pt-[66px] --bg-white --border-b border-[#dde4ef]">
         <div className="max-w-5xl mx-auto px-8 py-10">
           <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase text-[#1e88e5] mb-2">
             <span className="block w-5 h-px bg-[#1e88e5]" />
