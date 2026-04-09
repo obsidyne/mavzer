@@ -66,8 +66,6 @@ model Product {
 
   // many-to-many with categories — only used when depth = 0
   categories  ProductCategory[]
-
-  // many-to-many with groups — only used when depth = 0
   groups      ProductGroup[]
 
   // self-referencing for sub-products
@@ -77,29 +75,6 @@ model Product {
 
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
-}
-
-model Group {
-  id          String         @id @default(cuid())
-  name        String
-  slug        String         @unique
-  description String?
-  image       String?
-  order       Int            @default(0)
-  isActive    Boolean        @default(true)
-  products    ProductGroup[]
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-}
-
-// join table for root products <-> groups (many-to-many)
-model ProductGroup {
-  productId String
-  groupId   String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  group     Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)
-
-  @@id([productId, groupId])
 }
 
 model Banner {
@@ -131,3 +106,25 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
+model Group {
+  id          String         @id @default(cuid())
+  name        String
+  slug        String         @unique
+  description String?
+  image       String?
+  order       Int            @default(0)
+  isActive    Boolean        @default(true)
+  products    ProductGroup[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+// join table for root products <-> groups (many-to-many)
+model ProductGroup {
+  productId String
+  groupId   String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  group     Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@id([productId, groupId])
+}
