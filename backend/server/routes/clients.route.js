@@ -1,5 +1,6 @@
 import express from "express";
 import prisma from "../../database.js";
+import { chownSync } from "fs";
 
 const router = express.Router();
 
@@ -10,6 +11,7 @@ router.get("/", async (req, res) => {
       where: { isActive: true },
       orderBy: { order: "asc" },
     });
+    console.log("[cliets]", clients)
     return res.json(clients);
   } catch (err) {
     return res.status(500).json({ message: "Failed to fetch clients" });

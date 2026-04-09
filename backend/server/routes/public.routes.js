@@ -93,6 +93,55 @@ router.get("/products/:id", async (req, res) => {
   }
 });
 
+// GET /api/public/groups — all active groups (with product count)
+router.get("/groups", async (req, res) => {
+  try {
+    const groups = await prisma.group.findMany({
+      where: { isActive: true },
+      orderBy: { order: "asc" },
+      include: {
+        _count: { select: { products: true } },
+      },
+    });
+    return res.json(groups);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Failed to fetch groups" });
+  }
+});
+
+// GET /api/public/groups/:id — single group with its products
+router.get("/groups/:id", async (req, res) => {
+  try {
+    const group = await prisma.group.findUnique({
+      where: { id: req.params.id, isActive: true },
+    });
+    if (!group) return res.status(404).json({ message: "Group not found" });
+
+    const rows = await prisma.productGroup.findMany({
+      where: { groupId: req.params.id },
+      include: {
+        product: {
+          where: { isActive: true, depth: 0 },
+          select: {
+            id: true, name: true, description: true,
+            image: true, isGroup: true, price: true,
+            _count: { select: { subProducts: true } },
+          },
+        },
+      },
+    });
+
+    return res.json({
+      ...group,
+      products: rows.map((r) => r.product).filter(Boolean),
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Failed to fetch group" });
+  }
+});
+
 export default router;
 
 // GET /api/public/featured — featured products for homepage

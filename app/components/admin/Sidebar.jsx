@@ -9,10 +9,14 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "../../context/authContext";
 
 const navItems = [
-  { label: "Products",     href: "/admin/products",     icon: "▦" },
-  { label: "All Products", href: "/admin/all-products", icon: "☰" },
+  { label: "Products",     href: "/admin/products2",     icon: "▦" },
+  { label: "Sectors",     href: "/admin/sectors",     icon: "▦" },
+  { label: "Categories",     href: "/admin/categories",     icon: "▦" },
+  { label: "Groups",     href: "/admin/group",     icon: "▦" },
+  // { label: "All Products", href: "/admin/all-products", icon: "☰" },
   // { label: "Featured",     href: "/admin/featured",     icon: "★" },
   { label: "Banners",      href: "/admin/banners",      icon: "▬" },
+  // { label: "About",        href: "/admin/about",        icon: "✦" },
   // { label: "About",        href: "/admin/about",        icon: "✦" },
   { label: "Clients",      href: "/admin/clients",      icon: "◈" },
   // { label: "Clients",  href: "/admin/clients",  icon: "◈" },

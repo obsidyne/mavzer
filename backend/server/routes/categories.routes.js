@@ -10,12 +10,13 @@ router.get("/", async (req, res) => {
     if (!sectorId) return res.status(400).json({ message: "sectorId is required" });
 
     const categories = await prisma.category.findMany({
-      where: { sectorId },
+      // where: { sectorId },
       orderBy: { order: "asc" },
       include: {
         _count: { select: { products: true } },
       },
     });
+    console.log(categories)
     return res.json(categories);
   } catch (err) {
     return res.status(500).json({ message: "Failed to fetch categories" });
@@ -60,10 +61,12 @@ router.post("/", async (req, res) => {
 });
 
 // PUT /api/categories/:id
+
+// PUT /api/categories/:id
 router.put("/:id", async (req, res) => {
   try {
-    const { name, description, image, isActive, order } = req.body;
-
+    const { name, description, image, isActive, order, sectorId } = req.body; // ← added sectorId
+    console.log("[update caetgory]" , sectorId)
     const data = {};
     if (name !== undefined) {
       data.name = name;
@@ -73,6 +76,9 @@ router.put("/:id", async (req, res) => {
     if (image !== undefined) data.image = image;
     if (isActive !== undefined) data.isActive = isActive;
     if (order !== undefined) data.order = order;
+    if (sectorId !== undefined) data.sectorId = sectorId; // ← added
+
+    console.log(data)
 
     const category = await prisma.category.update({
       where: { id: req.params.id },

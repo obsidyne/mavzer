@@ -16,6 +16,7 @@ import uploadRoutes    from "./server/routes/upload.routes.js";
 import featuredRoutes    from "./server/routes/featured.routes.js";
 import bannerRoutes    from "./server/routes/banners.routes.js";
 import clientRoutes from './server/routes/clients.route.js'
+import groupRoutes from "./server/routes/group.routes.js"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -50,6 +51,7 @@ app.use("/api/upload",     auth, uploadRoutes);
 app.use("/api/featured",     auth, featuredRoutes);
 app.use("/api/banners",     auth, bannerRoutes);
 app.use("/api/clients",     auth, clientRoutes);
+app.use("/api/groups",     auth, groupRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, "0.0.0.0" , () => console.log(`Server running on port ${PORT}`));
