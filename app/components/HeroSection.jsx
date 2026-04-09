@@ -34,6 +34,7 @@ export default function HeroSection() {
     const [breadcrumbs, setBreadcrumbs] = useState([]);
     const [layer, setLayer] = useState(3);
     const gridRef = useRef(null);
+    const initializedRef = useRef(false);
 
     useEffect(() => {
         async function fetchBanners() {
@@ -56,6 +57,33 @@ export default function HeroSection() {
         fetchSectors();
     }, []);
 
+    // Auto-open first sector + first category on load
+    useEffect(() => {
+        if (initializedRef.current || sectors.length === 0) return;
+        initializedRef.current = true;
+        const firstSector = sectors[0];
+        const firstCategory = firstSector.categories?.[0];
+        setActiveSectorId(firstSector.id);
+        setActiveSector({ ...firstSector, colorIdx: 0 });
+        if (firstCategory) {
+            setGridState('products');
+            setBreadcrumbs([
+                { label: firstSector.name, id: firstSector.id, type: 'sector' },
+                { label: firstCategory.name, id: firstCategory.id, type: 'category' },
+            ]);
+            setGridLoading(true);
+            fetch(`${API}/api/public/products?categoryId=${firstCategory.id}`)
+                .then((r) => r.json())
+                .then((d) => setGridItems(Array.isArray(d) ? d : []))
+                .catch(() => setGridItems([]))
+                .finally(() => setGridLoading(false));
+        } else {
+            setGridState('categories');
+            setGridItems(firstSector.categories || []);
+            setBreadcrumbs([{ label: firstSector.name, id: firstSector.id, type: 'sector' }]);
+        }
+    }, [sectors]);
+
     useEffect(() => {
         setCurrent(0);
         if (timerRef.current) clearInterval(timerRef.current);
@@ -70,24 +98,39 @@ export default function HeroSection() {
     const goTo = (n) => { setCurrent((n + slides.length) % slides.length); startTimer(); };
 
     const handleSectorClick = useCallback((sector, idx) => {
-        if (activeSectorId === sector.id) {
-            setActiveSectorId(null); setActiveSector(null);
-            setGridItems([]); setBreadcrumbs([]); setGridState('categories');
-            return;
-        }
+        const firstCategory = sector.categories?.[0];
         setActiveSectorId(sector.id);
         setActiveSector({ ...sector, colorIdx: idx });
-        setGridItems(sector.categories || []);
-        setGridState('categories');
-        setBreadcrumbs([{ label: sector.name, id: sector.id, type: 'sector' }]);
         setLayer(3);
+        if (firstCategory) {
+            setGridState('products');
+            setBreadcrumbs([
+                { label: sector.name, id: sector.id, type: 'sector' },
+                { label: firstCategory.name, id: firstCategory.id, type: 'category' },
+            ]);
+            setGridLoading(true);
+            fetch(`${API}/api/public/products?categoryId=${firstCategory.id}`)
+                .then((r) => r.json())
+                .then((d) => setGridItems(Array.isArray(d) ? d : []))
+                .catch(() => setGridItems([]))
+                .finally(() => setGridLoading(false));
+        } else {
+            setGridState('categories');
+            setGridItems(sector.categories || []);
+            setBreadcrumbs([{ label: sector.name, id: sector.id, type: 'sector' }]);
+        }
         setTimeout(() => gridRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
-    }, [activeSectorId]);
+    }, []);
 
     const handleCategoryClick = useCallback(async (cat) => {
         setGridLoading(true);
         setGridState('products');
-        setBreadcrumbs((prev) => [...prev, { label: cat.name, id: cat.id, type: 'category' }]);
+        setBreadcrumbs((prev) => {
+            const sectorCrumb = prev.find((c) => c.type === 'sector');
+            return sectorCrumb
+                ? [sectorCrumb, { label: cat.name, id: cat.id, type: 'category' }]
+                : [{ label: cat.name, id: cat.id, type: 'category' }];
+        });
         setLayer(3);
         try {
             const res = await fetch(`${API}/api/public/products?categoryId=${cat.id}`);
@@ -135,6 +178,14 @@ export default function HeroSection() {
         }
     }, [breadcrumbs, activeSector]);
 
+    const handleBackToCategories = useCallback(() => {
+        if (!activeSector) return;
+        setGridState('categories');
+        setGridItems(activeSector.categories || []);
+        setLayer(3);
+        setBreadcrumbs([{ label: activeSector.name, id: activeSector.id, type: 'sector' }]);
+    }, [activeSector]);
+
     return (
         <>
             <style>{`
@@ -155,8 +206,6 @@ export default function HeroSection() {
                 .slide-right{animation:slideInRight 0.7s ease-out both}
                 .slide-right-2{animation:slideInRight 0.7s ease-out 0.15s both}
                 .fade-slide-up{animation:fadeSlideUp 0.35s ease-out both}
-                .sector-card-active{transform:scale(1.08) translateY(-4px)!important;box-shadow:0 16px 40px rgba(10,76,138,0.28)!important;z-index:2}
-                .sector-card-dimmed{opacity:0.52;transform:scale(0.96)}
             `}</style>
 
             <div className="mt-[66px]" style={{ display: 'flex', flexDirection: 'column' }}>
@@ -236,7 +285,8 @@ export default function HeroSection() {
                     </div>
                 </div>
 
-                {/* Sector Cards */}
+                {/* Sector pill buttons — centered */}
+                              {/* Sector Cards */}
                 <div className="w-full bg-white pt-5 pb-4">
                     <div className="w-full max-w-[1150px] mx-auto px-6">
                         <div className="grid grid-cols-6 gap-3" style={{ position:'relative' }}>
@@ -267,63 +317,97 @@ export default function HeroSection() {
                     </div>
                 </div>
 
-                {/* Inline Product Grid */}
-                {activeSectorId && (
-                    <div ref={gridRef} className="w-full bg-[#f4f6fa] border-t border-[#dde4ef]">
-                        <div className="w-full max-w-[1150px] mx-auto px-6 py-8">
-                            {/* Breadcrumb */}
-                            <div className="flex items-center gap-1.5 text-[11px] text-[#9aa3af] mb-5 flex-wrap">
-                                {breadcrumbs.map((crumb, i) => (
-                                    <span key={i} className="flex items-center gap-1.5">
-                                        {i > 0 && <span className="text-[#dde4ef]">›</span>}
-                                        {i === breadcrumbs.length - 1
-                                            ? <span className="text-[#071e3d] font-semibold">{crumb.label}</span>
-                                            : <button onClick={() => handleBreadcrumbClick(crumb, i)} className="hover:text-[#0a4c8a] hover:underline transition-colors font-medium">{crumb.label}</button>}
-                                    </span>
+                {/* Product Grid — always visible */}
+                <div ref={gridRef} className="w-full bg-[#f4f6fa]">
+                    <div className="w-full max-w-[1150px] mx-auto px-6 py-8">
+
+                        {/* Breadcrumb — always shown */}
+                        <div className="flex items-center gap-1.5 text-[11px] text-[#9aa3af] mb-4 flex-wrap min-h-[20px]">
+                            {breadcrumbs.map((crumb, i) => (
+                                <span key={i} className="flex items-center gap-1.5">
+                                    {i > 0 && <span className="text-[#dde4ef]">›</span>}
+                                    {i === breadcrumbs.length - 1
+                                        ? <span className="text-[#071e3d] font-semibold">{crumb.label}</span>
+                                        : <button onClick={() => handleBreadcrumbClick(crumb, i)} className="hover:text-[#0a4c8a] hover:underline transition-colors font-medium">{crumb.label}</button>}
+                                </span>
+                            ))}
+                        </div>
+
+                        {/* Category pill buttons (shown when in products view) */}
+                        {/* {gridState === 'products' && activeSector?.categories?.length > 0 && (
+                            <div className="flex flex-wrap gap-2 justify-center mb-5">
+                                {activeSector.categories.map((cat) => {
+                                    const isActive = breadcrumbs.some((c) => c.type === 'category' && c.id === cat.id);
+                                    return (
+                                        <button
+                                            key={cat.id}
+                                            onClick={() => handleCategoryClick(cat)}
+                                            className={`px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider border transition-all duration-200 cursor-pointer whitespace-nowrap ${
+                                                isActive
+                                                    ? 'bg-[#1e88e5] text-white border-[#1e88e5] shadow-sm'
+                                                    : 'bg-white text-[#4a5568] border-[#dde4ef] hover:border-[#1e88e5] hover:text-[#1e88e5]'
+                                            }`}
+                                        >
+                                            {cat.name}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        )} */}
+
+                        {/* Back button */}
+                        {gridState === 'products' && (
+                            <div className="mb-3">
+                                <button
+                                    onClick={handleBackToCategories}
+                                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#6b7380] hover:text-[#0a4c8a] transition-colors"
+                                >
+                                    <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
+                                    Kategorilere Dön
+                                </button>
+                            </div>
+                        )}
+
+                        <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9aa3af] mb-4">
+                            {gridState === 'categories'
+                                ? `${activeSector?.name || ''} — Kategoriler`
+                                : `${breadcrumbs[breadcrumbs.length-1]?.label || ''} — Ürünler`}
+                        </p>
+
+                        {sectors.length === 0 || gridLoading ? (
+                            <div className="grid grid-cols-3 gap-5">
+                                {[1,2,3,4,5,6].map((i) => (
+                                    <div key={i} className="rounded-xl border border-[#dde4ef] bg-white overflow-hidden animate-pulse">
+                                        <div className="h-48 bg-[#eef1f6]" />
+                                        <div className="p-4"><div className="h-3 bg-[#eef1f6] rounded w-3/4 mb-2"/><div className="h-2 bg-[#eef1f6] rounded w-1/2"/></div>
+                                    </div>
                                 ))}
                             </div>
+                        ) : gridItems.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-20 border border-dashed border-[#dde4ef] rounded-2xl bg-white">
+                                <p className="text-[13px] font-bold text-[#9aa3af] uppercase tracking-widest">Ürün bulunamadı</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-3 gap-5 fade-slide-up">
+                                {gridItems.slice(0, 6).map((item) => (
+                                    <InlineCard key={item.id} item={item}
+                                        isProduct={gridState === 'products'} layer={layer}
+                                        onClick={() => gridState === 'categories' ? handleCategoryClick(item) : handleProductClick(item)} />
+                                ))}
+                            </div>
+                        )}
 
-                            <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9aa3af] mb-4">
-                                {gridState === 'categories'
-                                    ? `${activeSector?.name} — Kategoriler`
-                                    : `${breadcrumbs[breadcrumbs.length-1]?.label} — Ürünler`}
-                            </p>
-
-                            {gridLoading ? (
-                                <div className="grid grid-cols-3 gap-5">
-                                    {[1,2,3,4,5,6].map((i) => (
-                                        <div key={i} className="rounded-xl border border-[#dde4ef] bg-white overflow-hidden animate-pulse">
-                                            <div className="h-48 bg-[#eef1f6]" />
-                                            <div className="p-4"><div className="h-3 bg-[#eef1f6] rounded w-3/4 mb-2"/><div className="h-2 bg-[#eef1f6] rounded w-1/2"/></div>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : gridItems.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center py-20 border border-dashed border-[#dde4ef] rounded-2xl bg-white">
-                                    <p className="text-[13px] font-bold text-[#9aa3af] uppercase tracking-widest">Ürün bulunamadı</p>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-3 gap-5 fade-slide-up">
-                                    {gridItems.slice(0, 6).map((item) => (
-                                        <InlineCard key={item.id} item={item}
-                                            isProduct={gridState === 'products'} layer={layer}
-                                            onClick={() => gridState === 'categories' ? handleCategoryClick(item) : handleProductClick(item)} />
-                                    ))}
-                                </div>
-                            )}
-
-                            {gridItems.length > 6 && (
-                                <div className="mt-6 text-center">
-                                    <button onClick={() => router.push(`/catalogue?sector=${activeSector?.slug || activeSector?.name?.toLowerCase()}`)}
-                                        className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#071e3d] text-white text-[11px] font-bold uppercase tracking-widest rounded-lg hover:bg-[#0a4c8a] transition-colors">
-                                        Tümünü Görüntüle ({gridItems.length})
-                                        <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
-                                    </button>
-                                </div>
-                            )}
-                        </div>
+                        {gridItems.length > 6 && (
+                            <div className="mt-6 text-center">
+                                <button onClick={() => router.push(`/catalogue?sector=${activeSector?.slug || activeSector?.name?.toLowerCase()}`)}
+                                    className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#071e3d] text-white text-[11px] font-bold uppercase tracking-widest rounded-lg hover:bg-[#0a4c8a] transition-colors">
+                                    Tümünü Görüntüle ({gridItems.length})
+                                    <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                                </button>
+                            </div>
+                        )}
                     </div>
-                )}
+                </div>
 
             </div>
         </>

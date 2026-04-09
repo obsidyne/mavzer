@@ -36,6 +36,8 @@ function CatalogueContent() {
   const [sectors, setSectors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeSector, setActiveSector] = useState(null);
+  // tabMode: 'sectors' | 'categories'
+  const [tabMode, setTabMode] = useState('sectors');
   const [layer, setLayer] = useState(3);
   const [context, setContext] = useState(null);
   const [products, setProducts] = useState([]);
@@ -43,7 +45,6 @@ function CatalogueContent() {
   const [productsLoading, setProductsLoading] = useState(false);
   const [breadcrumbs, setBreadcrumbs] = useState([]);
   const [search, setSearch] = useState("");
-  const [sectorCategories, setSectorCategories] = useState(null);
   const fetchedRef = useRef(false);
 
   useEffect(() => {
@@ -59,7 +60,11 @@ function CatalogueContent() {
         const first = initial || (list.length > 0 ? list[0] : null);
         if (first) {
           setActiveSector(first);
-          setSectorCategories({ sectorId: first.id, sectorName: first.name, categories: first.categories || [] });
+          // If arrived via sector param, go straight to category tab mode
+          if (initial) {
+            setTabMode('categories');
+            setBreadcrumbs([{ label: first.name, id: first.id, type: 'sector' }]);
+          }
         }
       } catch (err) {
         console.error(err);
@@ -78,7 +83,6 @@ function CatalogueContent() {
   const loadProducts = useCallback(async (type, id, label, chain = [], currentLayer = 3) => {
     setProductsLoading(true);
     setSearch("");
-    setSectorCategories(null);
     setContext({ type, id, label });
     setLayer(currentLayer);
     setBreadcrumbs([...chain, { label, id, type, layer: currentLayer }]);
@@ -93,9 +97,20 @@ function CatalogueContent() {
     finally { setProductsLoading(false); }
   }, []);
 
+  // Clicking a sector tab → switch tabs to categories of that sector
   const handleSectorTabClick = useCallback((sector) => {
     setActiveSector(sector);
-    setSectorCategories({ sectorId: sector.id, sectorName: sector.name, categories: sector.categories || [] });
+    setTabMode('categories');
+    setContext(null);
+    setProducts([]);
+    setFilteredProducts([]);
+    setBreadcrumbs([{ label: sector.name, id: sector.id, type: 'sector' }]);
+    setSearch("");
+  }, []);
+
+  // Back to sectors tab list
+  const handleBackToSectors = useCallback(() => {
+    setTabMode('sectors');
     setContext(null);
     setProducts([]);
     setFilteredProducts([]);
@@ -115,22 +130,28 @@ function CatalogueContent() {
     const newChain = breadcrumbs.slice(0, index);
     if (crumb.type === "sector") {
       setContext(null); setProducts([]); setFilteredProducts([]);
-      setBreadcrumbs([]); setLayer(3);
-      if (activeSector) setSectorCategories({ sectorId: activeSector.id, sectorName: activeSector.name, categories: activeSector.categories || [] });
+      setBreadcrumbs([{ label: crumb.label, id: crumb.id, type: 'sector' }]);
+      setLayer(3); setTabMode('categories');
     } else {
       loadProducts(crumb.type, crumb.id, crumb.label, newChain, crumb.layer);
     }
-  }, [breadcrumbs, loadProducts, activeSector]);
+  }, [breadcrumbs, loadProducts]);
 
   const handleCategorySelect = useCallback((id, label, chain) => {
     loadProducts("category", id, label, chain, 3);
   }, [loadProducts]);
 
-  const resetAll = useCallback(() => {
-    setContext(null); setProducts([]); setFilteredProducts([]);
-    setBreadcrumbs([]); setLayer(3); setSearch("");
-    if (activeSector) setSectorCategories({ sectorId: activeSector.id, sectorName: activeSector.name, categories: activeSector.categories || [] });
+  // Back from products to categories
+  const handleBackToCategories = useCallback(() => {
+    setContext(null);
+    setProducts([]);
+    setFilteredProducts([]);
+    setLayer(3);
+    setSearch("");
+    setBreadcrumbs(activeSector ? [{ label: activeSector.name, id: activeSector.id, type: 'sector' }] : []);
   }, [activeSector]);
+
+  const categories = activeSector?.categories || [];
 
   return (
     <div className="min-h-screen bg-[#f4f6fa]">
@@ -151,29 +172,57 @@ function CatalogueContent() {
           </p>
         </div>
 
-        {/* Sector Tab Buttons */}
-        <div className="max-w-5xl mx-auto px-8 pb-0">
+        {/* Tab buttons row — centered pill style */}
+        <div className="max-w-5xl mx-auto px-8 pb-5">
           {loading ? (
-            <div className="flex gap-2 pb-0">
+            <div className="flex gap-2 justify-center">
               {[1,2,3,4,5,6].map((i) => (
-                <div key={i} className="h-9 w-24 bg-[#eef1f6] rounded-t-lg animate-pulse" />
+                <div key={i} className="h-9 w-24 bg-[#eef1f6] rounded-full animate-pulse" />
               ))}
             </div>
-          ) : (
-            <div className="flex gap-1.5 overflow-x-auto pb-0" style={{ scrollbarWidth:'none' }}>
+          ) : tabMode === 'sectors' ? (
+            <div className="flex flex-wrap gap-2 justify-center">
               {sectors.map((sector) => {
                 const isActive = activeSector?.id === sector.id;
                 return (
                   <button
                     key={sector.id}
                     onClick={() => handleSectorTabClick(sector)}
-                    className={`shrink-0 px-5 py-2.5 text-[11px] font-bold uppercase tracking-wider rounded-t-lg border border-b-0 transition-all duration-200 whitespace-nowrap ${
+                    className={`px-5 py-2 rounded-full text-[11px] font-bold uppercase tracking-wider border transition-all duration-200 cursor-pointer whitespace-nowrap ${
                       isActive
-                        ? 'bg-[#f4f6fa] border-[#dde4ef] text-[#071e3d] shadow-sm'
-                        : 'bg-white border-transparent text-[#9aa3af] hover:text-[#071e3d] hover:bg-[#f8fafc] hover:border-[#dde4ef]'
+                        ? 'bg-[#071e3d] text-white border-[#071e3d] shadow-md'
+                        : 'bg-white text-[#4a5568] border-[#dde4ef] hover:border-[#0a4c8a] hover:text-[#0a4c8a] hover:bg-[#f0f7ff]'
                     }`}
                   >
                     {sector.name}
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-2 justify-center items-center">
+              {/* Back to sectors button */}
+              <button
+                onClick={handleBackToSectors}
+                className="px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-wider border border-[#dde4ef] bg-[#f4f6fa] text-[#6b7380] hover:border-[#0a4c8a] hover:text-[#0a4c8a] transition-all duration-200 flex items-center gap-1 whitespace-nowrap"
+              >
+                <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
+                Sektörler
+              </button>
+              <span className="text-[#dde4ef] text-sm">|</span>
+              {categories.map((cat) => {
+                const isActive = context?.id === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => handleCategorySelect(cat.id, cat.name, [{ label: activeSector.name, id: activeSector.id, type: 'sector' }])}
+                    className={`px-5 py-2 rounded-full text-[11px] font-bold uppercase tracking-wider border transition-all duration-200 cursor-pointer whitespace-nowrap ${
+                      isActive
+                        ? 'bg-[#1e88e5] text-white border-[#1e88e5] shadow-md'
+                        : 'bg-white text-[#4a5568] border-[#dde4ef] hover:border-[#1e88e5] hover:text-[#1e88e5] hover:bg-[#f0f7ff]'
+                    }`}
+                  >
+                    {cat.name}
                   </button>
                 );
               })}
@@ -185,9 +234,24 @@ function CatalogueContent() {
       {/* Main content */}
       <div className="max-w-5xl mx-auto px-8 py-8">
 
-        {/* Search + Breadcrumb bar */}
-        <div className="flex items-center gap-4 mb-6">
-          <div className="relative flex-1 max-w-xs">
+        {/* Breadcrumb — always visible */}
+        <div className="flex items-center gap-1.5 text-[11px] text-[#9aa3af] mb-5 flex-wrap min-h-[20px]">
+          <button onClick={handleBackToSectors} className="hover:text-[#0a4c8a] transition-colors font-medium">
+            Katalog
+          </button>
+          {breadcrumbs.map((crumb, i) => (
+            <span key={i} className="flex items-center gap-1.5">
+              <span className="text-[#dde4ef]">›</span>
+              {i === breadcrumbs.length - 1
+                ? <span className="text-[#071e3d] font-semibold">{crumb.label}</span>
+                : <button onClick={() => handleBreadcrumbClick(crumb, i)} className="hover:text-[#0a4c8a] hover:underline transition-colors">{crumb.label}</button>}
+            </span>
+          ))}
+        </div>
+
+        {/* Search bar */}
+        {context && (
+          <div className="relative mb-6 max-w-xs">
             <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#b0b8c4]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
               <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35" strokeLinecap="round"/>
             </svg>
@@ -195,41 +259,36 @@ function CatalogueContent() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder={context ? `Search in ${context.label}...` : "Select a category to search..."}
-              disabled={!context}
-              className="w-full pl-10 pr-4 py-2.5 text-[13px] border border-[#dde4ef] rounded-lg bg-white text-[#071e3d] placeholder:text-[#b0b8c4] outline-none focus:border-[#0a4c8a] focus:shadow-[0_0_0_3px_rgba(10,76,138,0.08)] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              placeholder={`Search in ${context.label}...`}
+              className="w-full pl-10 pr-4 py-2.5 text-[13px] border border-[#dde4ef] rounded-lg bg-white text-[#071e3d] placeholder:text-[#b0b8c4] outline-none focus:border-[#0a4c8a] focus:shadow-[0_0_0_3px_rgba(10,76,138,0.08)] transition-all"
             />
           </div>
-          <div className="flex items-center gap-1.5 text-[11px] text-[#9aa3af] flex-wrap">
-            {breadcrumbs.length > 0 && (
-              <>
-                <button onClick={resetAll} className="hover:text-[#0a4c8a] transition-colors font-medium">
-                  {activeSector?.name}
-                </button>
-                {breadcrumbs.map((crumb, i) => (
-                  <span key={i} className="flex items-center gap-1.5">
-                    <span className="text-[#dde4ef]">›</span>
-                    {i === breadcrumbs.length - 1
-                      ? <span className="text-[#071e3d] font-semibold">{crumb.label}</span>
-                      : <button onClick={() => handleBreadcrumbClick(crumb, i)} className="hover:text-[#0a4c8a] hover:underline transition-colors">{crumb.label}</button>}
-                  </span>
-                ))}
-              </>
-            )}
-          </div>
-        </div>
+        )}
 
-        {/* Sector categories grid */}
-        {sectorCategories && !context && (
+        {/* Back to categories button (when products are shown) */}
+        {context && (
+          <div className="mb-4">
+            <button
+              onClick={handleBackToCategories}
+              className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#6b7380] hover:text-[#0a4c8a] transition-colors"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
+              Kategorilere Dön
+            </button>
+          </div>
+        )}
+
+        {/* Sector category grid (when no product context and in category tab mode) */}
+        {!context && tabMode === 'categories' && activeSector && (
           <div>
             <p className="text-[11px] font-bold tracking-widest uppercase text-[#9aa3af] mb-4">
-              {sectorCategories.sectorName} — Kategoriler
+              {activeSector.name} — Kategoriler
             </p>
             <div className="grid grid-cols-3 gap-5">
-              {sectorCategories.categories.map((cat) => (
+              {categories.map((cat) => (
                 <div
                   key={cat.id}
-                  onClick={() => handleCategorySelect(cat.id, cat.name, [{ label: sectorCategories.sectorName, id: sectorCategories.sectorId, type: "sector" }])}
+                  onClick={() => handleCategorySelect(cat.id, cat.name, [{ label: activeSector.name, id: activeSector.id, type: "sector" }])}
                   className="group cursor-pointer rounded-xl border border-[#dde4ef] bg-white overflow-hidden hover:border-[#1e88e5] hover:shadow-[0_8px_32px_rgba(30,136,229,0.1)] transition-all duration-200"
                 >
                   <div className="h-52 bg-[#f4f6fa] flex items-center justify-center overflow-hidden">
@@ -241,6 +300,37 @@ function CatalogueContent() {
                     <h3 className="text-[12px] font-bold uppercase tracking-wide text-[#071e3d] leading-tight group-hover:text-[#1e88e5] transition-colors">{cat.name}</h3>
                     <p className="text-[11px] text-[#9aa3af] mt-1.5 flex items-center gap-1">
                       Browse products
+                      <svg viewBox="0 0 24 24" fill="currentColor" width="10" height="10"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Sector list (when in sector tab mode and no context) */}
+        {!context && tabMode === 'sectors' && (
+          <div>
+            <p className="text-[11px] font-bold tracking-widest uppercase text-[#9aa3af] mb-4">
+              Sektörler
+            </p>
+            <div className="grid grid-cols-3 gap-5">
+              {sectors.map((sector) => (
+                <div
+                  key={sector.id}
+                  onClick={() => handleSectorTabClick(sector)}
+                  className="group cursor-pointer rounded-xl border border-[#dde4ef] bg-white overflow-hidden hover:border-[#1e88e5] hover:shadow-[0_8px_32px_rgba(30,136,229,0.1)] transition-all duration-200"
+                >
+                  <div className="h-52 bg-[#f4f6fa] flex items-center justify-center overflow-hidden">
+                    {sector.image
+                      ? <img src={sector.image} alt={sector.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      : <svg viewBox="0 0 24 24" fill="none" stroke="#dde4ef" strokeWidth="1" width="40" height="40"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>}
+                  </div>
+                  <div className="p-3.5">
+                    <h3 className="text-[12px] font-bold uppercase tracking-wide text-[#071e3d] leading-tight group-hover:text-[#1e88e5] transition-colors">{sector.name}</h3>
+                    <p className="text-[11px] text-[#9aa3af] mt-1.5 flex items-center gap-1">
+                      Kategorileri Gör
                       <svg viewBox="0 0 24 24" fill="currentColor" width="10" height="10"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
                     </p>
                   </div>
