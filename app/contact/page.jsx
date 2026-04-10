@@ -46,7 +46,7 @@ export default function ContactPage() {
             İletişim
           </div>
           <h1 className="font-condensed text-[36px] font-extrabold uppercase text-[#071e3d] leading-tight tracking-wide">
-            Bizimle İletişime Geçin
+            BİZİMLE İLETİŞİME GEÇİN
           </h1>
           <p className="text-[13px] text-[#9aa3af] mt-1">
             Sorularınız, talepleriniz veya teklife ihtiyaç duyduğunuz konular için aşağıdaki formu doldurun.
