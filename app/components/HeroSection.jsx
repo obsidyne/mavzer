@@ -234,7 +234,10 @@ export default function HeroSection() {
                 .fade-slide-up{animation:fadeSlideUp 0.35s ease-out both}
             `}</style>
 
-            <div className="mt-[66px]" style={{ display: 'flex', flexDirection: 'column' }}>
+            <div className="mt-[66px] " style={{ display: 'flex', flexDirection: 'column' }}>
+
+                {/* top section */}
+                <div className='--bg-red-200  --border-2 min-h-[96vh]' >
 
                 {/* Banner */}
                 <section className="relative w-full overflow-hidden bg-[#071e3d] shrink-0" style={{ height: '50vh' }}>
@@ -313,7 +316,7 @@ export default function HeroSection() {
 
                 {/* Sector Cards */}
                 {/* <div ref={sectorRef} className="w-full bg-white pt-5 pb-10" style={{ overflow: 'visible' }}> */}
-                <div  style={{ minHeight: 'calc(100vh - 0px)' }}>
+                {/* <div  style={{ minHeight: 'calc(100vh - 0px)' }}> */}
                 <div  ref={sectorRef} className="w-full bg-white pt-5 pb-10" style={{ overflow: 'visible', scrollMarginTop: '66px'  }}>
 
                     <div className="w-full max-w-[1150px] mx-auto px-6" style={{ overflow: 'visible' }}>
@@ -362,9 +365,10 @@ export default function HeroSection() {
                         </div>
                     </div>
                 </div>
+                </div>
 
                 {/* Product Grid — always visible */}
-                <div ref={gridRef} className="w-full  bg-[#f4f6fa] " >
+                <div ref={gridRef} className="w-full min-h-[55vh] --bg-red-200  bg-[#f4f6fa] " >
                     <div className="w-full bg max-w-[1150px] mx-auto px-6 py-8">
 
                         {/* Top row: back button (left) + view all button (right) */}
@@ -422,7 +426,7 @@ export default function HeroSection() {
 
                     </div>
                 </div>
-                </div>
+                {/* </div> */}
 
             </div>
         </>

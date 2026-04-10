@@ -44,7 +44,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 right-0 z-[900] h-[66px] flex items-center bg-white/95 backdrop-blur-sm border-b border-[#dde4ef] transition-shadow duration-300 ${scrolled ? 'shadow-[0_2px_20px_rgba(7,30,61,0.1)]' : ''}`}>
+      <nav className={`fixed top-0 left-0 right-0 z-[900] h-[8vh] flex items-center bg-white/95 backdrop-blur-sm border-b border-[#dde4ef] transition-shadow duration-300 ${scrolled ? 'shadow-[0_2px_20px_rgba(7,30,61,0.1)]' : ''}`}>
 
         {/* Menu button — leftmost */}
         <div className="relative pl-6 shrink-0">
