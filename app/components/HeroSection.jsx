@@ -364,7 +364,7 @@ export default function HeroSection() {
                 </div>
 
                 {/* Product Grid — always visible */}
-                <div ref={gridRef} className="w-full  bg-[#f4f6fa] " style={{ minHeight: 'inherit' }}>
+                <div ref={gridRef} className="w-full  bg-[#f4f6fa] " >
                     <div className="w-full bg max-w-[1150px] mx-auto px-6 py-8">
 
                         {/* Top row: back button (left) + view all button (right) */}
