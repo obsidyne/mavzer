@@ -38,6 +38,10 @@ export default function HeroSection() {
     const initializedRef = useRef(false);
 
     useEffect(() => {
+        initializedRef.current = false;
+    }, []);
+
+    useEffect(() => {
         async function fetchBanners() {
             try {
                 const res = await fetch(`${API}/api/public/banners`);
@@ -412,7 +416,7 @@ export default function HeroSection() {
                             </div>
                         ) : (
                             <div className="grid grid-cols-5 gap-5 fade-slide-up">
-                                {gridItems.slice(0, 6).map((item) => (
+                                {gridItems.slice(0, 5).map((item) => (
                                     <InlineCard
                                         key={item.id}
                                         item={item}
