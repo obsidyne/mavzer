@@ -95,7 +95,7 @@ export default function ProductDetailPage() {
             Our Catalogue
           </div>
           {/* Breadcrumb */}
-          <div className="flex items-center gap-1.5 text-[12px] text-[#9aa3af] flex-wrap">
+          {/* <div className="flex items-center gap-1.5 text-[12px] text-[#9aa3af] flex-wrap">
             <Link href="/products" className="hover:text-[#0a4c8a] transition-colors font-medium">All Products</Link>
             {sector && (
               <>
@@ -119,7 +119,7 @@ export default function ProductDetailPage() {
             )}
             <span className="text-[#dde4ef]">›</span>
             <span className="text-[#071e3d] font-semibold">{display?.name || product?.name}</span>
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -127,12 +127,12 @@ export default function ProductDetailPage() {
         <div className="flex gap-8 items-start">
 
           {/* Sidebar */}
-          <ProductsSidebar
+          {/* <ProductsSidebar
             sectors={sectors}
             loading={loading}
             activeId={category?.id}
             onSelectCategory={handleCategorySelect}
-          />
+          /> */}
 
           {/* Main content area */}
           <div className="flex-1 min-w-0">

@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 const LEFT_LINKS = [
   { label: 'Kurumsal', href: '/about' },
-  { label: 'Üretim', href: '/products' },
+  { label: 'Üretim', href: '/products2' },
 ];
 
 const RIGHT_LINKS = [
@@ -80,7 +80,7 @@ export default function Navbar() {
                   </div>
                   {[
                     { label: 'Kurumsal', href: '/about' },
-                    { label: 'Üretim', href: '/products' },
+                    { label: 'Üretim', href: '/products2' },
                     { label: 'Referanslar', href: '/clients' },
                     { label: 'İletişim', href: '/contact' },
                   ].map((item) => (

@@ -34,6 +34,7 @@ export default function HeroSection() {
     const [breadcrumbs, setBreadcrumbs] = useState([]);
     const [layer, setLayer] = useState(3);
     const gridRef = useRef(null);
+    const sectorRef = useRef(null);
     const initializedRef = useRef(false);
 
     useEffect(() => {
@@ -97,30 +98,40 @@ export default function HeroSection() {
     };
     const goTo = (n) => { setCurrent((n + slides.length) % slides.length); startTimer(); };
 
+    // const handleSectorClick = useCallback((sector, idx) => {
+    //     const firstCategory = sector.categories?.[0];
+    //     setActiveSectorId(sector.id);
+    //     setActiveSector({ ...sector, colorIdx: idx });
+    //     setLayer(3);
+    //     if (firstCategory) {
+    //         setGridState('products');
+    //         setBreadcrumbs([
+    //             { label: sector.name, id: sector.id, type: 'sector' },
+    //             { label: firstCategory.name, id: firstCategory.id, type: 'category' },
+    //         ]);
+    //         setGridLoading(true);
+    //         fetch(`${API}/api/public/products?categoryId=${firstCategory.id}`)
+    //             .then((r) => r.json())
+    //             .then((d) => setGridItems(Array.isArray(d) ? d : []))
+    //             .catch(() => setGridItems([]))
+    //             .finally(() => setGridLoading(false));
+    //     } else {
+    //         setGridState('categories');
+    //         setGridItems(sector.categories || []);
+    //         setBreadcrumbs([{ label: sector.name, id: sector.id, type: 'sector' }]);
+    //     }
+    //     setTimeout(() => sectorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    // }, []);
+
     const handleSectorClick = useCallback((sector, idx) => {
-        const firstCategory = sector.categories?.[0];
-        setActiveSectorId(sector.id);
-        setActiveSector({ ...sector, colorIdx: idx });
-        setLayer(3);
-        if (firstCategory) {
-            setGridState('products');
-            setBreadcrumbs([
-                { label: sector.name, id: sector.id, type: 'sector' },
-                { label: firstCategory.name, id: firstCategory.id, type: 'category' },
-            ]);
-            setGridLoading(true);
-            fetch(`${API}/api/public/products?categoryId=${firstCategory.id}`)
-                .then((r) => r.json())
-                .then((d) => setGridItems(Array.isArray(d) ? d : []))
-                .catch(() => setGridItems([]))
-                .finally(() => setGridLoading(false));
-        } else {
-            setGridState('categories');
-            setGridItems(sector.categories || []);
-            setBreadcrumbs([{ label: sector.name, id: sector.id, type: 'sector' }]);
-        }
-        setTimeout(() => gridRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
-    }, []);
+    setActiveSectorId(sector.id);
+    setActiveSector({ ...sector, colorIdx: idx });
+    setLayer(3);
+    setGridState('categories');
+    setGridItems(sector.categories || []);
+    setBreadcrumbs([{ label: sector.name, id: sector.id, type: 'sector' }]);
+    setTimeout(() => sectorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+}, []);
 
     const handleCategoryClick = useCallback(async (cat) => {
         setGridLoading(true);
@@ -285,26 +296,45 @@ export default function HeroSection() {
                     </div>
                 </div>
 
-                {/* Sector pill buttons — centered */}
-                              {/* Sector Cards */}
-                <div className="w-full bg-white pt-5 pb-4">
-                    <div className="w-full max-w-[1150px] mx-auto px-6">
-                        <div className="grid grid-cols-6 gap-3" style={{ position:'relative' }}>
+                {/* Sector Cards */}
+                {/* <div ref={sectorRef} className="w-full bg-white pt-5 pb-10" style={{ overflow: 'visible' }}> */}
+                <div ref={sectorRef} className="w-full bg-white pt-5 pb-10" style={{ overflow: 'visible', scrollMarginTop: '66px' }}>
+
+                    <div className="w-full max-w-[1150px] mx-auto px-6" style={{ overflow: 'visible' }}>
+                        <div className="grid grid-cols-6 gap-3" style={{ position: 'relative', overflow: 'visible' }}>
                             {sectors.map((sector, idx) => {
                                 const colors = SECTOR_COLORS[idx % SECTOR_COLORS.length];
                                 const isActive = activeSectorId === sector.id;
                                 const hasSomeActive = activeSectorId !== null;
                                 return (
-                                    <div key={sector.id} onClick={() => handleSectorClick(sector, idx)}
-                                        className={`no-underline block cursor-pointer transition-all duration-300 ${isActive ? 'sector-card-active' : hasSomeActive ? 'sector-card-dimmed' : ''}`}
-                                        style={{ position:'relative' }}>
-                                        <div className={`relative rounded-xl overflow-hidden border transition-all duration-300 ${isActive ? 'border-[#1e88e5]' : 'border-[#dde4ef] hover:-translate-y-1 hover:shadow-[0_14px_32px_rgba(10,76,138,0.2)]'}`}
-                                            style={{ aspectRatio:'4/5' }}>
+                                    <div
+                                        key={sector.id}
+                                        onClick={() => handleSectorClick(sector, idx)}
+                                        className="no-underline block cursor-pointer"
+                                        style={{
+                                            position: 'relative',
+                                            transform: isActive
+                                                ? 'scale(1.05)'
+                                                : hasSomeActive
+                                                ? 'scale(00.98)'
+                                                : 'scale(1)',
+                                            transformOrigin: 'center top',
+                                            transition: 'transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s',
+                                            opacity: hasSomeActive && !isActive ? 0.6 : 1,
+                                            zIndex: isActive ? 10 : 1,
+                                        }}
+                                    >
+                                        <div
+                                            className={`relative rounded-xl overflow-hidden border transition-all duration-300 ${isActive ? 'border-[#1e88e5]' : 'border-[#dde4ef]'}`}
+                                            style={{ aspectRatio: '4/5' }}
+                                        >
                                             {sector.image
                                                 ? <img src={sector.image} alt={sector.name} className="absolute inset-0 w-full h-full object-cover" />
                                                 : <div className="absolute inset-0 bg-[#dde4ef]" />}
-                                            <div className={`absolute inset-0 transition-opacity duration-300 ${isActive ? 'opacity-60' : 'opacity-40 hover:opacity-50'}`}
-                                                style={{ background:`linear-gradient(160deg, ${colors.from} 0%, ${colors.to} 100%)` }} />
+                                            <div
+                                                className={`absolute inset-0 transition-opacity duration-300 ${isActive ? 'opacity-60' : 'opacity-40'}`}
+                                                style={{ background: `linear-gradient(160deg, ${colors.from} 0%, ${colors.to} 100%)` }}
+                                            />
                                             {isActive && <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#1e88e5]" />}
                                         </div>
                                         <p className={`text-center text-[11px] font-semibold mt-1 tracking-wide uppercase transition-colors duration-200 ${isActive ? 'text-[#1e88e5]' : 'text-[#4a5568]'}`}>
@@ -321,43 +351,9 @@ export default function HeroSection() {
                 <div ref={gridRef} className="w-full bg-[#f4f6fa]">
                     <div className="w-full max-w-[1150px] mx-auto px-6 py-8">
 
-                        {/* Breadcrumb — always shown */}
-                        <div className="flex items-center gap-1.5 text-[11px] text-[#9aa3af] mb-4 flex-wrap min-h-[20px]">
-                            {breadcrumbs.map((crumb, i) => (
-                                <span key={i} className="flex items-center gap-1.5">
-                                    {i > 0 && <span className="text-[#dde4ef]">›</span>}
-                                    {i === breadcrumbs.length - 1
-                                        ? <span className="text-[#071e3d] font-semibold">{crumb.label}</span>
-                                        : <button onClick={() => handleBreadcrumbClick(crumb, i)} className="hover:text-[#0a4c8a] hover:underline transition-colors font-medium">{crumb.label}</button>}
-                                </span>
-                            ))}
-                        </div>
-
-                        {/* Category pill buttons (shown when in products view) */}
-                        {/* {gridState === 'products' && activeSector?.categories?.length > 0 && (
-                            <div className="flex flex-wrap gap-2 justify-center mb-5">
-                                {activeSector.categories.map((cat) => {
-                                    const isActive = breadcrumbs.some((c) => c.type === 'category' && c.id === cat.id);
-                                    return (
-                                        <button
-                                            key={cat.id}
-                                            onClick={() => handleCategoryClick(cat)}
-                                            className={`px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider border transition-all duration-200 cursor-pointer whitespace-nowrap ${
-                                                isActive
-                                                    ? 'bg-[#1e88e5] text-white border-[#1e88e5] shadow-sm'
-                                                    : 'bg-white text-[#4a5568] border-[#dde4ef] hover:border-[#1e88e5] hover:text-[#1e88e5]'
-                                            }`}
-                                        >
-                                            {cat.name}
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        )} */}
-
-                        {/* Back button */}
-                        {gridState === 'products' && (
-                            <div className="mb-3">
+                        {/* Top row: back button (left) + view all button (right) */}
+                        <div className="flex items-center justify-between mb-4 min-h-[28px]">
+                            {gridState === 'products' ? (
                                 <button
                                     onClick={handleBackToCategories}
                                     className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#6b7380] hover:text-[#0a4c8a] transition-colors"
@@ -365,17 +361,24 @@ export default function HeroSection() {
                                     <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
                                     Kategorilere Dön
                                 </button>
-                            </div>
-                        )}
+                            ) : (
+                                <span />
+                            )}
 
-                        <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9aa3af] mb-4">
-                            {gridState === 'categories'
-                                ? `${activeSector?.name || ''} — Kategoriler`
-                                : `${breadcrumbs[breadcrumbs.length-1]?.label || ''} — Ürünler`}
-                        </p>
+                            {/* {gridItems.length > 6 && ( */}
+                            {activeSector   && (
+                                <button
+                                    onClick={() => router.push(`/catalogue?sector=${activeSector?.slug || activeSector?.name?.toLowerCase()}`)}
+                                    className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#071e3d] text-white text-[11px] font-bold uppercase tracking-widest rounded-lg hover:bg-[#0a4c8a] transition-colors"
+                                >
+                                    Tümünü Görüntüle
+                                    <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                                </button>
+                            )}
+                        </div>
 
                         {sectors.length === 0 || gridLoading ? (
-                            <div className="grid grid-cols-3 gap-5">
+                            <div className="grid grid-cols-4 gap-5">
                                 {[1,2,3,4,5,6].map((i) => (
                                     <div key={i} className="rounded-xl border border-[#dde4ef] bg-white overflow-hidden animate-pulse">
                                         <div className="h-48 bg-[#eef1f6]" />
@@ -388,24 +391,19 @@ export default function HeroSection() {
                                 <p className="text-[13px] font-bold text-[#9aa3af] uppercase tracking-widest">Ürün bulunamadı</p>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-3 gap-5 fade-slide-up">
+                            <div className="grid grid-cols-5 gap-5 fade-slide-up">
                                 {gridItems.slice(0, 6).map((item) => (
-                                    <InlineCard key={item.id} item={item}
-                                        isProduct={gridState === 'products'} layer={layer}
-                                        onClick={() => gridState === 'categories' ? handleCategoryClick(item) : handleProductClick(item)} />
+                                    <InlineCard
+                                        key={item.id}
+                                        item={item}
+                                        isProduct={gridState === 'products'}
+                                        layer={layer}
+                                        onClick={() => gridState === 'categories' ? handleCategoryClick(item) : handleProductClick(item)}
+                                    />
                                 ))}
                             </div>
                         )}
 
-                        {gridItems.length > 6 && (
-                            <div className="mt-6 text-center">
-                                <button onClick={() => router.push(`/catalogue?sector=${activeSector?.slug || activeSector?.name?.toLowerCase()}`)}
-                                    className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#071e3d] text-white text-[11px] font-bold uppercase tracking-widest rounded-lg hover:bg-[#0a4c8a] transition-colors">
-                                    Tümünü Görüntüle ({gridItems.length})
-                                    <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
-                                </button>
-                            </div>
-                        )}
                     </div>
                 </div>
 

@@ -93,6 +93,27 @@ router.get("/products/:id", async (req, res) => {
   }
 });
 
+// GET /api/public/products/:id/subproducts — get subproducts of a product
+router.get("/products/:id/subproducts", async (req, res) => {
+  console.log(req.params.id)
+  try {
+    const products = await prisma.product.findMany({
+      where: { parentId: req.params.id, isActive: true },
+      orderBy: { order: "asc" },
+      select: {
+        id: true, name: true, description: true,
+        image: true, isGroup: true, price: true,
+        _count: { select: { subProducts: true } },
+      },
+    });
+    console.log("[products]",products)
+    return res.json(products);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Failed to fetch subproducts" });
+  }
+});
+
 // GET /api/public/groups — all active groups (with product count)
 router.get("/groups", async (req, res) => {
   try {
@@ -122,27 +143,28 @@ router.get("/groups/:id", async (req, res) => {
       where: { groupId: req.params.id },
       include: {
         product: {
-          where: { isActive: true, depth: 0 },
           select: {
             id: true, name: true, description: true,
             image: true, isGroup: true, price: true,
+            isActive: true, depth: true,
             _count: { select: { subProducts: true } },
           },
         },
       },
     });
 
-    return res.json({
-      ...group,
-      products: rows.map((r) => r.product).filter(Boolean),
-    });
+    const products = rows
+      .map((r) => r.product)
+      .filter((p) => p && p.isActive && p.depth === 0);
+
+    return res.json({ ...group, products });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Failed to fetch group" });
   }
 });
 
-export default router;
+
 
 // GET /api/public/featured — featured products for homepage
 router.get("/featured", async (req, res) => {
@@ -191,3 +213,5 @@ router.get("/clients", async (req, res) => {
     return res.status(500).json({ message: "Failed to fetch clients" });
   }
 });
+
+export default router;

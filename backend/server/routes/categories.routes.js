@@ -7,16 +7,15 @@ const router = Router();
 router.get("/", async (req, res) => {
   try {
     const { sectorId } = req.query;
-    if (!sectorId) return res.status(400).json({ message: "sectorId is required" });
 
     const categories = await prisma.category.findMany({
-      // where: { sectorId },
+      where: sectorId ? { sectorId } : undefined,
       orderBy: { order: "asc" },
       include: {
         _count: { select: { products: true } },
       },
     });
-    console.log(categories)
+
     return res.json(categories);
   } catch (err) {
     return res.status(500).json({ message: "Failed to fetch categories" });
