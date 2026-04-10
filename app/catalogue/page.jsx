@@ -79,14 +79,21 @@ function CatalogueContent() {
                 if (first) {
                     setActiveSector(first);
                     if (initial) {
-                        setTabMode('categories');
-                        // Use the specific category from param, fallback to first category
-                        const targetCat = categoryIdParam
-                            ? initial.categories?.find(c => c.id === categoryIdParam || c.id === Number(categoryIdParam))
-                            : initial.categories?.[0];
-                        if (targetCat) {
-                            loadProducts('category', targetCat.id, targetCat.name, [{ label: initial.name, id: initial.id, type: 'sector' }], 3);
+                        if (categoryIdParam) {
+                            // came from hero category click — open that specific category's products
+                            setTabMode('categories');
+                            const targetCat = initial.categories?.find(c => c.id === categoryIdParam || c.id === Number(categoryIdParam));
+                            if (targetCat) {
+                                loadProducts('category', targetCat.id, targetCat.name, [{ label: initial.name, id: initial.id, type: 'sector' }], 3);
+                            } else {
+                                setBreadcrumbs([{ label: initial.name, id: initial.id, type: 'sector' }]);
+                            }
                         } else {
+                            // came from "Tümünü Görüntüle" — show categories grid
+                            setTabMode('sectors');
+                            setContext({ type: 'sector-categories', id: initial.id, label: initial.name });
+                            setProducts(initial.categories || []);
+                            setFilteredProducts(initial.categories || []);
                             setBreadcrumbs([{ label: initial.name, id: initial.id, type: 'sector' }]);
                         }
                     } else {
