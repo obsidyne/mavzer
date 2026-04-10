@@ -261,7 +261,7 @@ export default function HeroSection() {
                 </section>
 
                 {/* Badges strip */}
-                <div className="shrink-0 w-full flex items-center justify-between overflow-hidden" style={{ height: '52px', background: 'linear-gradient(135deg, #0a3a6e 0%, #1565c0 50%, #0a3a6e 100%)' }}>
+                <div className="shrink-0 w-full flex items-center justify-between overflow-hidden" style={{ height: '55px', background: 'linear-gradient(135deg, #0a3a6e 0%, #1565c0 50%, #0a3a6e 100%)' }}>
                     <div className="flex items-center h-full divide-x divide-white/20 shrink-0">
                         <div className="slide-left flex flex-col items-center justify-center h-full" style={{ gap: '3px', padding: '0 2.5vw', minWidth: '10vw' }}>
                             <div className="truck-anim text-white/90">
