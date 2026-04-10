@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 const LEFT_LINKS = [
   { label: 'Kurumsal', href: '/about' },
-  { label: 'Üretim', href: '/products2' },
+  { label: 'ÜRÜNLER', href: '/products2' },
 ];
 
 const RIGHT_LINKS = [

@@ -45,44 +45,54 @@ export default function HeroSection() {
                 if (Array.isArray(data) && data.length > 0) {
                     setSlides(data.map((b) => ({ url: b.image, alt: b.title || 'Banner' })));
                 }
-            } catch (err) {}
+            } catch (err) { }
         }
         async function fetchSectors() {
             try {
                 const res = await fetch(`${API}/api/public/sectors`);
                 const data = await res.json();
                 if (Array.isArray(data) && data.length > 0) setSectors(data);
-            } catch (err) {}
+            } catch (err) { }
         }
         fetchBanners();
         fetchSectors();
     }, []);
 
     // Auto-open first sector + first category on load
+    // useEffect(() => {
+    //     if (initializedRef.current || sectors.length === 0) return;
+    //     initializedRef.current = true;
+    //     const firstSector = sectors[0];
+    //     const firstCategory = firstSector.categories?.[0];
+    //     setActiveSectorId(firstSector.id);
+    //     setActiveSector({ ...firstSector, colorIdx: 0 });
+    //     if (firstCategory) {
+    //         setGridState('products');
+    //         setBreadcrumbs([
+    //             { label: firstSector.name, id: firstSector.id, type: 'sector' },
+    //             { label: firstCategory.name, id: firstCategory.id, type: 'category' },
+    //         ]);
+    //         setGridLoading(true);
+    //         fetch(`${API}/api/public/products?categoryId=${firstCategory.id}`)
+    //             .then((r) => r.json())
+    //             .then((d) => setGridItems(Array.isArray(d) ? d : []))
+    //             .catch(() => setGridItems([]))
+    //             .finally(() => setGridLoading(false));
+    //     } else {
+    //         setGridState('categories');
+    //         setGridItems(firstSector.categories || []);
+    //         setBreadcrumbs([{ label: firstSector.name, id: firstSector.id, type: 'sector' }]);
+    //     }
+    // }, [sectors]);
     useEffect(() => {
         if (initializedRef.current || sectors.length === 0) return;
         initializedRef.current = true;
         const firstSector = sectors[0];
-        const firstCategory = firstSector.categories?.[0];
         setActiveSectorId(firstSector.id);
         setActiveSector({ ...firstSector, colorIdx: 0 });
-        if (firstCategory) {
-            setGridState('products');
-            setBreadcrumbs([
-                { label: firstSector.name, id: firstSector.id, type: 'sector' },
-                { label: firstCategory.name, id: firstCategory.id, type: 'category' },
-            ]);
-            setGridLoading(true);
-            fetch(`${API}/api/public/products?categoryId=${firstCategory.id}`)
-                .then((r) => r.json())
-                .then((d) => setGridItems(Array.isArray(d) ? d : []))
-                .catch(() => setGridItems([]))
-                .finally(() => setGridLoading(false));
-        } else {
-            setGridState('categories');
-            setGridItems(firstSector.categories || []);
-            setBreadcrumbs([{ label: firstSector.name, id: firstSector.id, type: 'sector' }]);
-        }
+        setGridState('categories');
+        setGridItems(firstSector.categories || []);
+        setBreadcrumbs([{ label: firstSector.name, id: firstSector.id, type: 'sector' }]);
     }, [sectors]);
 
     useEffect(() => {
@@ -124,32 +134,37 @@ export default function HeroSection() {
     // }, []);
 
     const handleSectorClick = useCallback((sector, idx) => {
-    setActiveSectorId(sector.id);
-    setActiveSector({ ...sector, colorIdx: idx });
-    setLayer(3);
-    setGridState('categories');
-    setGridItems(sector.categories || []);
-    setBreadcrumbs([{ label: sector.name, id: sector.id, type: 'sector' }]);
-    setTimeout(() => sectorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-}, []);
-
-    const handleCategoryClick = useCallback(async (cat) => {
-        setGridLoading(true);
-        setGridState('products');
-        setBreadcrumbs((prev) => {
-            const sectorCrumb = prev.find((c) => c.type === 'sector');
-            return sectorCrumb
-                ? [sectorCrumb, { label: cat.name, id: cat.id, type: 'category' }]
-                : [{ label: cat.name, id: cat.id, type: 'category' }];
-        });
+        setActiveSectorId(sector.id);
+        setActiveSector({ ...sector, colorIdx: idx });
         setLayer(3);
-        try {
-            const res = await fetch(`${API}/api/public/products?categoryId=${cat.id}`);
-            const data = await res.json();
-            setGridItems(Array.isArray(data) ? data : []);
-        } catch (err) { setGridItems([]); }
-        finally { setGridLoading(false); }
+        setGridState('categories');
+        setGridItems(sector.categories || []);
+        setBreadcrumbs([{ label: sector.name, id: sector.id, type: 'sector' }]);
+        setTimeout(() => sectorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
     }, []);
+
+    // const handleCategoryClick = useCallback(async (cat) => {
+    //     setGridLoading(true);
+    //     setGridState('products');
+    //     setBreadcrumbs((prev) => {
+    //         const sectorCrumb = prev.find((c) => c.type === 'sector');
+    //         return sectorCrumb
+    //             ? [sectorCrumb, { label: cat.name, id: cat.id, type: 'category' }]
+    //             : [{ label: cat.name, id: cat.id, type: 'category' }];
+    //     });
+    //     setLayer(3);
+    //     try {
+    //         const res = await fetch(`${API}/api/public/products?categoryId=${cat.id}`);
+    //         const data = await res.json();
+    //         setGridItems(Array.isArray(data) ? data : []);
+    //     } catch (err) { setGridItems([]); }
+    //     finally { setGridLoading(false); }
+    // }, []);
+    const handleCategoryClick = useCallback((cat) => {
+        if (!activeSector) return;
+        const sectorParam = activeSector.slug || activeSector.name?.toLowerCase();
+        router.push(`/catalogue?sector=${sectorParam}&category=${cat.id}`);
+    }, [activeSector, router]);
 
     const handleProductClick = useCallback(async (product) => {
         if (layer === 3 && product.isGroup) {
@@ -236,10 +251,10 @@ export default function HeroSection() {
                         ))}
                     </div>
                     <div className="absolute bottom-2 right-8 z-10 flex gap-1.5">
-                        {[{label:'Prev',dir:-1,path:'M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z'},{label:'Next',dir:1,path:'M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z'}].map(({label,dir,path})=>(
+                        {[{ label: 'Prev', dir: -1, path: 'M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z' }, { label: 'Next', dir: 1, path: 'M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z' }].map(({ label, dir, path }) => (
                             <button key={label} onClick={() => goTo(current + dir)} aria-label={label}
                                 className="w-6 h-6 rounded flex items-center justify-center bg-white/20 border border-white/40 cursor-pointer transition-all duration-200 hover:bg-white hover:border-white">
-                                <svg viewBox="0 0 24 24" fill="white" width="11" height="11"><path d={path}/></svg>
+                                <svg viewBox="0 0 24 24" fill="white" width="11" height="11"><path d={path} /></svg>
                             </button>
                         ))}
                     </div>
@@ -248,57 +263,58 @@ export default function HeroSection() {
                 {/* Badges strip */}
                 <div className="shrink-0 w-full flex items-center justify-between overflow-hidden" style={{ height: '52px', background: 'linear-gradient(135deg, #0a3a6e 0%, #1565c0 50%, #0a3a6e 100%)' }}>
                     <div className="flex items-center h-full divide-x divide-white/20 shrink-0">
-                        <div className="slide-left flex flex-col items-center justify-center h-full" style={{ gap:'3px', padding:'0 2.5vw', minWidth:'10vw' }}>
+                        <div className="slide-left flex flex-col items-center justify-center h-full" style={{ gap: '3px', padding: '0 2.5vw', minWidth: '10vw' }}>
                             <div className="truck-anim text-white/90">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width:'1.4vw', height:'1.4vw', minWidth:'16px', minHeight:'16px' }}>
-                                    <path d="M1 3h15v13H1zM16 8h4l3 3v5h-7V8z" strokeLinecap="round" strokeLinejoin="round"/>
-                                    <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width: '1.4vw', height: '1.4vw', minWidth: '16px', minHeight: '16px' }}>
+                                    <path d="M1 3h15v13H1zM16 8h4l3 3v5h-7V8z" strokeLinecap="round" strokeLinejoin="round" />
+                                    <circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" />
                                 </svg>
                             </div>
-                            <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize:'clamp(8px,0.65vw,11px)', letterSpacing:'0.12em', padding:'1px 0.5vw' }}>Hızlı Teslimat</span>
+                            <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: 'clamp(8px,0.65vw,11px)', letterSpacing: '0.12em', padding: '1px 0.5vw' }}>Hızlı Teslimat</span>
                         </div>
-                        <div className="slide-left-2 flex flex-col items-center justify-center h-full" style={{ gap:'3px', padding:'0 2.5vw', minWidth:'10vw' }}>
-                            <div className="pulse-anim text-white/90" style={{ width:'1.4vw', height:'1.4vw', minWidth:'16px', minHeight:'16px', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                        <div className="slide-left-2 flex flex-col items-center justify-center h-full" style={{ gap: '3px', padding: '0 2.5vw', minWidth: '10vw' }}>
+                            <div className="pulse-anim text-white/90" style={{ width: '1.4vw', height: '1.4vw', minWidth: '16px', minHeight: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <div className="rounded-full border-2 border-white/80 flex items-center justify-center w-full h-full">
-                                    <span className="text-white font-extrabold" style={{ fontSize:'clamp(7px,0.6vw,10px)', lineHeight:1 }}>30+</span>
+                                    <span className="text-white font-extrabold" style={{ fontSize: 'clamp(7px,0.6vw,10px)', lineHeight: 1 }}>30+</span>
                                 </div>
                             </div>
-                            <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize:'clamp(8px,0.65vw,11px)', letterSpacing:'0.12em', padding:'1px 0.5vw' }}>30+ Yıllık Tecrübe</span>
+                            <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: 'clamp(8px,0.65vw,11px)', letterSpacing: '0.12em', padding: '1px 0.5vw' }}>30+ Yıllık Tecrübe</span>
                         </div>
                     </div>
-                    <div className="flex items-center flex-1 justify-center min-w-0 px-2" style={{ gap:'0.5vw' }}>
+                    <div className="flex items-center flex-1 justify-center min-w-0 px-2" style={{ gap: '0.5vw' }}>
                         <div className="flex flex-col items-center shrink-0">
-                            {[0,1,2].map((i)=>(<svg key={i} viewBox="0 0 24 24" fill="white" style={{ width:'clamp(10px,1vw,16px)', height:'clamp(10px,1vw,16px)', animation:'chevronBlink 1.2s ease-in-out infinite', animationDelay:`${i*0.2}s` }}><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>))}
+                            {[0, 1, 2].map((i) => (<svg key={i} viewBox="0 0 24 24" fill="white" style={{ width: 'clamp(10px,1vw,16px)', height: 'clamp(10px,1vw,16px)', animation: 'chevronBlink 1.2s ease-in-out infinite', animationDelay: `${i * 0.2}s` }}><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" /></svg>))}
                         </div>
-                        <span className="font-bold uppercase text-white whitespace-nowrap" style={{ fontSize:'14px', letterSpacing:'0.08em' }}>Sektörünüzü Seçerek İhtiyacınız Olabilecek Ürünleri Keşfedin</span>
+                        <span className="font-bold uppercase text-white whitespace-nowrap" style={{ fontSize: '14px', letterSpacing: '0.08em' }}>Sektörünüzü Seçerek İhtiyacınız Olabilecek Ürünleri Keşfedin</span>
                         <div className="flex flex-col items-center shrink-0">
-                            {[0,1,2].map((i)=>(<svg key={i} viewBox="0 0 24 24" fill="white" style={{ width:'clamp(10px,1vw,16px)', height:'clamp(10px,1vw,16px)', animation:'chevronBlink 1.2s ease-in-out infinite', animationDelay:`${i*0.2}s` }}><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>))}
+                            {[0, 1, 2].map((i) => (<svg key={i} viewBox="0 0 24 24" fill="white" style={{ width: 'clamp(10px,1vw,16px)', height: 'clamp(10px,1vw,16px)', animation: 'chevronBlink 1.2s ease-in-out infinite', animationDelay: `${i * 0.2}s` }}><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" /></svg>))}
                         </div>
                     </div>
                     <div className="flex items-center h-full divide-x divide-white/20 shrink-0">
-                        <div className="slide-right flex flex-col items-center justify-center h-full" style={{ gap:'3px', padding:'0 2.5vw', minWidth:'10vw' }}>
+                        <div className="slide-right flex flex-col items-center justify-center h-full" style={{ gap: '3px', padding: '0 2.5vw', minWidth: '10vw' }}>
                             <div className="badge-anim text-white/90">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width:'1.4vw', height:'1.4vw', minWidth:'16px', minHeight:'16px' }}>
-                                    <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" strokeLinecap="round" strokeLinejoin="round"/>
-                                    <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round"/>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width: '1.4vw', height: '1.4vw', minWidth: '16px', minHeight: '16px' }}>
+                                    <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
                             </div>
-                            <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize:'clamp(8px,0.65vw,11px)', letterSpacing:'0.12em', padding:'1px 0.5vw' }}>Kaliteli Üretimi</span>
+                            <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: 'clamp(8px,0.65vw,11px)', letterSpacing: '0.12em', padding: '1px 0.5vw' }}>Kaliteli Üretimi</span>
                         </div>
-                        <div className="slide-right-2 flex flex-col items-center justify-center h-full" style={{ gap:'3px', padding:'0 2.5vw', minWidth:'10vw' }}>
+                        <div className="slide-right-2 flex flex-col items-center justify-center h-full" style={{ gap: '3px', padding: '0 2.5vw', minWidth: '10vw' }}>
                             <div className="clock-anim text-white/90">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width:'1.4vw', height:'1.4vw', minWidth:'16px', minHeight:'16px' }}>
-                                    <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2" strokeLinecap="round"/>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width: '1.4vw', height: '1.4vw', minWidth: '16px', minHeight: '16px' }}>
+                                    <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" strokeLinecap="round" />
                                 </svg>
                             </div>
-                            <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize:'clamp(8px,0.65vw,11px)', letterSpacing:'0.12em', padding:'1px 0.5vw' }}>Zamanında Üretim</span>
+                            <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: 'clamp(8px,0.65vw,11px)', letterSpacing: '0.12em', padding: '1px 0.5vw' }}>Zamanında Üretim</span>
                         </div>
                     </div>
                 </div>
 
                 {/* Sector Cards */}
                 {/* <div ref={sectorRef} className="w-full bg-white pt-5 pb-10" style={{ overflow: 'visible' }}> */}
-                <div ref={sectorRef} className="w-full bg-white pt-5 pb-10" style={{ overflow: 'visible', scrollMarginTop: '66px' }}>
+                <div  style={{ minHeight: 'calc(100vh - 0px)' }}>
+                <div  ref={sectorRef} className="w-full bg-white pt-5 pb-10" style={{ overflow: 'visible', scrollMarginTop: '66px'  }}>
 
                     <div className="w-full max-w-[1150px] mx-auto px-6" style={{ overflow: 'visible' }}>
                         <div className="grid grid-cols-6 gap-3" style={{ position: 'relative', overflow: 'visible' }}>
@@ -316,8 +332,8 @@ export default function HeroSection() {
                                             transform: isActive
                                                 ? 'scale(1.05)'
                                                 : hasSomeActive
-                                                ? 'scale(00.98)'
-                                                : 'scale(1)',
+                                                    ? 'scale(00.98)'
+                                                    : 'scale(1)',
                                             transformOrigin: 'center top',
                                             transition: 'transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s',
                                             opacity: hasSomeActive && !isActive ? 0.6 : 1,
@@ -348,8 +364,8 @@ export default function HeroSection() {
                 </div>
 
                 {/* Product Grid — always visible */}
-                <div ref={gridRef} className="w-full bg-[#f4f6fa]">
-                    <div className="w-full max-w-[1150px] mx-auto px-6 py-8">
+                <div ref={gridRef} className="w-full  bg-[#f4f6fa] " style={{ minHeight: 'inherit' }}>
+                    <div className="w-full bg max-w-[1150px] mx-auto px-6 py-8">
 
                         {/* Top row: back button (left) + view all button (right) */}
                         <div className="flex items-center justify-between mb-4 min-h-[28px]">
@@ -358,7 +374,7 @@ export default function HeroSection() {
                                     onClick={handleBackToCategories}
                                     className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#6b7380] hover:text-[#0a4c8a] transition-colors"
                                 >
-                                    <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
+                                    <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z" /></svg>
                                     Kategorilere Dön
                                 </button>
                             ) : (
@@ -366,23 +382,23 @@ export default function HeroSection() {
                             )}
 
                             {/* {gridItems.length > 6 && ( */}
-                            {activeSector   && (
+                            {activeSector && (
                                 <button
                                     onClick={() => router.push(`/catalogue?sector=${activeSector?.slug || activeSector?.name?.toLowerCase()}`)}
                                     className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#071e3d] text-white text-[11px] font-bold uppercase tracking-widest rounded-lg hover:bg-[#0a4c8a] transition-colors"
                                 >
                                     Tümünü Görüntüle
-                                    <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                                    <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z" /></svg>
                                 </button>
                             )}
                         </div>
 
                         {sectors.length === 0 || gridLoading ? (
                             <div className="grid grid-cols-4 gap-5">
-                                {[1,2,3,4,5,6].map((i) => (
+                                {[1, 2, 3, 4, 5, 6].map((i) => (
                                     <div key={i} className="rounded-xl border border-[#dde4ef] bg-white overflow-hidden animate-pulse">
                                         <div className="h-48 bg-[#eef1f6]" />
-                                        <div className="p-4"><div className="h-3 bg-[#eef1f6] rounded w-3/4 mb-2"/><div className="h-2 bg-[#eef1f6] rounded w-1/2"/></div>
+                                        <div className="p-4"><div className="h-3 bg-[#eef1f6] rounded w-3/4 mb-2" /><div className="h-2 bg-[#eef1f6] rounded w-1/2" /></div>
                                     </div>
                                 ))}
                             </div>
@@ -406,6 +422,7 @@ export default function HeroSection() {
 
                     </div>
                 </div>
+                </div>
 
             </div>
         </>
@@ -418,7 +435,7 @@ function InlineCard({ item, isProduct, layer, onClick }) {
             <div className="h-48 bg-[#f4f6fa] flex items-center justify-center overflow-hidden relative">
                 {item.image
                     ? <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                    : <svg viewBox="0 0 24 24" fill="none" stroke="#dde4ef" strokeWidth="1" width="40" height="40"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>}
+                    : <svg viewBox="0 0 24 24" fill="none" stroke="#dde4ef" strokeWidth="1" width="40" height="40"><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 21V9" /></svg>}
                 {isProduct && item.isGroup && (
                     <div className="absolute top-2.5 right-2.5 bg-[#071e3d] text-white text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full">Series</div>
                 )}
@@ -427,7 +444,7 @@ function InlineCard({ item, isProduct, layer, onClick }) {
                 <h3 className="text-[12px] font-bold uppercase tracking-wide text-[#071e3d] leading-tight group-hover:text-[#1e88e5] transition-colors line-clamp-2">{item.name}</h3>
                 <p className="text-[11px] text-[#9aa3af] mt-1.5 flex items-center gap-1">
                     {!isProduct ? 'Ürünleri Gör' : item.isGroup ? `${item._count?.subProducts ?? 0} varyant` : 'Detayları Gör'}
-                    <svg viewBox="0 0 24 24" fill="currentColor" width="10" height="10"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="10" height="10"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z" /></svg>
                 </p>
             </div>
         </div>

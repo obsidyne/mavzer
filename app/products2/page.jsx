@@ -115,15 +115,15 @@ const handleGroupClick = useCallback(async (group) => {
 
             <div className="pt-[66px] bg-white border-b border-[#dde4ef]">
                 <div className="max-w-5xl mx-auto px-8 py-6">
-                    <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase text-[#1e88e5] mb-1">
+                    {/* <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase text-[#1e88e5] mb-1">
                         <span className="block w-5 h-px bg-[#1e88e5]" />
                         ÜRÜN GRUPLARI
-                    </div>
+                    </div> */}
                     <h1 className="font-condensed text-[28px] font-extrabold uppercase text-[#071e3d] leading-tight tracking-wide">
-                        GRUPLAR
+                        ÜRÜNLER
                     </h1>
                     <p className="text-[13px] text-[#9aa3af] mt-1">
-                        Tüm ürün gruplarını keşfedin ve istediğiniz ürünü bulun.
+                        İhtiyacınıza uygun ürünleri keşfedin ve size en uygun çözümleri bulun.
                     </p>
                 </div>
             </div>
