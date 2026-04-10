@@ -32,6 +32,7 @@ function CatalogueContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const sectorParam = searchParams.get("sector");
+    const categoryIdParam = searchParams.get("categoryId");
 
     const [sectors, setSectors] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -78,11 +79,13 @@ function CatalogueContent() {
                 if (first) {
                     setActiveSector(first);
                     if (initial) {
-                        // came via sector param — categories tab, auto-load first category's products
                         setTabMode('categories');
-                        const firstCat = initial.categories?.[0];
-                        if (firstCat) {
-                            loadProducts('category', firstCat.id, firstCat.name, [{ label: initial.name, id: initial.id, type: 'sector' }], 3);
+                        // Use the specific category from param, fallback to first category
+                        const targetCat = categoryIdParam
+                            ? initial.categories?.find(c => c.id === categoryIdParam || c.id === Number(categoryIdParam))
+                            : initial.categories?.[0];
+                        if (targetCat) {
+                            loadProducts('category', targetCat.id, targetCat.name, [{ label: initial.name, id: initial.id, type: 'sector' }], 3);
                         } else {
                             setBreadcrumbs([{ label: initial.name, id: initial.id, type: 'sector' }]);
                         }
@@ -322,8 +325,8 @@ function CatalogueContent() {
                                         key={cat.id}
                                         onClick={() => handleCategorySelect(cat.id, cat.name, [{ label: activeSector.name, id: activeSector.id, type: 'sector' }])}
                                         className={`px-5 py-2 rounded-full text-[11px] font-bold uppercase tracking-wider border transition-all duration-200 cursor-pointer whitespace-nowrap ${isActive
-                                                ? 'bg-[#1e88e5] text-white border-[#1e88e5] shadow-md'
-                                                : 'bg-white text-[#4a5568] border-[#dde4ef] hover:border-[#1e88e5] hover:text-[#1e88e5] hover:bg-[#f0f7ff]'
+                                            ? 'bg-[#1e88e5] text-white border-[#1e88e5] shadow-md'
+                                            : 'bg-white text-[#4a5568] border-[#dde4ef] hover:border-[#1e88e5] hover:text-[#1e88e5] hover:bg-[#f0f7ff]'
                                             }`}
                                     >
                                         {cat.name}
