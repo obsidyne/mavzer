@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Sector {
+  id          String     @id @default(cuid())
+  name        String
+  slug        String     @unique
+  description String?
+  image       String?
+  order       Int        @default(0)
+  isActive    Boolean    @default(true)
+  categories  Category[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Category {
+  id          String             @id @default(cuid())
+  name        String
+  slug        String
+  description String?
+  image       String?
+  order       Int                @default(0)
+  isActive    Boolean            @default(true)
+  sectorId    String
+  sector      Sector             @relation(fields: [sectorId], references: [id], onDelete: Cascade)
+  products    ProductCategory[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  @@unique([slug, sectorId])
+}
+
+// join table for root products <-> categories (many-to-many)
+model ProductCategory {
+  productId  String
+  categoryId String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([productId, categoryId])
+}
+
+model Product {
+  id          String            @id @default(cuid())
+  name        String
+  slug        String            @unique
+  description String?
+  image       String?
+
+  // only for leaf/single products
+  details     Json?
+  price       Decimal?          @db.Decimal(10, 2)
+
+  isGroup     Boolean           @default(false)
+  isActive    Boolean           @default(true)
+  order       Int               @default(0)
+  depth       Int               @default(0)      // 0 = root, 1 = child, 2 = grandchild
+  isFeatured  Boolean           @default(false)
+
+  // many-to-many with categories — only used when depth = 0
+  categories  ProductCategory[]
+
+  // many-to-many with groups — only used when depth = 0
+  groups      ProductGroup[]
+
+  // self-referencing for sub-products
+  parentId    String?
+  parent      Product?          @relation("SubProducts", fields: [parentId], references: [id], onDelete: Cascade)
+  subProducts Product[]         @relation("SubProducts")
+
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+model Group {
+  id          String         @id @default(cuid())
+  name        String
+  slug        String         @unique
+  description String?
+  image       String?
+  order       Int            @default(0)
+  isActive    Boolean        @default(true)
+  products    ProductGroup[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+// join table for root products <-> groups (many-to-many)
+model ProductGroup {
+  productId String
+  groupId   String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  group     Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@id([productId, groupId])
+}
+
+model Banner {
+  id        String   @id @default(cuid())
+  title     String?
+  image     String
+  link      String?
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Client {
+  id        String   @id @default(cuid())
+  name      String
+  logo      String?
+  website   String?
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+

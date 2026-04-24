@@ -108,7 +108,7 @@ export default function ClientsSection() {
             <div className="mb-5">
                 <CarouselTrack trackRef={track1Ref} wrapRef={wrap1Ref} />
             </div>
-            <CarouselTrack trackRef={track2Ref} wrapRef={wrap2Ref} />
+            {/* <CarouselTrack trackRef={track2Ref} wrapRef={wrap2Ref} /> */}
         </section>
     );
 }

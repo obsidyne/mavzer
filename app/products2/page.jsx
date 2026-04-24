@@ -135,7 +135,7 @@ const handleGroupClick = useCallback(async (group) => {
                         onClick={() => handleBreadcrumbClick(-1)}
                         className={`font-medium transition-colors ${isRoot ? 'text-[#071e3d] font-semibold' : 'hover:text-[#0a4c8a]'}`}
                     >
-                        Gruplar
+                        kategoriler
                     </button>
                     {breadcrumbs.map((crumb, i) => (
                         <span key={i} className="flex items-center gap-1.5">
@@ -218,16 +218,16 @@ function GroupCard({ item, isRoot, onClick }) {
                         <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 21V9" />
                     </svg>
                 )}
-                {isRoot && (
+                {/* {isRoot && (
                     <div className="absolute top-2.5 right-2.5 bg-[#071e3d] text-white text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full">
-                        Grup
+                        kategoriler
                     </div>
                 )}
                 {!isRoot && hasChildren && (
                     <div className="absolute top-2.5 right-2.5 bg-[#1e88e5] text-white text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full">
                         Series
                     </div>
-                )}
+                )} */}
             </div>
             <div className="p-3.5">
                 <h3 className="text-[12px] font-bold uppercase tracking-wide text-[#071e3d] leading-tight line-clamp-2 group-hover:text-[#1e88e5] transition-colors">
@@ -235,7 +235,7 @@ function GroupCard({ item, isRoot, onClick }) {
                 </h3>
                 <p className="text-[11px] text-[#9aa3af] mt-1.5 flex items-center gap-1">
                     {isRoot
-                        ? 'Grubu Gör'
+                        ? 'kategorileri gör'
                         : hasChildren
                             ? `${item._count?.subProducts ?? 0} varyant`
                             : 'Detayları Gör'}
