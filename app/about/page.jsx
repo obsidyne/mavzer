@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLanguage } from "../context/LanguageContext";
 import Navbar from "../components/Navbar";
 
 const API = process.env.NEXT_PUBLIC_API_URL;

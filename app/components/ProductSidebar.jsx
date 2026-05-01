@@ -1,42 +1,23 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
-const GENERAL_ID = "__general__";
-
-export default function ProductsSidebar({ sectors, loading, activeId, autoOpenSectorId, onSelectCategory, onSelectSector, onSelectGeneral, isGeneralActive }) {
-  const [openSectors, setOpenSectors] = useState({});
+export default function ProductsSidebar({
+  sectors, loading, activeSectorId, isGeneralActive,
+  onSelectSector, onSelectGeneral,
+}) {
   const initialized = useRef(false);
 
   useEffect(() => {
-    if (initialized.current) return;
-    if (sectors.length === 0) return;
+    if (initialized.current || sectors.length === 0) return;
     initialized.current = true;
-
-    if (autoOpenSectorId) {
-      setOpenSectors({ [autoOpenSectorId]: true });
-    } else {
-      setOpenSectors({ [sectors[0].id]: true });
-    }
-  }, [sectors, autoOpenSectorId]);
-
-  useEffect(() => {
-    if (!autoOpenSectorId) return;
-    setOpenSectors((prev) => ({ ...prev, [autoOpenSectorId]: true }));
-  }, [autoOpenSectorId]);
-
-  function toggleSector(sector) {
-    const isOpen = openSectors[sector.id];
-    setOpenSectors((prev) => ({ ...prev, [sector.id]: !isOpen }));
-    if (!isOpen && onSelectSector) {
-      onSelectSector(sector);
-    }
-  }
+    onSelectSector(sectors[0]);
+  }, [sectors]);
 
   if (loading) {
     return (
-      <div className="w-56 shrink-0">
-        {[1,2,3,4].map((i) => (
+      <div className="w-52 shrink-0 sticky top-24">
+        {[1, 2, 3, 4].map((i) => (
           <div key={i} className="h-11 bg-[#eef1f6] rounded-lg mb-1.5 animate-pulse" />
         ))}
       </div>
@@ -44,57 +25,41 @@ export default function ProductsSidebar({ sectors, loading, activeId, autoOpenSe
   }
 
   return (
-    <div className="w-56 shrink-0 sticky top-24">
+    <div className="w-52 shrink-0 sticky top-24">
       <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9aa3af] mb-3 px-1">
-        Browse by Sector
+        Sektöre Göre
       </p>
-      <div className="border border-[#dde4ef] rounded-lg overflow-hidden bg-white divide-y divide-[#dde4ef]">
 
-        {/* General — no dropdown, just a button */}
-     
-
-        {sectors.map((sector) => (
-          <div key={sector.id}>
+      <div className="border border-[#dde4ef] rounded-xl overflow-hidden bg-white divide-y divide-[#dde4ef]">
+        {sectors.map((sector) => {
+          const isActive = !isGeneralActive && activeSectorId === sector.id;
+          const count = sector._count?.products ?? 0;
+          return (
             <button
-              onClick={() => toggleSector(sector)}
-              className="w-full flex items-center justify-between px-4 py-3 hover:bg-[#f8fafc] transition-colors text-left"
+              key={sector.id}
+              onClick={() => onSelectSector(sector)}
+              className={`w-full flex items-center justify-between px-4 py-3 transition-colors text-left
+                ${isActive ? "bg-[#071e3d]" : "hover:bg-[#f8fafc]"}`}
             >
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#071e3d]">
+              <span className={`text-[11px] font-bold uppercase tracking-wider truncate
+                ${isActive ? "text-white" : "text-[#071e3d]"}`}>
                 {sector.name}
               </span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="#b0b8c4" strokeWidth="2" width="12" height="12"
-                className={`transition-transform duration-200 shrink-0 ${openSectors[sector.id] ? "rotate-180" : ""}`}>
-                <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+              <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full shrink-0 ml-2
+                ${isActive ? "bg-white/20 text-white" : "bg-[#f0f4f8] text-[#9aa3af]"}`}>
+                {count}
+              </span>
             </button>
+          );
+        })}
 
-            {openSectors[sector.id] && (
-              <div className="bg-[#f8fafc] divide-y divide-[#eef1f6]">
-                {(!sector.categories || sector.categories.length === 0) && (
-                  <p className="text-[11px] text-[#b0b8c4] px-5 py-2.5">No categories</p>
-                )}
-                {sector.categories?.map((cat) => {
-                  const isActive = activeId === cat.id;
-                  return (
-                    <button
-                      key={cat.id}
-                      onClick={() => onSelectCategory(cat.id, cat.name, [{ label: sector.name, id: sector.id, type: "sector" }])}
-                      className={`w-full text-left px-5 py-2.5 text-[11px] flex items-center gap-2 transition-colors ${isActive ? "bg-[#0a4c8a] text-white font-semibold" : "text-[#4a5568] hover:bg-[#eef3fa] hover:text-[#071e3d]"}`}
-                    >
-                      <span className={`w-1 h-1 rounded-full shrink-0 ${isActive ? "bg-white" : "bg-[#cbd5e1]"}`} />
-                      {cat.name}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        ))}
-           <button
+        <button
           onClick={onSelectGeneral}
-          className={`w-full flex items-center justify-between px-4 py-3 transition-colors text-left ${isGeneralActive ? "bg-[#0a4c8a]" : "hover:bg-[#f8fafc]"}`}
+          className={`w-full flex items-center justify-between px-4 py-3 transition-colors text-left
+            ${isGeneralActive ? "bg-[#071e3d]" : "hover:bg-[#f8fafc]"}`}
         >
-          <span className={`text-[11px] font-bold uppercase tracking-wider ${isGeneralActive ? "text-white" : "text-[#071e3d]"}`}>
+          <span className={`text-[11px] font-bold uppercase tracking-wider
+            ${isGeneralActive ? "text-white" : "text-[#071e3d]"}`}>
             Tüm Ürünler
           </span>
         </button>
