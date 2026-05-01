@@ -3,92 +3,141 @@ import prisma from "../../database.js";
 
 const router = Router();
 
-// GET /api/sectors
-router.get("/", async (req, res) => {
+// GET /api/product-sectors/sectors
+router.get("/sectors", async (req, res) => {
   try {
     const sectors = await prisma.sector.findMany({
       orderBy: { order: "asc" },
-      include: {
-        _count: { select: { categories: true } },
-      },
+      include: { _count: { select: { products: true } } },
     });
     return res.json(sectors);
   } catch (err) {
+    console.error(err);
     return res.status(500).json({ message: "Failed to fetch sectors" });
   }
 });
 
-// GET /api/sectors/:id
-router.get("/:id", async (req, res) => {
+// GET /api/product-sectors/products?sectorId=x  — ordered by ProductSector.order
+router.get("/products", async (req, res) => {
   try {
-    const sector = await prisma.sector.findUnique({
-      where: { id: req.params.id },
+    const { sectorId } = req.query;
+    if (!sectorId) return res.status(400).json({ message: "sectorId is required" });
+
+    const rows = await prisma.productSector.findMany({
+      where: { sectorId },
+      orderBy: { order: "asc" },
       include: {
-        _count: { select: { categories: true } },
+        product: {
+          include: {
+            _count: { select: { subProducts: true } },
+            sectors: { include: { sector: { select: { id: true, name: true } } } },
+          },
+        },
       },
     });
-    if (!sector) return res.status(404).json({ message: "Sector not found" });
-    return res.json(sector);
+
+    const products = rows
+      .map((r) => ({ ...r.product, sectorOrder: r.order }))
+      .filter((p) => p && p.depth === 0);
+
+    return res.json(products);
   } catch (err) {
-    return res.status(500).json({ message: "Failed to fetch sector" });
+    console.error(err);
+    return res.status(500).json({ message: "Failed to fetch products for sector" });
   }
 });
 
-// POST /api/sectors
-router.post("/", async (req, res) => {
+// GET /api/product-sectors/all-products
+router.get("/all-products", async (req, res) => {
   try {
-    const { name, description, image, isActive } = req.body;
-
-    if (!name) return res.status(400).json({ message: "Name is required" });
-
-    const slug = name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
-
-    const existing = await prisma.sector.findUnique({ where: { slug } });
-    if (existing) return res.status(400).json({ message: "Sector with this name already exists" });
-
-    const sector = await prisma.sector.create({
-      data: { name, slug, description, image, isActive: isActive ?? true },
+    const { q } = req.query;
+    const products = await prisma.product.findMany({
+      where: {
+        depth: 0,
+        ...(q ? { name: { contains: q, mode: "insensitive" } } : {}),
+      },
+      orderBy: { name: "asc" },
+      include: {
+        _count: { select: { subProducts: true } },
+        sectors: { include: { sector: { select: { id: true, name: true } } } },
+      },
     });
-    return res.status(201).json(sector);
+    return res.json(products);
   } catch (err) {
-    return res.status(500).json({ message: "Failed to create sector" });
+    console.error(err);
+    return res.status(500).json({ message: "Failed to fetch all products" });
   }
 });
 
-// PUT /api/sectors/:id
-router.put("/:id", async (req, res) => {
+// POST /api/product-sectors/link
+// Body: { productId, sectorId }
+// Sets order to max+1 so new products go to bottom
+router.post("/link", async (req, res) => {
   try {
-    const { name, description, image, isActive, order } = req.body;
+    const { productId, sectorId } = req.body;
+    if (!productId || !sectorId) return res.status(400).json({ message: "productId and sectorId are required" });
 
-    const data = {};
-    if (name !== undefined) {
-      data.name = name;
-      data.slug = name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    const maxRow = await prisma.productSector.findFirst({
+      where: { sectorId },
+      orderBy: { order: "desc" },
+      select: { order: true },
+    });
+    const nextOrder = (maxRow?.order ?? -1) + 1;
+
+    await prisma.productSector.upsert({
+      where: { productId_sectorId: { productId, sectorId } },
+      create: { productId, sectorId, order: nextOrder },
+      update: {},
+    });
+
+    return res.json({ message: "Linked" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Failed to link product to sector" });
+  }
+});
+
+// DELETE /api/product-sectors/unlink
+router.delete("/unlink", async (req, res) => {
+  try {
+    const { productId, sectorId } = req.body;
+    if (!productId || !sectorId) return res.status(400).json({ message: "productId and sectorId are required" });
+
+    await prisma.productSector.delete({
+      where: { productId_sectorId: { productId, sectorId } },
+    });
+
+    return res.json({ message: "Unlinked" });
+  } catch (err) {
+    if (err.code === "P2025") return res.status(404).json({ message: "Link not found" });
+    console.error(err);
+    return res.status(500).json({ message: "Failed to unlink product from sector" });
+  }
+});
+
+// POST /api/product-sectors/reorder
+// Body: { sectorId, productIds: [...] }  — ordered array of productIds
+// Updates order field for each row
+router.post("/reorder", async (req, res) => {
+  try {
+    const { sectorId, productIds } = req.body;
+    if (!sectorId || !Array.isArray(productIds)) {
+      return res.status(400).json({ message: "sectorId and productIds[] are required" });
     }
-    if (description !== undefined) data.description = description;
-    if (image !== undefined) data.image = image;
-    if (isActive !== undefined) data.isActive = isActive;
-    if (order !== undefined) data.order = order;
 
-    const sector = await prisma.sector.update({
-      where: { id: req.params.id },
-      data,
-    });
-    return res.json(sector);
-  } catch (err) {
-    if (err.code === "P2025") return res.status(404).json({ message: "Sector not found" });
-    return res.status(500).json({ message: "Failed to update sector" });
-  }
-});
+    await prisma.$transaction(
+      productIds.map((productId, index) =>
+        prisma.productSector.update({
+          where: { productId_sectorId: { productId, sectorId } },
+          data: { order: index },
+        })
+      )
+    );
 
-// DELETE /api/sectors/:id
-router.delete("/:id", async (req, res) => {
-  try {
-    await prisma.sector.delete({ where: { id: req.params.id } });
-    return res.json({ message: "Sector deleted" });
+    return res.json({ message: "Reordered" });
   } catch (err) {
-    if (err.code === "P2025") return res.status(404).json({ message: "Sector not found" });
-    return res.status(500).json({ message: "Failed to delete sector" });
+    console.error(err);
+    return res.status(500).json({ message: "Failed to reorder" });
   }
 });
 
