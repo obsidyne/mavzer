@@ -126,8 +126,13 @@ export default function HeroSection() {
 
   const handleSectorClick = useCallback((sector, idx) => {
     loadSectorProducts(sector, idx);
-    setTimeout(() => sectorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    setTimeout(() => {
+      if (!sectorRef.current) return;
+      const top = sectorRef.current.getBoundingClientRect().top + window.scrollY - 66;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }, 100);
   }, []);
+
 
   const handleProductClick = useCallback(async (product) => {
     if (product.isGroup && layer < 3) {
@@ -257,7 +262,7 @@ export default function HeroSection() {
       <div className="mt-[66px]" style={{ display: 'flex', flexDirection: 'column' }}>
 
         {/* ── SECTION 1 ── */}
-        <div className="min-h-[96vh]">
+        <div className="--min-h-[86vh]">
 
           {/* Banner slider */}
           <section className="relative w-full overflow-hidden bg-[#071e3d] shrink-0" style={{ height: '50vh' }}>
