@@ -6,8 +6,8 @@ import { useLanguage } from '../context/LanguageContext';
 
 export default function Navbar() {
   const { lang, switchLang, t } = useLanguage();
-  const [scrolled, setScrolled]   = useState(false);
-  const [menuOpen, setMenuOpen]   = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const btnRef  = useRef(null);
 
@@ -46,7 +46,7 @@ export default function Navbar() {
   return (
     <nav className={`fixed top-0 left-0 right-0 z-[900] h-[66px] flex items-center bg-white/95 backdrop-blur-sm border-b border-[#dde4ef] transition-shadow duration-300 ${scrolled ? 'shadow-[0_2px_20px_rgba(7,30,61,0.1)]' : ''}`}>
 
-      {/* Hamburger — leftmost */}
+      {/* Hamburger */}
       <div className="relative pl-6 shrink-0">
         <button
           ref={btnRef}
@@ -142,7 +142,7 @@ export default function Navbar() {
         )}
       </div>
 
-      {/* Center — links + logo + links */}
+      {/* Center */}
       <div className="flex-1 flex items-center justify-center gap-8">
         {LEFT_LINKS.map((l) => (
           <Link key={l.href} href={l.href}
@@ -165,25 +165,65 @@ export default function Navbar() {
         ))}
       </div>
 
-      {/* Language switcher — rightmost */}
-      <div className="pr-6 shrink-0 flex items-center gap-1">
+      {/* Language switcher — flag icons */}
+      <div className="pr-6 shrink-0 flex items-center gap-2">
         <button
           onClick={() => switchLang('tr')}
-          className={`text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded transition-all duration-200
-            ${lang === 'tr' ? 'bg-[#071e3d] text-white' : 'text-[#9aa3af] hover:text-[#071e3d]'}`}
+          title="Türkçe"
+          className={`w-8 h-5 rounded overflow-hidden border-2 transition-all duration-200 focus:outline-none
+            ${lang === 'tr' ? 'border-[#071e3d] shadow-[0_0_0_2px_rgba(7,30,61,0.15)]' : 'border-transparent opacity-50 hover:opacity-100'}`}
         >
-          TR
+          <TurkeyFlag />
         </button>
-        <span className="text-[#dde4ef] text-xs">|</span>
         <button
           onClick={() => switchLang('en')}
-          className={`text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded transition-all duration-200
-            ${lang === 'en' ? 'bg-[#071e3d] text-white' : 'text-[#9aa3af] hover:text-[#071e3d]'}`}
+          title="English"
+          className={`w-8 h-5 rounded overflow-hidden border-2 transition-all duration-200 focus:outline-none
+            ${lang === 'en' ? 'border-[#071e3d] shadow-[0_0_0_2px_rgba(7,30,61,0.15)]' : 'border-transparent opacity-50 hover:opacity-100'}`}
         >
-          EN
+          <USFlag />
         </button>
       </div>
     </nav>
+  );
+}
+
+function TurkeyFlag() {
+  return (
+    <svg viewBox="0 0 30 20" width="32" height="20" xmlns="http://www.w3.org/2000/svg">
+      <rect width="30" height="20" fill="#E30A17" />
+      <circle cx="11" cy="10" r="4.5" fill="white" />
+      <circle cx="12.8" cy="10" r="3.5" fill="#E30A17" />
+      <polygon fill="white" points="17,10 18.5,5.8 19.7,9.5 15.8,7.4 19.8,7.4" />
+    </svg>
+  );
+}
+
+function USFlag() {
+  return (
+    <svg viewBox="0 0 30 20" width="32" height="20" xmlns="http://www.w3.org/2000/svg">
+      {/* stripes */}
+      {[0,1,2,3,4,5,6,7,8,9,10,11,12].map((i) => (
+        <rect key={i} x="0" y={i * (20/13)} width="30" height={20/13}
+          fill={i % 2 === 0 ? "#B22234" : "white"} />
+      ))}
+      {/* canton */}
+      <rect x="0" y="0" width="12" height="10.8" fill="#3C3B6E" />
+      {/* stars — 5 rows */}
+      {[
+        [1.2,1.1],[3.0,1.1],[4.8,1.1],[6.6,1.1],[8.4,1.1],[10.2,1.1],
+        [2.1,2.2],[3.9,2.2],[5.7,2.2],[7.5,2.2],[9.3,2.2],
+        [1.2,3.3],[3.0,3.3],[4.8,3.3],[6.6,3.3],[8.4,3.3],[10.2,3.3],
+        [2.1,4.4],[3.9,4.4],[5.7,4.4],[7.5,4.4],[9.3,4.4],
+        [1.2,5.5],[3.0,5.5],[4.8,5.5],[6.6,5.5],[8.4,5.5],[10.2,5.5],
+        [2.1,6.6],[3.9,6.6],[5.7,6.6],[7.5,6.6],[9.3,6.6],
+        [1.2,7.7],[3.0,7.7],[4.8,7.7],[6.6,7.7],[8.4,7.7],[10.2,7.7],
+        [2.1,8.8],[3.9,8.8],[5.7,8.8],[7.5,8.8],[9.3,8.8],
+        [1.2,9.9],[3.0,9.9],[4.8,9.9],[6.6,9.9],[8.4,9.9],[10.2,9.9],
+      ].map(([cx, cy], i) => (
+        <circle key={i} cx={cx} cy={cy} r="0.55" fill="white" />
+      ))}
+    </svg>
   );
 }
 

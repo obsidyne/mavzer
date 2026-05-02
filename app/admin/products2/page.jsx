@@ -64,7 +64,9 @@ export default function Products2Page() {
     try {
       const url = `/api/product-sectors/all-products${q ? `?q=${encodeURIComponent(q)}` : ""}`;
       const data = await apiFetch(url);
-      setAllProducts(Array.isArray(data) ? data : []);
+      const raw = Array.isArray(data) ? data : [];
+      const seen2 = new Set();
+      setAllProducts(raw.filter(p => { if (seen2.has(p.id)) return false; seen2.add(p.id); return true; }));
     } catch (e) { console.error(e); }
     finally { setLoadingRight(false); }
   }
@@ -74,7 +76,9 @@ export default function Products2Page() {
     setLoadingCenter(true);
     try {
       const data = await apiFetch(`/api/product-sectors/products?sectorId=${sector.id}`);
-      setSectorProds(Array.isArray(data) ? data : []);
+      const list = Array.isArray(data) ? data : [];
+      const seen = new Set();
+      setSectorProds(list.filter(p => { if (seen.has(p.id)) return false; seen.add(p.id); return true; }));
     } catch (e) { console.error(e); }
     finally { setLoadingCenter(false); }
   }
@@ -105,7 +109,7 @@ export default function Products2Page() {
   async function linkProduct(product) {
     if (!activeSector) return;
     // optimistic
-    setSectorProds((prev) => [...prev, product]);
+    setSectorProds((prev) => prev.some(p => p.id === product.id) ? prev : [...prev, product]);
     setSectors((prev) => prev.map((s) =>
       s.id === activeSector.id
         ? { ...s, _count: { ...s._count, products: (s._count?.products ?? 0) + 1 } }
@@ -361,12 +365,12 @@ export default function Products2Page() {
             <p className="text-[#222] text-[10px] mt-0.5">Not in selected sector</p>
           </div>
           <div className="relative">
-            <button
+            {/* <button
               onClick={() => setAddMenuOpen(!addMenuOpen)}
               className="text-[10px] bg-white text-black font-bold px-3 py-1.5 rounded-lg hover:bg-neutral-200 transition-colors"
             >
               + Add
-            </button>
+            </button> */}
             {addMenuOpen && (
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setAddMenuOpen(false)} />

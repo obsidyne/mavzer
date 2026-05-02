@@ -83,6 +83,20 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+// DELETE /api/groups/unlink — remove a product from a group
+router.delete("/unlink", async (req, res) => {
+  try {
+    const { productId, groupId } = req.body;
+    if (!productId || !groupId) return res.status(400).json({ message: "productId and groupId are required" });
+
+    await prisma.productGroup.delete({ where: { productId_groupId: { productId, groupId } } });
+    return res.json({ message: "Product unlinked from group" });
+  } catch (err) {
+    if (err.code === "P2025") return res.status(404).json({ message: "Link not found" });
+    return res.status(500).json({ message: "Failed to unlink product" });
+  }
+});
+
 // DELETE /api/groups/:id
 router.delete("/:id", async (req, res) => {
   try {
@@ -108,19 +122,6 @@ router.post("/link", async (req, res) => {
   }
 });
 
-// DELETE /api/groups/unlink — remove a product from a group
-router.delete("/unlink", async (req, res) => {
-  try {
-    const { productId, groupId } = req.body;
-    if (!productId || !groupId) return res.status(400).json({ message: "productId and groupId are required" });
-
-    await prisma.productGroup.delete({ where: { productId_groupId: { productId, groupId } } });
-    return res.json({ message: "Product unlinked from group" });
-  } catch (err) {
-    if (err.code === "P2025") return res.status(404).json({ message: "Link not found" });
-    return res.status(500).json({ message: "Failed to unlink product" });
-  }
-});
 
 // GET /api/groups/:id/products — products in a specific group
 router.get("/:id/products", async (req, res) => {

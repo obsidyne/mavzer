@@ -92,6 +92,8 @@ router.post("/link", async (req, res) => {
 
     return res.json({ message: "Linked" });
   } catch (err) {
+    // P2002 = unique constraint — already linked, treat as success
+    if (err.code === "P2002") return res.json({ message: "Already linked" });
     console.error(err);
     return res.status(500).json({ message: "Failed to link product to sector" });
   }
@@ -127,9 +129,10 @@ router.post("/reorder", async (req, res) => {
 
     await prisma.$transaction(
       productIds.map((productId, index) =>
-        prisma.productSector.update({
+        prisma.productSector.upsert({
           where: { productId_sectorId: { productId, sectorId } },
-          data: { order: index },
+          update: { order: index },
+          create: { productId, sectorId, order: index },
         })
       )
     );

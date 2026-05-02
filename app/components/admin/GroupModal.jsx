@@ -51,7 +51,7 @@ export default function GroupModal({ group, onClose, onSaved }) {
       <div className="absolute inset-0 bg-black/70" onClick={onClose} />
       <div className="relative z-10 w-full max-w-md bg-[#111] border border-[#1f1f1f] rounded-xl p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-white font-semibold text-base">{isEditing ? "Edit Group" : "Add Group"}</h2>
+          <h2 className="text-white font-semibold text-base">{isEditing ? "Edit Category" : "Add Category"}</h2>
           <button onClick={onClose} className="text-[#555] hover:text-white transition-colors text-lg">✕</button>
         </div>
 

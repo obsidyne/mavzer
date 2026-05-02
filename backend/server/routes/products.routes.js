@@ -151,6 +151,40 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+
+// POST /api/products/standalone — create a depth-0 product or group without categoryId
+// Used by the new sector-based admin flow where products are linked to sectors separately
+router.post("/standalone", async (req, res) => {
+  try {
+    const { name, description, image, price, details, isGroup, isActive, depth } = req.body;
+    if (!name) return res.status(400).json({ message: "Name is required" });
+
+    const slug = makeSlug(name) + "-" + Date.now();
+    const data = {
+      name, slug,
+      description: description || null,
+      image: image || null,
+      isGroup: isGroup ?? false,
+      isActive: isActive ?? true,
+      depth: depth ?? 0,
+      order: 0,
+    };
+    if (!isGroup) {
+      data.details = details ?? null;
+      data.price = price ? parseFloat(price) : null;
+    }
+
+    const product = await prisma.product.create({
+      data,
+      include: { _count: { select: { subProducts: true } }, sectors: { include: { sector: true } } },
+    });
+    return res.status(201).json(product);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Failed to create product" });
+  }
+});
+
 // POST /api/products — create new product
 router.post("/", async (req, res) => {
   try {

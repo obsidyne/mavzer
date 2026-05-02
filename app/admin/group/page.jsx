@@ -387,7 +387,7 @@ export default function GroupsPage() {
       {/* ── Header ── */}
       <div className="flex items-start justify-between mb-6 shrink-0">
         <div>
-          <h1 className="text-white text-2xl font-bold tracking-tight">Groups</h1>
+          <h1 className="text-white text-2xl font-bold tracking-tight">Categories</h1>
           <p className="text-[#555] text-sm mt-1">
             Curate product collections independent of categories
           </p>
@@ -396,7 +396,7 @@ export default function GroupsPage() {
           onClick={() => { setEditingGroup(null); setModalOpen(true); }}
           className="bg-white text-black text-sm font-semibold px-4 py-2 rounded-lg hover:bg-neutral-200 transition-colors shrink-0"
         >
-          + Add Group
+          + Add Category
         </button>
       </div>
 
@@ -414,7 +414,7 @@ export default function GroupsPage() {
         <div className="w-[300px] shrink-0 flex flex-col bg-[#080808] border border-[#1a1a1a] rounded-2xl overflow-hidden">
 
           <div className="px-4 py-3 border-b border-[#111] flex items-center gap-2 shrink-0">
-            <span className="text-[#777] text-[11px] tracking-widest uppercase font-semibold">Groups</span>
+            <span className="text-[#777] text-[11px] tracking-widest uppercase font-semibold">Categories</span>
             <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-[#111] text-[#555] border border-[#1a1a1a]">
               {filteredGroups.length}
             </span>
@@ -453,7 +453,7 @@ export default function GroupsPage() {
                     onClick={() => { setEditingGroup(null); setModalOpen(true); }}
                     className="mt-2 text-[#555] text-[11px] border border-[#1f1f1f] rounded-lg px-3 py-1.5 hover:text-white hover:border-[#333] transition-colors"
                   >
-                    Add first group
+                    Add first category
                   </button>
                 )}
               </div>
