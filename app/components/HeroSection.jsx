@@ -35,11 +35,14 @@ export default function HeroSection() {
   const [layer, setLayer]                   = useState(1);
   const [breadcrumbs, setBreadcrumbs]       = useState([]);
 
-  const gridRef      = useRef(null);
-  const sectorRef    = useRef(null);
+  const [gridVisible, setGridVisible]   = useState(false);
+  const [sectorSticky, setSectorSticky] = useState(false);
+
+  const gridRef        = useRef(null);
+  const sectorRef      = useRef(null);
   const initializedRef = useRef(false);
 
-  // ── fetch banners + sectors ──────────────────────────────────────────────
+  // ── fetch ────────────────────────────────────────────────────────────────
 
   useEffect(() => {
     async function fetchBanners() {
@@ -61,15 +64,36 @@ export default function HeroSection() {
     fetchSectors();
   }, []);
 
-  // ── auto-open first sector on load ──────────────────────────────────────
-
   useEffect(() => {
     if (initializedRef.current || sectors.length === 0) return;
     initializedRef.current = true;
     loadSectorProducts(sectors[0], 0);
   }, [sectors]);
 
-  // ── slider timer ─────────────────────────────────────────────────────────
+  // ── scroll + intersection tracking ───────────────────────────────────────
+
+  useEffect(() => {
+    if (!gridRef.current) return;
+
+    const gridObserver = new IntersectionObserver(
+      ([entry]) => setGridVisible(entry.isIntersecting),
+      { threshold: 0.5, rootMargin: '-10% 0px 0px 0px' }
+    );
+    gridObserver.observe(gridRef.current);
+
+    const onScroll = () => {
+      const threshold = window.innerHeight * 0.5 + 55;
+      setSectorSticky(window.scrollY > threshold);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    return () => {
+      gridObserver.disconnect();
+      window.removeEventListener('scroll', onScroll);
+    };
+  }, []);
+
+  // ── slider ───────────────────────────────────────────────────────────────
 
   useEffect(() => {
     setCurrent(0);
@@ -84,7 +108,7 @@ export default function HeroSection() {
   };
   const goTo = (n) => { setCurrent((n + slides.length) % slides.length); startTimer(); };
 
-  // ── load sector products ─────────────────────────────────────────────────
+  // ── data ─────────────────────────────────────────────────────────────────
 
   async function loadSectorProducts(sector, idx) {
     setActiveSectorId(sector.id);
@@ -100,14 +124,10 @@ export default function HeroSection() {
     finally { setGridLoading(false); }
   }
 
-  // ── sector card click ────────────────────────────────────────────────────
-
   const handleSectorClick = useCallback((sector, idx) => {
     loadSectorProducts(sector, idx);
     setTimeout(() => sectorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
   }, []);
-
-  // ── product card click (drill into group) ────────────────────────────────
 
   const handleProductClick = useCallback(async (product) => {
     if (product.isGroup && layer < 3) {
@@ -125,40 +145,29 @@ export default function HeroSection() {
     }
   }, [layer, router]);
 
-  // ── breadcrumb click ─────────────────────────────────────────────────────
-
   const handleBreadcrumbClick = useCallback(async (crumb, index) => {
     setBreadcrumbs((prev) => prev.slice(0, index + 1));
-    if (crumb.type === 'sector') {
-      // back to sector products
-      setLayer(1);
-      setGridLoading(true);
-      try {
-        const res  = await fetch(`${API}/api/public/sector-products?sectorId=${crumb.id}`);
-        const data = await res.json();
-        setGridItems(Array.isArray(data) ? data : []);
-      } catch (e) { setGridItems([]); }
-      finally { setGridLoading(false); }
-    } else {
-      setLayer(crumb.layer);
-      setGridLoading(true);
-      try {
-        const res  = await fetch(`${API}/api/public/products?parentId=${crumb.id}`);
-        const data = await res.json();
-        setGridItems(Array.isArray(data) ? data : []);
-      } catch (e) { setGridItems([]); }
-      finally { setGridLoading(false); }
-    }
+    setLayer(crumb.layer);
+    setGridLoading(true);
+    try {
+      const url = crumb.type === 'sector'
+        ? `${API}/api/public/sector-products?sectorId=${crumb.id}`
+        : `${API}/api/public/products?parentId=${crumb.id}`;
+      const res  = await fetch(url);
+      const data = await res.json();
+      setGridItems(Array.isArray(data) ? data : []);
+      if (crumb.type === 'sector') setLayer(1);
+    } catch (e) { setGridItems([]); }
+    finally { setGridLoading(false); }
   }, []);
-
-  // ── view all → catalogue page ────────────────────────────────────────────
 
   const handleViewAll = useCallback(() => {
     if (!activeSector) return;
     router.push(`/catalogue?sector=${activeSector.slug || activeSector.name?.toLowerCase()}`);
   }, [activeSector, router]);
 
-  // ── render ────────────────────────────────────────────────────────────────
+  const isSticky  = sectorSticky;
+  const isCondensed = gridVisible;
 
   return (
     <>
@@ -171,6 +180,7 @@ export default function HeroSection() {
         @keyframes slideInLeft { from{opacity:0;transform:translateX(-40px)} to{opacity:1;transform:translateX(0)} }
         @keyframes slideInRight { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:translateX(0)} }
         @keyframes fadeSlideUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes fadeIn { from{opacity:0} to{opacity:1} }
         .truck-anim{animation:truckMove 1.6s ease-in-out infinite}
         .pulse-anim{animation:pulse30 1.8s ease-in-out infinite}
         .badge-anim{animation:badgeBounce 2s ease-in-out infinite}
@@ -180,11 +190,73 @@ export default function HeroSection() {
         .slide-right{animation:slideInRight 0.7s ease-out both}
         .slide-right-2{animation:slideInRight 0.7s ease-out 0.15s both}
         .fade-slide-up{animation:fadeSlideUp 0.35s ease-out both}
+
+        /* sector bar */
+        .sector-bar {
+          position: sticky;
+          top: 66px;
+          z-index: 50;
+          background: white;
+          transition: padding 0.4s ease, box-shadow 0.4s ease;
+          padding-top: 20px;
+          padding-bottom: 20px;
+        }
+        .sector-bar.condensed {
+          padding-top: 6px !important;
+          padding-bottom: 6px !important;
+          box-shadow: 0 2px 16px rgba(7,30,61,0.08);
+        }
+
+        /* card image */
+        .sc-img {
+          aspect-ratio: 4/5;
+          position: relative;
+          transition: aspect-ratio 0.4s ease;
+        }
+        .sector-bar.condensed .sc-img {
+          aspect-ratio: 3/2;
+        }
+
+        /* label BELOW card — visible by default, hides when sticky */
+        .sc-label-below {
+          overflow: hidden;
+          max-height: 24px;
+          opacity: 1;
+          margin-top: 4px;
+          transition: max-height 0.35s ease, opacity 0.3s ease, margin-top 0.3s ease;
+        }
+        .sector-bar.sticky .sc-label-below {
+          max-height: 0;
+          opacity: 0;
+          margin-top: 0;
+        }
+
+        /* label ON TOP of card — hidden by default, fades in when sticky */
+        .sc-label-over {
+          position: absolute;
+          bottom: 0; left: 0; right: 0;
+          padding: 6px 4px 5px;
+          text-align: center;
+          font-size: 9px;
+          font-weight: 700;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%);
+          color: white;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.4s ease 0.15s;
+          z-index: 2;
+        }
+        .sector-bar.sticky .sc-label-over {
+          opacity: 1;
+          animation: fadeIn 0.4s ease 0.1s both;
+        }
       `}</style>
 
       <div className="mt-[66px]" style={{ display: 'flex', flexDirection: 'column' }}>
 
-        {/* top section */}
+        {/* ── SECTION 1 ── */}
         <div className="min-h-[96vh]">
 
           {/* Banner slider */}
@@ -221,7 +293,7 @@ export default function HeroSection() {
                     <circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" />
                   </svg>
                 </div>
-                <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: 'clamp(8px,0.65vw,11px)', letterSpacing: '0.12em', padding: '1px 0.5vw' }}>Hızlı Teslimat</span>
+                <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: 'clamp(8px,0.65vw,11px)', letterSpacing: '0.12em', padding: '1px 0.5vw' }}>{t.hero_badge}</span>
               </div>
               <div className="slide-left-2 flex flex-col items-center justify-center h-full" style={{ gap: '3px', padding: '0 2.5vw', minWidth: '10vw' }}>
                 <div className="pulse-anim text-white/90" style={{ width: '1.4vw', height: '1.4vw', minWidth: '16px', minHeight: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -229,7 +301,7 @@ export default function HeroSection() {
                     <span className="text-white font-extrabold" style={{ fontSize: 'clamp(7px,0.6vw,10px)', lineHeight: 1 }}>30+</span>
                   </div>
                 </div>
-                <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: 'clamp(8px,0.65vw,11px)', letterSpacing: '0.12em', padding: '1px 0.5vw' }}>30+ Yıllık Tecrübe</span>
+                <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: 'clamp(8px,0.65vw,11px)', letterSpacing: '0.12em', padding: '1px 0.5vw' }}>{t.hero_exp}</span>
               </div>
             </div>
             <div className="flex items-center flex-1 justify-center min-w-0 px-2" style={{ gap: '0.5vw' }}>
@@ -249,7 +321,7 @@ export default function HeroSection() {
                     <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
-                <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: 'clamp(8px,0.65vw,11px)', letterSpacing: '0.12em', padding: '1px 0.5vw' }}>Kaliteli Üretimi</span>
+                <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: 'clamp(8px,0.65vw,11px)', letterSpacing: '0.12em', padding: '1px 0.5vw' }}>{t.hero_quality}</span>
               </div>
               <div className="slide-right-2 flex flex-col items-center justify-center h-full" style={{ gap: '3px', padding: '0 2.5vw', minWidth: '10vw' }}>
                 <div className="clock-anim text-white/90">
@@ -257,15 +329,18 @@ export default function HeroSection() {
                     <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" strokeLinecap="round" />
                   </svg>
                 </div>
-                <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: 'clamp(8px,0.65vw,11px)', letterSpacing: '0.12em', padding: '1px 0.5vw' }}>Zamanında Üretim</span>
+                <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: 'clamp(8px,0.65vw,11px)', letterSpacing: '0.12em', padding: '1px 0.5vw' }}>{t.hero_ontime}</span>
               </div>
             </div>
           </div>
 
-          {/* Sector cards */}
-          <div ref={sectorRef} className="w-full bg-white pt-5 pb-10" style={{ overflow: 'visible', scrollMarginTop: '66px' }}>
-            <div className="w-full max-w-[1150px] mx-auto px-6" style={{ overflow: 'visible' }}>
-              <div className="grid grid-cols-6 gap-3" style={{ position: 'relative', overflow: 'visible' }}>
+          {/* Sector cards — sticky */}
+          <div
+            ref={sectorRef}
+            className={`sector-bar ${isSticky ? 'sticky' : ''} ${isCondensed ? 'condensed' : ''}`}
+          >
+            <div className="w-full max-w-[1150px] mx-auto px-6">
+              <div className="grid grid-cols-6 gap-3">
                 {sectors.map((sector, idx) => {
                   const colors   = SECTOR_COLORS[idx % SECTOR_COLORS.length];
                   const isActive = activeSectorId === sector.id;
@@ -284,10 +359,8 @@ export default function HeroSection() {
                         zIndex: isActive ? 10 : 1,
                       }}
                     >
-                      <div
-                        className={`relative rounded-xl overflow-hidden border transition-all duration-300 ${isActive ? 'border-[#1e88e5]' : 'border-[#dde4ef]'}`}
-                        style={{ aspectRatio: '4/5' }}
-                      >
+                      {/* card image with overlay label */}
+                      <div className={`sc-img rounded-xl overflow-hidden border transition-all duration-300 ${isActive ? 'border-[#1e88e5]' : 'border-[#dde4ef]'}`}>
                         {sector.image
                           ? <img src={sector.image} alt={sector.name} className="absolute inset-0 w-full h-full object-cover" />
                           : <div className="absolute inset-0 bg-[#dde4ef]" />
@@ -296,9 +369,14 @@ export default function HeroSection() {
                           className={`absolute inset-0 transition-opacity duration-300 ${isActive ? 'opacity-60' : 'opacity-40'}`}
                           style={{ background: `linear-gradient(160deg, ${colors.from} 0%, ${colors.to} 100%)` }}
                         />
-                        {isActive && <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#1e88e5]" />}
+                        {isActive && <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#1e88e5]" style={{ zIndex: 3 }} />}
+
+                        {/* label that fades in ON the card when sticky */}
+                        <div className="sc-label-over">{sector.name}</div>
                       </div>
-                      <p className={`text-center text-[11px] font-semibold mt-1 tracking-wide uppercase transition-colors duration-200 ${isActive ? 'text-[#1e88e5]' : 'text-[#4a5568]'}`}>
+
+                      {/* label BELOW card — hides when sticky */}
+                      <p className={`sc-label-below text-center text-[11px] font-semibold tracking-wide uppercase ${isActive ? 'text-[#1e88e5]' : 'text-[#4a5568]'}`}>
                         {sector.name}
                       </p>
                     </div>
@@ -309,12 +387,11 @@ export default function HeroSection() {
           </div>
         </div>
 
-        {/* Product grid */}
-        <div ref={gridRef} className="w-full min-h-[55vh] bg-[#f4f6fa]">
+        {/* ── SECTION 2: product grid ── */}
+        <div ref={gridRef} className="w-full bg-[#f4f6fa]" style={{ minHeight: '100vh' }}>
           <div className="w-full max-w-[1150px] mx-auto px-6 py-8">
 
-            {/* breadcrumb + view all */}
-            <div className="flex items-center justify-between mb-4 min-h-[28px]">
+            <div className="flex items-center justify-between mb-5 min-h-[28px]">
               <div className="flex items-center gap-1.5 text-[11px] text-[#9aa3af] flex-wrap">
                 {breadcrumbs.map((crumb, i) => (
                   <span key={i} className="flex items-center gap-1.5">
@@ -326,7 +403,6 @@ export default function HeroSection() {
                   </span>
                 ))}
               </div>
-
               {activeSector && (
                 <button
                   onClick={handleViewAll}
@@ -338,13 +414,12 @@ export default function HeroSection() {
               )}
             </div>
 
-            {/* grid */}
             {gridLoading ? (
-              <div className="grid grid-cols-5 gap-5">
-                {[1, 2, 3, 4, 5].map((i) => (
+              <div className="grid grid-cols-6 gap-4">
+                {[1,2,3,4,5,6,7,8,9,10,11,12].map((i) => (
                   <div key={i} className="rounded-xl border border-[#dde4ef] bg-white overflow-hidden animate-pulse">
-                    <div className="h-48 bg-[#eef1f6]" />
-                    <div className="p-4"><div className="h-3 bg-[#eef1f6] rounded w-3/4 mb-2" /><div className="h-2 bg-[#eef1f6] rounded w-1/2" /></div>
+                    <div className="h-36 bg-[#eef1f6]" />
+                    <div className="p-3"><div className="h-3 bg-[#eef1f6] rounded w-3/4 mb-2" /><div className="h-2 bg-[#eef1f6] rounded w-1/2" /></div>
                   </div>
                 ))}
               </div>
@@ -353,8 +428,8 @@ export default function HeroSection() {
                 <p className="text-[13px] font-bold text-[#9aa3af] uppercase tracking-widest">{t.hero_notfound}</p>
               </div>
             ) : (
-              <div className="grid grid-cols-5 gap-5 fade-slide-up">
-                {gridItems.slice(0, 5).map((item) => (
+              <div className="grid grid-cols-6 gap-4 fade-slide-up">
+                {gridItems.slice(0, 12).map((item) => (
                   <InlineCard
                     key={item.id}
                     item={item}
@@ -377,7 +452,7 @@ function InlineCard({ item, layer, t, onClick }) {
   const canDrill = item.isGroup && layer < 3;
   return (
     <div onClick={onClick} className="group cursor-pointer rounded-xl border border-[#dde4ef] bg-white overflow-hidden hover:border-[#1e88e5] hover:shadow-[0_8px_32px_rgba(30,136,229,0.1)] transition-all duration-200">
-      <div className="h-48 bg-[#f4f6fa] flex items-center justify-center overflow-hidden relative">
+      <div className="h-36 bg-[#f4f6fa] flex items-center justify-center overflow-hidden relative">
         {item.image
           ? <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
           : <svg viewBox="0 0 24 24" fill="none" stroke="#dde4ef" strokeWidth="1" width="40" height="40"><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 21V9" /></svg>
@@ -388,9 +463,9 @@ function InlineCard({ item, layer, t, onClick }) {
           </div>
         )}
       </div>
-      <div className="p-3.5">
-        <h3 className="text-[12px] font-bold uppercase tracking-wide text-[#071e3d] leading-tight group-hover:text-[#1e88e5] transition-colors line-clamp-2">{item.name}</h3>
-        <p className="text-[11px] text-[#9aa3af] mt-1.5 flex items-center gap-1">
+      <div className="p-2.5">
+        <h3 className="text-[11px] font-bold uppercase tracking-wide text-[#071e3d] leading-tight group-hover:text-[#1e88e5] transition-colors line-clamp-2">{item.name}</h3>
+        <p className="text-[10px] text-[#9aa3af] mt-1 flex items-center gap-1">
           {canDrill ? `${item._count?.subProducts ?? 0} ${t.hero_items}` : t.hero_details}
           <svg viewBox="0 0 24 24" fill="currentColor" width="10" height="10"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z" /></svg>
         </p>

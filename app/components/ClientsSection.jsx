@@ -32,42 +32,38 @@ function CarouselTrack({ trackRef, wrapRef }) {
 export default function ClientsSection() {
   const { t } = useLanguage();
   const track1Ref = useRef(null);
-  const track2Ref = useRef(null);
   const wrap1Ref  = useRef(null);
-  const wrap2Ref  = useRef(null);
   const rafRef    = useRef(null);
-  const stateRef  = useRef({ pos1: 0, pos2: null, paused1: false, paused2: false });
+  const stateRef  = useRef({ pos1: 0, paused1: false });
 
   useEffect(() => {
-    const t1 = track1Ref.current;
-    const t2 = track2Ref.current;
-    const w1 = wrap1Ref.current;
-    const w2 = wrap2Ref.current;
-    if (!t1 || !t2 || !w1 || !w2) return;
+    const track = track1Ref.current;
+    const wrap  = wrap1Ref.current;
+    if (!track || !wrap) return;
+
     const s = stateRef.current;
-    const onEnter1 = () => { s.paused1 = true; };
-    const onLeave1 = () => { s.paused1 = false; };
-    const onEnter2 = () => { s.paused2 = true; };
-    const onLeave2 = () => { s.paused2 = false; };
-    w1.addEventListener('mouseenter', onEnter1);
-    w1.addEventListener('mouseleave', onLeave1);
-    w2.addEventListener('mouseenter', onEnter2);
-    w2.addEventListener('mouseleave', onLeave2);
+    const onEnter = () => { s.paused1 = true; };
+    const onLeave = () => { s.paused1 = false; };
+
+    wrap.addEventListener('mouseenter', onEnter);
+    wrap.addEventListener('mouseleave', onLeave);
+
     function animate() {
-      const half1 = t1.scrollWidth / 2;
-      const half2 = t2.scrollWidth / 2;
-      if (s.pos2 === null) s.pos2 = -half2;
-      if (!s.paused1) { s.pos1 -= SPEED; if (s.pos1 <= -half1) s.pos1 = 0; t1.style.transform = `translateX(${s.pos1}px)`; }
-      if (!s.paused2) { s.pos2 += SPEED; if (s.pos2 >= 0) s.pos2 = -half2; t2.style.transform = `translateX(${s.pos2}px)`; }
+      const half = track.scrollWidth / 2;
+      if (!s.paused1) {
+        s.pos1 -= SPEED;
+        if (s.pos1 <= -half) s.pos1 = 0;
+        track.style.transform = `translateX(${s.pos1}px)`;
+      }
       rafRef.current = requestAnimationFrame(animate);
     }
+
     rafRef.current = requestAnimationFrame(animate);
+
     return () => {
       cancelAnimationFrame(rafRef.current);
-      w1.removeEventListener('mouseenter', onEnter1);
-      w1.removeEventListener('mouseleave', onLeave1);
-      w2.removeEventListener('mouseenter', onEnter2);
-      w2.removeEventListener('mouseleave', onLeave2);
+      wrap.removeEventListener('mouseenter', onEnter);
+      wrap.removeEventListener('mouseleave', onLeave);
     };
   }, []);
 

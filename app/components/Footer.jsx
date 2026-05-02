@@ -56,7 +56,7 @@ export default function Footer() {
           </div>
 
           {/* RIGHT */}
-          <div className="flex flex-row gap-6 pt-2 items-start justify-end text-left pr-10 pl-6">
+          <div className="flex flex-row gap-10 pt-2 items-start justify-center text-left">
             <div>
               <h3 className="text-white text-[11px] font-bold uppercase tracking-widest mb-2">{t.footer_address_label}</h3>
               <p className="text-white/40 text-[12px] leading-relaxed">

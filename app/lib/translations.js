@@ -86,6 +86,19 @@ export const t = {
     form_success_title: "Mesajınız İletildi",
     form_success_sub:   "En kısa sürede sizinle iletişime geçeceğiz.",
 
+
+    // About page content fallbacks
+    about_s1_label: "Kimiz?",
+    about_s1_title: "Mavzer Ambalaj — 1994'ten Bu Yana Güvenilir Tedarikçiniz",
+    about_s1_p1: "Mavzer Pazarlama Matbaacılık Reklam Ambalaj Gıda Kimya Sanayi ve Ticaret Ltd. Şti., 1994 yılından bu yana Ankara'da faaliyet göstermekte olup; gıda, kimya, matbaacılık ve ambalaj sektörlerinde kapsamlı ürün ve hizmet yelpazesiyle öne çıkan köklü bir Türk firmasıdır.",
+    about_s1_p2: "Kurulduğumuz günden itibaren müşteri memnuniyetini her şeyin önünde tutan bir anlayışla hareket ettik. Restoran, kafe, otel, hastane ve sanayi tesisleri başta olmak üzere yüzlerce kurumsal müşteriye kesintisiz hizmet sunmaktayız. Kalite standartlarımızı sürekli yükselterek sektörde güvenilir bir referans noktası haline geldik.",
+    about_s1_p3: "Üretim süreçlerimizde çevreye duyarlı malzemelere öncelik veriyor, geri dönüştürülebilir ve biyobozunur ambalaj çözümleriyle sürdürülebilir bir geleceğe katkı sağlıyoruz. Güçlü tedarik ağımız ve deneyimli ekibimizle her ölçekteki işletmeye özel çözümler üretmeye devam ediyoruz.",
+    about_s2_label: "Vizyonumuz",
+    about_s2_title: "Geleceğe Yönelik Güçlü Bir Vizyon",
+    about_s2_p1: "Mavzer olarak vizyonumuz; sürdürülebilir üretim anlayışını benimseyerek hem ulusal hem de uluslararası pazarlarda tanınan, saygın bir ambalaj markası olmaktır. Teknolojiye yapılan yatırımlar ve ar-ge çalışmalarıyla ürün kalitemizi ve çeşitliliğimizi sürekli geliştiriyoruz.",
+    about_s2_p2: "Ekibimiz; alanında uzman mühendisler, deneyimli satış danışmanları ve müşteri odaklı lojistik personelinden oluşmaktadır. Her bir çalışanımız, kurumsal değerlerimizi benimsemiş ve müşterilerimizin ihtiyaçlarını en iyi şekilde karşılamak için özel olarak yetiştirilmiştir.",
+    about_s2_p3: "30 yılı aşkın sektör deneyimimiz, 500'ü aşkın aktif referansımız ve %100 müşteri memnuniyeti hedefimizle, Türkiye'nin dört bir yanındaki işletmelere kaliteli ambalaj çözümleri sunmaya devam ediyoruz.",
+
     // Clients page
     clients_label:    "Referanslarımız",
     clients_title:    "Müşterilerimiz",
@@ -95,7 +108,7 @@ export const t = {
 
   en: {
     // Navbar
-    nav_corporate:   "About",
+    nav_corporate:   "Corporate",
     nav_products:    "Products",
     nav_references:  "References",
     nav_contact:     "Contact",
@@ -179,6 +192,19 @@ export const t = {
     form_sending:       "Sending...",
     form_success_title: "Message Sent",
     form_success_sub:   "We will get back to you as soon as possible.",
+
+
+    // About page content fallbacks
+    about_s1_label: "Who We Are",
+    about_s1_title: "Mavzer Packaging — Your Trusted Supplier Since 1994",
+    about_s1_p1: "Mavzer Pazarlama Matbaacılık Reklam Ambalaj Gıda Kimya Sanayi ve Ticaret Ltd. Şti. has been operating in Ankara since 1994, standing out as a well-established Turkish company with a comprehensive range of products and services in the food, chemical, printing and packaging sectors.",
+    about_s1_p2: "Since our founding, we have operated with a customer-first approach. We provide uninterrupted service to hundreds of corporate clients including restaurants, cafes, hotels, hospitals and industrial facilities. By continuously raising our quality standards, we have become a trusted reference point in the industry.",
+    about_s1_p3: "We prioritise environmentally sensitive materials in our production processes, contributing to a sustainable future with recyclable and biodegradable packaging solutions. With our strong supply network and experienced team, we continue to produce tailored solutions for businesses of every scale.",
+    about_s2_label: "Our Vision",
+    about_s2_title: "A Strong Vision for the Future",
+    about_s2_p1: "Our vision at Mavzer is to become a recognised and respected packaging brand in both national and international markets by embracing sustainable production. We continuously improve our product quality and diversity through technology investments and R&D activities.",
+    about_s2_p2: "Our team consists of specialist engineers, experienced sales consultants and customer-focused logistics personnel. Each of our employees has embraced our corporate values and has been specifically trained to best meet the needs of our customers.",
+    about_s2_p3: "With over 30 years of industry experience, more than 500 active references and a target of 100% customer satisfaction, we continue to provide quality packaging solutions to businesses across Turkey.",
 
     // Clients page
     clients_label:    "Our References",
