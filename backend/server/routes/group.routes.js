@@ -126,7 +126,7 @@ router.post("/link", async (req, res) => {
 // GET /api/groups/:id/products — products in a specific group
 router.get("/:id/products", async (req, res) => {
   try {
-    const rows = await prisma.productGroup.findMany({
+    const rows = await prisma.productGroup.findMany({ 
       where: { groupId: req.params.id },
       include: {
         product: {
