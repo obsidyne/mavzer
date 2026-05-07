@@ -12,7 +12,6 @@ function ImageGallery({ images = [], alt = "" }) {
   const [active, setActive] = useState(0);
   const [zoomed, setZoomed] = useState(false);
 
-  // Reset when images change (e.g. variant switch)
   useEffect(() => { setActive(0); }, [images.join(",")]);
 
   const prev = useCallback(() => setActive((i) => (i - 1 + images.length) % images.length), [images.length]);
@@ -31,7 +30,7 @@ function ImageGallery({ images = [], alt = "" }) {
 
   if (!images.length) {
     return (
-      <div className="w-72 shrink-0 bg-[#f8fafc] border-r border-[#dde4ef] flex items-center justify-center" style={{ minHeight: 340 }}>
+      <div className="w-full md:w-72 md:shrink-0 bg-[#f8fafc] border-b md:border-b-0 md:border-r border-[#dde4ef] flex items-center justify-center" style={{ minHeight: 200 }}>
         <div className="flex flex-col items-center gap-2 text-[#dde4ef]">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.8" width="48" height="48">
             <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 21V9" />
@@ -89,11 +88,11 @@ function ImageGallery({ images = [], alt = "" }) {
       )}
 
       {/* Inline gallery */}
-      <div className="w-72 shrink-0 border-r border-[#dde4ef] flex flex-col" style={{ minHeight: 340 }}>
+      <div className="w-full md:w-72 md:shrink-0 border-b md:border-b-0 md:border-r border-[#dde4ef] flex flex-col" style={{ minHeight: 200 }}>
         {/* Main image */}
         <div
           className="flex-1 bg-[#f8fafc] relative overflow-hidden cursor-zoom-in group"
-          style={{ minHeight: 260 }}
+          style={{ minHeight: 220 }}
           onClick={() => setZoomed(true)}
         >
           <img
@@ -102,7 +101,6 @@ function ImageGallery({ images = [], alt = "" }) {
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             style={{ maxHeight: 340 }}
           />
-          {/* Arrow overlays — only if multiple images */}
           {images.length > 1 && (
             <>
               <button
@@ -117,13 +115,11 @@ function ImageGallery({ images = [], alt = "" }) {
               >
                 ›
               </button>
-              {/* Counter */}
               <div className="absolute bottom-2 right-2 bg-black/40 text-white text-[10px] px-2 py-0.5 rounded-full">
                 {active + 1} / {images.length}
               </div>
             </>
           )}
-          {/* Zoom hint */}
           <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
             <div className="bg-black/40 text-white text-[9px] px-2 py-1 rounded-full flex items-center gap-1">
               <svg viewBox="0 0 24 24" fill="white" width="9" height="9">
@@ -217,7 +213,6 @@ export default function ProductDetailPage() {
   const isGroup = product?.isGroup;
   const display = isGroup ? selectedVariant : product;
 
-  // Resolve images: API returns { image, images[] }
   const displayImages =
     Array.isArray(display?.images) && display.images.length
       ? display.images
@@ -237,7 +232,7 @@ export default function ProductDetailPage() {
 
       {/* Header / breadcrumb */}
       <div className="pt-[66px] bg-white border-b border-[#dde4ef]">
-        <div className="max-w-5xl mx-auto px-8 py-6">
+        <div className="max-w-5xl mx-auto px-4 py-4 md:px-8 md:py-6">
           <div className="flex items-center gap-1.5 text-[11px] text-[#9aa3af] flex-wrap">
             <Link href="/products" className="hover:text-[#0a4c8a] transition-colors font-medium">
               Ürünler
@@ -269,11 +264,11 @@ export default function ProductDetailPage() {
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-8 py-8">
+      <div className="max-w-5xl mx-auto px-4 py-4 md:px-8 md:py-8">
         {loading ? (
           <div className="bg-white rounded-xl border border-[#dde4ef] p-8 animate-pulse">
-            <div className="flex gap-8">
-              <div className="w-72 h-72 bg-[#f4f6fa] rounded-lg shrink-0" />
+            <div className="flex flex-col md:flex-row gap-8">
+              <div className="w-full md:w-72 h-52 md:h-72 bg-[#f4f6fa] rounded-lg md:shrink-0" />
               <div className="flex-1 flex flex-col gap-3 pt-2">
                 <div className="h-7 bg-[#f4f6fa] rounded w-3/4" />
                 <div className="h-4 bg-[#f4f6fa] rounded" />
@@ -292,19 +287,20 @@ export default function ProductDetailPage() {
           <>
             {/* Main product card */}
             <div className="bg-white rounded-xl border border-[#dde4ef] shadow-[0_1px_12px_rgba(7,30,61,0.05)] overflow-hidden">
-              <div className="flex">
+              {/* CHANGED: flex-col on mobile, flex-row on desktop */}
+              <div className="flex flex-col md:flex-row">
                 {/* Gallery */}
                 <ImageGallery images={displayImages} alt={display?.name || product.name} />
 
                 {/* Details */}
-                <div className="flex-1 p-7 flex flex-col">
+                <div className="flex-1 p-4 md:p-7 flex flex-col">
                   {isGroup && (
                     <div className="inline-flex items-center gap-1.5 bg-[#eef6ff] border border-[#bdd9f5] text-[#0a4c8a] text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full mb-4 self-start">
                       {variants.length} Varyant
                     </div>
                   )}
 
-                  <h1 className="font-condensed text-[28px] font-extrabold uppercase text-[#071e3d] leading-tight">
+                  <h1 className="font-condensed text-[22px] md:text-[28px] font-extrabold uppercase text-[#071e3d] leading-tight">
                     {display?.name || product.name}
                   </h1>
                   {isGroup && display && display.name !== product.name && (
@@ -361,7 +357,6 @@ export default function ProductDetailPage() {
                       <div className="flex flex-wrap gap-2">
                         {variants.map((variant) => {
                           const isSelected = selectedVariant?.id === variant.id;
-                          // Variants also have images[] from API
                           const vImg =
                             Array.isArray(variant.images) && variant.images.length
                               ? variant.images[0]
@@ -420,21 +415,21 @@ export default function ProductDetailPage() {
             {/* CTA */}
             <Link
               href="/contact#form"
-              className="mt-4 flex items-center justify-between bg-[#071e3d] text-white px-7 py-4 rounded-xl hover:bg-[#0a2d5a] transition-colors group no-underline"
+              className="mt-4 flex items-center justify-between bg-[#071e3d] text-white px-4 py-3 md:px-7 md:py-4 rounded-xl hover:bg-[#0a2d5a] transition-colors group no-underline"
             >
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3 md:gap-4">
                 <div className="w-9 h-9 rounded-lg bg-[#1e88e5] flex items-center justify-center shrink-0">
                   <svg viewBox="0 0 24 24" fill="white" width="16" height="16">
                     <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
                   </svg>
                 </div>
-                <p className="text-[13px] font-medium text-white/90">
+                <p className="text-[12px] md:text-[13px] font-medium text-white/90">
                   İlgili ürüne dair teklif almak ya da özel taleplerinizi iletmek için tıklayınız.
                 </p>
               </div>
               <svg
                 viewBox="0 0 24 24" fill="white" width="18" height="18"
-                className="shrink-0 ml-6 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all"
+                className="shrink-0 ml-4 md:ml-6 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all"
               >
                 <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z" />
               </svg>
@@ -452,7 +447,8 @@ export default function ProductDetailPage() {
                 <h2 className="font-condensed text-[22px] font-extrabold uppercase text-[#071e3d] mb-5">
                   Bunları da Beğenebilirsiniz
                 </h2>
-                <div className="grid grid-cols-3 gap-4">
+                {/* CHANGED: 2 cols on mobile, 3 on desktop */}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {recommended.map((rec) => {
                     const recImg =
                       Array.isArray(rec.images) && rec.images.length
@@ -464,7 +460,7 @@ export default function ProductDetailPage() {
                         href={`/products/${rec.id}`}
                         className="group bg-white rounded-xl border border-[#dde4ef] overflow-hidden hover:border-[#0a4c8a] hover:shadow-[0_4px_20px_rgba(10,76,138,0.1)] transition-all duration-200 no-underline"
                       >
-                        <div className="h-36 bg-[#f8fafc] flex items-center justify-center overflow-hidden border-b border-[#dde4ef]">
+                        <div className="h-28 md:h-36 bg-[#f8fafc] flex items-center justify-center overflow-hidden border-b border-[#dde4ef]">
                           {recImg ? (
                             <img
                               src={recImg}
@@ -477,7 +473,7 @@ export default function ProductDetailPage() {
                             </svg>
                           )}
                         </div>
-                        <div className="p-4">
+                        <div className="p-3 md:p-4">
                           {rec.isGroup && (
                             <span className="inline-block text-[9px] font-bold tracking-widest uppercase text-[#0a4c8a] bg-[#eef6ff] px-2 py-0.5 rounded mb-2">
                               Seri
