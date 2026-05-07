@@ -5,10 +5,101 @@ import ImageUpload from "./ImageUpload";
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
+// ─── MultiImageUpload ─────────────────────────────────────────────────────────
+function MultiImageUpload({ images = [], onChange }) {
+  function move(from, to) {
+    const next = [...images];
+    const [item] = next.splice(from, 1);
+    next.splice(to, 0, item);
+    onChange(next);
+  }
+
+  function remove(idx) {
+    onChange(images.filter((_, i) => i !== idx));
+  }
+
+  function handleNewUpload(url) {
+    if (url && !images.includes(url)) onChange([...images, url]);
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      {/* Uploaded images list */}
+      {images.length > 0 && (
+        <div className="flex flex-col gap-1.5">
+          {images.map((url, idx) => (
+            <div
+              key={url}
+              className="flex items-center gap-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-2.5 py-1.5"
+            >
+              {/* Thumbnail */}
+              <div className="w-8 h-8 rounded border border-[#2a2a2a] overflow-hidden shrink-0 bg-[#0d0d0d]">
+                <img src={url} alt="" className="w-full h-full object-cover" />
+              </div>
+
+              {/* Primary badge */}
+              {idx === 0 && (
+                <span className="text-[9px] font-bold tracking-widest uppercase text-blue-400 bg-blue-950 px-1.5 py-0.5 rounded-full shrink-0">
+                  Primary
+                </span>
+              )}
+
+              {/* URL */}
+              <p className="flex-1 text-[10px] text-[#555] truncate min-w-0">{url}</p>
+
+              {/* Reorder */}
+              <div className="flex gap-0.5 shrink-0">
+                <button
+                  type="button"
+                  disabled={idx === 0}
+                  onClick={() => move(idx, idx - 1)}
+                  className="w-5 h-5 flex items-center justify-center text-[#444] hover:text-white transition-colors disabled:opacity-20 text-xs"
+                >
+                  ↑
+                </button>
+                <button
+                  type="button"
+                  disabled={idx === images.length - 1}
+                  onClick={() => move(idx, idx + 1)}
+                  className="w-5 h-5 flex items-center justify-center text-[#444] hover:text-white transition-colors disabled:opacity-20 text-xs"
+                >
+                  ↓
+                </button>
+              </div>
+
+              {/* Remove */}
+              <button
+                type="button"
+                onClick={() => remove(idx)}
+                className="w-5 h-5 flex items-center justify-center text-[#444] hover:text-red-400 transition-colors text-xs shrink-0"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Upload widget */}
+      <div className="border border-dashed border-[#2a2a2a] rounded-lg overflow-hidden">
+        <ImageUpload value="" onChange={handleNewUpload} height="h-24" />
+      </div>
+
+      {images.length > 0 && (
+        <p className="text-[#3a3a3a] text-[10px]">
+          <span className="text-blue-500">First image</span> is the primary thumbnail. Use ↑↓ to reorder.
+        </p>
+      )}
+    </div>
+  );
+}
+
+// ─── Modal ────────────────────────────────────────────────────────────────────
+
 export default function ProductGroupModal({ product, categoryId, parentId, depth = 0, onClose, onSaved }) {
   const [name, setName]               = useState("");
   const [description, setDescription] = useState("");
-  const [image, setImage]             = useState("");
+  const [images, setImages]           = useState([]);
   const [loading, setLoading]         = useState(false);
   const [error, setError]             = useState("");
 
@@ -18,7 +109,14 @@ export default function ProductGroupModal({ product, categoryId, parentId, depth
     if (product) {
       setName(product.name || "");
       setDescription(product.description || "");
-      setImage(product.image || "");
+      // Support both new { images[] } and legacy { image } format
+      setImages(
+        Array.isArray(product.images) && product.images.length
+          ? product.images
+          : product.image
+          ? [product.image]
+          : []
+      );
     }
   }, [product]);
 
@@ -27,60 +125,35 @@ export default function ProductGroupModal({ product, categoryId, parentId, depth
     setError("");
     setLoading(true);
     try {
-      let url, body;
+      let url, method, body;
 
       if (isEditing) {
-        url  = `${API}/api/products/${product.id}`;
-        body = { name, description, image };
-        const res  = await fetch(url, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(body),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Something went wrong");
-        onSaved(data);
+        url    = `${API}/api/products/${product.id}`;
+        method = "PUT";
+        body   = { name, description, images };
       } else if (parentId) {
-        // Sub-group inside an existing group — use normal endpoint
-        url  = `${API}/api/products`;
-        body = { name, description, image, isGroup: true, depth, parentId };
-        const res  = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(body),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Something went wrong");
-        onSaved(data);
+        url    = `${API}/api/products`;
+        method = "POST";
+        body   = { name, description, images, isGroup: true, depth, parentId };
       } else if (categoryId) {
-        // Legacy: creating inside a category
-        url  = `${API}/api/products`;
-        body = { name, description, image, isGroup: true, depth, categoryId };
-        const res  = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(body),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Something went wrong");
-        onSaved(data);
+        url    = `${API}/api/products`;
+        method = "POST";
+        body   = { name, description, images, isGroup: true, depth, categoryId };
       } else {
-        // New depth-0 group with no category/parent — use standalone endpoint
-        url  = `${API}/api/products/standalone`;
-        body = { name, description, image, isGroup: true, depth: 0 };
-        const res  = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(body),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Something went wrong");
-        onSaved(data);
+        url    = `${API}/api/products/standalone`;
+        method = "POST";
+        body   = { name, description, images, isGroup: true, depth: 0 };
       }
+
+      const res  = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Something went wrong");
+      onSaved(data);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -122,8 +195,15 @@ export default function ProductGroupModal({ product, categoryId, parentId, depth
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-[#666] text-[11px] tracking-widest uppercase">Image</label>
-            <ImageUpload value={image} onChange={setImage} height="h-36" />
+            <label className="text-[#666] text-[11px] tracking-widest uppercase flex items-center justify-between">
+              Images
+              {images.length > 0 && (
+                <span className="normal-case font-normal tracking-normal text-[#444] text-[11px]">
+                  {images.length} uploaded
+                </span>
+              )}
+            </label>
+            <MultiImageUpload images={images} onChange={setImages} />
           </div>
 
           {error && <p className="text-red-500 text-xs">{error}</p>}

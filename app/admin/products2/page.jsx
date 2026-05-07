@@ -224,7 +224,7 @@ export default function Products2Page() {
       {/* LEFT — sectors */}
       <div className="w-[170px] shrink-0 border-r border-[#1a1a1a] flex flex-col bg-[#0a0a0a]">
         <div className="px-4 py-4 border-b border-[#1a1a1a]">
-          <p className="text-[10px] font-bold tracking-widest uppercase text-[#333]">Sectors</p>
+          <p className="text-[10px] font-bold tracking-widest uppercase text-[#333]">sektörler</p>
         </div>
         <div className="flex-1 overflow-y-auto py-1">
           {loadingSectors
@@ -264,7 +264,7 @@ export default function Products2Page() {
             {activeSector?.name ?? "—"}
           </h2>
           <p className="text-[#333] text-[10px] mt-0.5">
-            {sectorProducts.length} products · use arrows to reorder · drag right to remove
+            {/* {sectorProducts.length} products · use arrows to reorder · drag right to remove */}
           </p>
         </div>
 
@@ -316,8 +316,8 @@ export default function Products2Page() {
         onDrop={onRightDrop}
       >
         <div className="px-4 py-4 border-b border-[#1a1a1a] shrink-0">
-          <p className="text-[10px] font-bold tracking-widest uppercase text-[#333]">All Products</p>
-          <p className="text-[#222] text-[10px] mt-0.5">Not in selected sector · drag to center to add</p>
+          <p className="text-[10px] font-bold tracking-widest uppercase text-[#333]">Tüm Ürünler</p>
+          {/* <p className="text-[#222] text-[10px] mt-0.5">Not in selected sector · drag to center to add</p> */}
         </div>
 
         <div className="px-4 py-3 border-b border-[#1a1a1a] shrink-0">

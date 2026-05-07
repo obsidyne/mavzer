@@ -16,12 +16,25 @@ const SPEED = 0.28;
 function CarouselTrack({ trackRef, wrapRef }) {
   return (
     <div ref={wrapRef} className="relative w-full overflow-hidden cursor-default">
-      <div className="absolute left-0 top-0 bottom-0 w-40 z-10 pointer-events-none bg-gradient-to-r from-white to-transparent" />
-      <div className="absolute right-0 top-0 bottom-0 w-40 z-10 pointer-events-none bg-gradient-to-l from-white to-transparent" />
-      <div ref={trackRef} className="flex items-center gap-12 w-max py-4" style={{ willChange: 'transform' }}>
+      {/* Fade edges — narrower on mobile, wider on desktop */}
+      <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-24 lg:w-40 z-10 pointer-events-none bg-gradient-to-r from-white to-transparent" />
+      <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-24 lg:w-40 z-10 pointer-events-none bg-gradient-to-l from-white to-transparent" />
+
+      <div
+        ref={trackRef}
+        className="flex items-center gap-8 sm:gap-12 w-max py-4"
+        style={{ willChange: 'transform' }}
+      >
         {REPEATED.map((client, i) => (
-          <div key={i} className="flex-shrink-0 w-[180px] h-[90px] flex items-center justify-center">
-            <img src={client.img} alt={client.name} className="max-w-[160px] max-h-[80px] w-full object-contain" />
+          <div
+            key={i}
+            className="flex-shrink-0 w-[130px] h-[65px] sm:w-[160px] sm:h-[80px] lg:w-[180px] lg:h-[90px] flex items-center justify-center"
+          >
+            <img
+              src={client.img}
+              alt={client.name}
+              className="max-w-[110px] sm:max-w-[140px] lg:max-w-[160px] max-h-[60px] sm:max-h-[70px] lg:max-h-[80px] w-full object-contain"
+            />
           </div>
         ))}
       </div>
@@ -68,12 +81,12 @@ export default function ClientsSection() {
   }, []);
 
   return (
-    <section className="bg-white py-16 border-t border-[#dde4ef] overflow-hidden">
-      <div className="text-center mb-5">
-        <h2 className="font-condensed text-[36px] font-extrabold uppercase text-[#000000] tracking-wide leading-tight mb-3">
+    <section className="bg-white py-12 sm:py-16 lg:py-20 pb-12 sm:pb-16 lg:pb-32 border-t border-[#dde4ef] overflow-hidden">
+      <div className="text-center mb-5 sm:mb-7 px-4">
+        <h2 className="font-condensed text-[26px] sm:text-[32px] lg:text-[36px] font-extrabold uppercase text-[#000000] tracking-wide leading-tight mb-3">
           {t.clients_section_title}
         </h2>
-        <p className="text-[13px] text-[#6b7380] w-[800px] leading-relaxed max-w-md mx-auto">
+        <p className="text-[13px] text-[#6b7380] leading-relaxed max-w-[90vw] sm:max-w-md mx-auto">
           {t.clients_section_subtitle}
         </p>
       </div>

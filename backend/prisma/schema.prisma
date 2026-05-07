@@ -88,14 +88,22 @@ model Product {
 }
 
 model Banner {
-  id        String   @id @default(cuid())
+  id        String      @id @default(cuid())
   title     String?
   image     String
+  mobileImage String?
+  type      BannerType  @default(BOTH)
   link      String?
-  order     Int      @default(0)
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  order     Int         @default(0)
+  isActive  Boolean     @default(true)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+enum BannerType {
+  DESKTOP
+  MOBILE
+  BOTH
 }
 
 model Client {

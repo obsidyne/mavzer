@@ -9,16 +9,16 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "../../context/authContext";
 
 const navItems = [
-  { label: "All Products", href: "/admin/all-products", icon: "☰" },
-  { label: "Sectors",     href: "/admin/products2",     icon: "▦" },
+  { label: "tüm ürünler", href: "/admin/all-products", icon: "☰" },
+  { label: "sektörler",     href: "/admin/products2",     icon: "▦" },
   // { label: "Sectors",     href: "/admin/sectors",     icon: "▦" },
   // { label: "Categories",     href: "/admin/categories",     icon: "▦" },
-  { label: "Categories",     href: "/admin/group",     icon: "▦" },
+  { label: "kategoriler",     href: "/admin/group",     icon: "▦" },
   // { label: "Featured",     href: "/admin/featured",     icon: "★" },
-  { label: "Banners",      href: "/admin/banners",      icon: "▬" },
+  { label: "afişler",      href: "/admin/banners",      icon: "▬" },
   // { label: "About",        href: "/admin/about",        icon: "✦" },
   // { label: "About",        href: "/admin/about",        icon: "✦" },
-  { label: "Clients",      href: "/admin/clients",      icon: "◈" },
+  { label: "müşteriler",      href: "/admin/clients",      icon: "◈" },
   // { label: "Clients",  href: "/admin/clients",  icon: "◈" },
 ];
 
@@ -31,7 +31,7 @@ export default function Sidebar() {
 
       <div className="px-6 pb-8 border-b border-[#1a1a1a]">
         <h1 className="text-white text-lg font-bold tracking-[5px]">MAVZER</h1>
-        <p className="text-[#333] text-[9px] tracking-[3px] mt-1 uppercase">Admin</p>
+        {/* <p className="text-[#333] text-[9px] tracking-[3px] mt-1 uppercase">Admin</p> */}
       </div>
 
       <nav className="flex flex-col gap-1 px-3 py-6 flex-1">

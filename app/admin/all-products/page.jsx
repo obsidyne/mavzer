@@ -75,8 +75,8 @@ export default function AllProductsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-white">All Products</h1>
-          <p className="text-[#555] text-sm mt-0.5">Manage all depth-0 products and groups. Click a group to drill in.</p>
+          <h1 className="text-xl font-bold text-white">tüm ürünler</h1>
+          {/* <p className="text-[#555] text-sm mt-0.5">Manage all depth-0 products and groups. Click a group to drill in.</p> */}
         </div>
 
         {/* Add button */}
@@ -85,7 +85,7 @@ export default function AllProductsPage() {
             onClick={() => setAddMenuOpen(!addMenuOpen)}
             className="bg-white text-black text-sm font-semibold px-4 py-2 rounded-lg hover:bg-neutral-200 transition-colors flex items-center gap-2"
           >
-            + Add <span className="text-xs opacity-60">▾</span>
+            + ürün ekle <span className="text-xs opacity-60">▾</span>
           </button>
           {addMenuOpen && (
             <>
@@ -95,16 +95,16 @@ export default function AllProductsPage() {
                   onClick={() => { setAddMenuOpen(false); router.push("/admin/products2/product/new"); }}
                   className="w-full text-left px-4 py-3 text-sm text-white hover:bg-[#1a1a1a] transition-colors"
                 >
-                  <p className="font-medium">New Single Product</p>
-                  <p className="text-[#555] text-xs mt-0.5">Leaf product with specs & price</p>
+                  <p className="font-medium">Yeni Tek Ürün</p>
+                  <p className="text-[#555] text-xs mt-0.5">Leaf ürününün özellikleri ve fiyatı</p>
                 </button>
                 <div className="border-t border-[#1f1f1f]" />
                 <button
                   onClick={() => { setAddMenuOpen(false); setEditingGroup(null); setGroupModalOpen(true); }}
                   className="w-full text-left px-4 py-3 text-sm text-white hover:bg-[#1a1a1a] transition-colors"
                 >
-                  <p className="font-medium">New Product Group</p>
-                  <p className="text-[#555] text-xs mt-0.5">Group with sub-products inside</p>
+                  <p className="font-medium">Yeni Ürün Grubu</p>
+                  <p className="text-[#555] text-xs mt-0.5">İçinde alt ürünler bulunan grup</p>
                 </button>
               </div>
             </>
@@ -121,7 +121,7 @@ export default function AllProductsPage() {
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search products..."
+          placeholder="aramak..."
           className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder:text-[#333] outline-none focus:border-[#444] transition-colors"
         />
         {search && (
@@ -134,7 +134,7 @@ export default function AllProductsPage() {
       </div>
 
       {/* Count */}
-      <p className="text-[#555] text-xs mb-4">{products.length} products</p>
+      <p className="text-[#555] text-xs mb-4">{products.length} ürünler</p>
 
       {/* Table */}
       {loading ? (
@@ -153,7 +153,7 @@ export default function AllProductsPage() {
               onClick={() => { setEditingGroup(null); setGroupModalOpen(true); }}
               className="text-white text-sm border border-[#2a2a2a] px-4 py-2 rounded-lg hover:border-[#444] transition-colors"
             >
-              Add your first product
+              İlk ürününüzü ekleyin
             </button>
           )}
         </div>

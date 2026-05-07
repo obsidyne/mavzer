@@ -16,10 +16,14 @@ router.get("/", async (req, res) => {
 // POST /api/banners
 router.post("/", async (req, res) => {
   try {
-    const { image, title, order, isActive } = req.body;
+    // const { image, title, order, isActive } = req.body;
+    const { image, mobileImage, title, order, isActive, type } = req.body;
     if (!image) return res.status(400).json({ message: "Image is required" });
+    // const banner = await prisma.banner.create({
+    //   data: { image, title: title || null, order: order ?? 0, isActive: isActive ?? true },
+    // });
     const banner = await prisma.banner.create({
-      data: { image, title: title || null, order: order ?? 0, isActive: isActive ?? true },
+      data: { image, mobileImage: mobileImage || null, title: title || null, order: order ?? 0, isActive: isActive ?? true, type: type ?? 'BOTH' },
     });
     return res.status(201).json(banner);
   } catch (err) {
@@ -30,10 +34,15 @@ router.post("/", async (req, res) => {
 // PUT /api/banners/:id
 router.put("/:id", async (req, res) => {
   try {
-    const { image, title, order, isActive } = req.body;
+    // const { image, title, order, isActive } = req.body;
+    const { image, mobileImage, title, order, isActive, type } = req.body;
+    // const banner = await prisma.banner.update({
+    //   where: { id: req.params.id },
+    //   data: { image, title: title || null, order: order ?? 0, isActive: isActive ?? true },
+    // });
     const banner = await prisma.banner.update({
       where: { id: req.params.id },
-      data: { image, title: title || null, order: order ?? 0, isActive: isActive ?? true },
+      data: { image, mobileImage: mobileImage || null, title: title || null, order: order ?? 0, isActive: isActive ?? true, type: type ?? 'BOTH' },
     });
     return res.json(banner);
   } catch (err) {

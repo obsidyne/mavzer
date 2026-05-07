@@ -17,6 +17,105 @@ import ImageUpload from "../../../../components/admin/ImageUpload";
 const API = process.env.NEXT_PUBLIC_API_URL;
 const EMPTY_DETAIL = { key: "", value: "" };
 
+// ─── MultiImageUpload ─────────────────────────────────────────────────────────
+// Reuses the existing ImageUpload component for uploading.
+// Maintains an ordered array; index 0 is always the primary thumbnail.
+function MultiImageUpload({ images = [], onChange }) {
+  function move(from, to) {
+    const next = [...images];
+    const [item] = next.splice(from, 1);
+    next.splice(to, 0, item);
+    onChange(next);
+  }
+
+  function remove(idx) {
+    onChange(images.filter((_, i) => i !== idx));
+  }
+
+  function handleNewUpload(url) {
+    if (url && !images.includes(url)) onChange([...images, url]);
+  }
+
+  return (
+    <div className="flex flex-col gap-3">
+      {/* Uploaded images list */}
+      {images.length > 0 && (
+        <div className="flex flex-col gap-2">
+          {images.map((url, idx) => (
+            <div
+              key={url}
+              className="flex items-center gap-3 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-3 py-2"
+            >
+              {/* Thumbnail */}
+              <div className="w-10 h-10 rounded border border-[#2a2a2a] overflow-hidden shrink-0 bg-[#0d0d0d]">
+                <img src={url} alt="" className="w-full h-full object-cover" />
+              </div>
+
+              {/* Primary badge on first item */}
+              {idx === 0 && (
+                <span className="text-[9px] font-bold tracking-widest uppercase text-blue-400 bg-blue-950 px-2 py-0.5 rounded-full shrink-0">
+                  Primary
+                </span>
+              )}
+
+              {/* URL preview */}
+              <p className="flex-1 text-[11px] text-[#555] truncate min-w-0">{url}</p>
+
+              {/* Reorder buttons */}
+              <div className="flex gap-0.5 shrink-0">
+                <button
+                  type="button"
+                  disabled={idx === 0}
+                  onClick={() => move(idx, idx - 1)}
+                  title="Move up"
+                  className="w-6 h-6 flex items-center justify-center text-[#444] hover:text-white transition-colors disabled:opacity-20 rounded text-xs"
+                >
+                  ↑
+                </button>
+                <button
+                  type="button"
+                  disabled={idx === images.length - 1}
+                  onClick={() => move(idx, idx + 1)}
+                  title="Move down"
+                  className="w-6 h-6 flex items-center justify-center text-[#444] hover:text-white transition-colors disabled:opacity-20 rounded text-xs"
+                >
+                  ↓
+                </button>
+              </div>
+
+              {/* Remove */}
+              <button
+                type="button"
+                onClick={() => remove(idx)}
+                className="w-6 h-6 flex items-center justify-center text-[#444] hover:text-red-400 transition-colors rounded text-sm shrink-0"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Upload widget — always shown to add more */}
+      <div className="border border-dashed border-[#2a2a2a] rounded-lg overflow-hidden">
+        <ImageUpload
+          value=""
+          onChange={handleNewUpload}
+          height="h-28"
+        />
+      </div>
+
+      <p className="text-[#3a3a3a] text-[10px] leading-relaxed">
+        Upload images one at a time.{" "}
+        <span className="text-blue-500">First image</span> is the primary thumbnail shown in listings.
+        Use ↑↓ to reorder.
+      </p>
+    </div>
+  );
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
 export default function Products2FormPage() {
   const { productId } = useParams();
   const searchParams = useSearchParams();
@@ -27,8 +126,6 @@ export default function Products2FormPage() {
   const parentId = searchParams.get("parentId") || null;
   const depthParam = parseInt(searchParams.get("depth") || "0");
 
-  // When creating inside a group, it's always a single product (leaf)
-  // When creating from the root list with isGroup=1, it's a group
   const creatingGroup = isNew && isGroupParam && !parentId;
   const depth = parentId ? depthParam : 0;
 
@@ -39,11 +136,11 @@ export default function Products2FormPage() {
   // fields
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [image, setImage] = useState("");
+  const [images, setImages] = useState([]); // ordered array — index 0 = primary
   const [price, setPrice] = useState("");
   const [isActive, setIsActive] = useState(true);
   const [details, setDetails] = useState([{ ...EMPTY_DETAIL }]);
-  const [isGroup, setIsGroup] = useState(false); // only used when reading existing
+  const [isGroup, setIsGroup] = useState(false);
 
   useEffect(() => {
     if (isNew) return;
@@ -53,7 +150,15 @@ export default function Products2FormPage() {
         const data = await res.json();
         setName(data.name || "");
         setDescription(data.description || "");
-        setImage(data.image || "");
+        // API returns { image, images[] } after the route update.
+        // Fall back gracefully if still on old single-image format.
+        setImages(
+          Array.isArray(data.images) && data.images.length
+            ? data.images
+            : data.image
+            ? [data.image]
+            : []
+        );
         setPrice(data.price?.toString() || "");
         setIsActive(data.isActive ?? true);
         setIsGroup(data.isGroup ?? false);
@@ -92,13 +197,11 @@ export default function Products2FormPage() {
       let url, method, body;
 
       if (isNew) {
-        // Use standalone endpoint for depth-0 products (no category required)
-        // For sub-products (parentId present), use the normal endpoint
         if (parentId) {
           url = `${API}/api/products`;
           method = "POST";
           body = {
-            name, description, image, price: price || null,
+            name, description, images, price: price || null,
             details: Object.keys(detailsObj).length ? detailsObj : null,
             isActive,
             isGroup: creatingGroup,
@@ -109,7 +212,7 @@ export default function Products2FormPage() {
           url = `${API}/api/products/standalone`;
           method = "POST";
           body = {
-            name, description, image, price: price || null,
+            name, description, images, price: price || null,
             details: Object.keys(detailsObj).length ? detailsObj : null,
             isActive,
             isGroup: creatingGroup,
@@ -120,7 +223,7 @@ export default function Products2FormPage() {
         url = `${API}/api/products/${productId}`;
         method = "PUT";
         body = {
-          name, description, image,
+          name, description, images,
           ...(!isCreatingGroup ? {
             price: price || null,
             details: Object.keys(detailsObj).length ? detailsObj : null,
@@ -205,7 +308,7 @@ export default function Products2FormPage() {
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[#666] text-[11px] tracking-widest uppercase">Price</label>
                   <input
-                    type="number" value={price} onChange={(e) => setPrice(e.target.value)}
+                    type="hidden" value={price} onChange={(e) => setPrice(e.target.value)}
                     placeholder="0.00" step="0.01" min="0"
                     className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:border-[#444] transition-colors placeholder:text-[#333]"
                   />
@@ -253,9 +356,18 @@ export default function Products2FormPage() {
 
           {/* Right column */}
           <div className="w-72 flex flex-col gap-5">
+
+            {/* Multi-image upload */}
             <div className="bg-[#111] border border-[#1f1f1f] rounded-xl p-6 flex flex-col gap-3">
-              <label className="text-[#666] text-[11px] tracking-widest uppercase">Image</label>
-              <ImageUpload value={image} onChange={setImage} height="h-52" />
+              <label className="text-[#666] text-[11px] tracking-widest uppercase flex items-center justify-between">
+                Images
+                {images.length > 0 && (
+                  <span className="normal-case text-[#444] font-normal tracking-normal text-[11px]">
+                    {images.length} uploaded
+                  </span>
+                )}
+              </label>
+              <MultiImageUpload images={images} onChange={setImages} />
             </div>
 
             <div className="bg-[#111] border border-[#1f1f1f] rounded-xl p-6">

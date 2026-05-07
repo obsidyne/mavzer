@@ -82,11 +82,11 @@ export default function ClientsPage() {
 
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-xl font-bold text-white">Clients</h1>
-          <p className="text-[#555] text-sm mt-0.5">Manage client logos shown on the references page</p>
+          <h1 className="text-xl font-bold text-white">müşteriler</h1>
+          {/* <p className="text-[#555] text-sm mt-0.5">Manage client logos shown on the references page</p> */}
         </div>
         <button onClick={openAdd} className="bg-[#1e88e5] text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#1565c0] transition-colors">
-          + Add Client
+          + müşteri ekle
         </button>
       </div>
 

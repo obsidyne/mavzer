@@ -47,10 +47,12 @@ export default function Navbar() {
     <nav className={`fixed top-0 left-0 right-0 z-[900] h-[66px] flex items-center bg-white/95 backdrop-blur-sm border-b border-[#dde4ef] transition-shadow duration-300 ${scrolled ? 'shadow-[0_2px_20px_rgba(7,30,61,0.1)]' : ''}`}>
 
       {/* Hamburger */}
-      <div className="relative pl-6 shrink-0">
+      <div className="relative pl-4 sm:pl-6 shrink-0">
         <button
           ref={btnRef}
           onClick={() => setMenuOpen((o) => !o)}
+          aria-label="Toggle menu"
+          aria-expanded={menuOpen}
           className="flex items-center justify-center w-9 h-9 border border-[#dde4ef] text-[#071e3d] rounded cursor-pointer transition-all duration-200 hover:bg-[#0a4c8a] hover:text-white hover:border-[#0a4c8a]"
         >
           <svg viewBox="0 0 14 10" fill="none" width="14" height="10">
@@ -63,7 +65,7 @@ export default function Navbar() {
         {menuOpen && (
           <div
             ref={menuRef}
-            className="absolute left-2 top-full mt-2 w-64 bg-white border border-[#dde4ef] rounded-xl shadow-[0_8px_40px_rgba(7,30,61,0.13)] overflow-hidden z-[1000] flex flex-col"
+            className="absolute left-2 top-full mt-2 w-64 bg-white border border-[#dde4ef] rounded-xl shadow-[0_8px_40px_rgba(7,30,61,0.13)] overflow-hidden z-[1000] flex flex-col animate-slideDown"
             style={{ maxHeight: '75vh' }}
           >
             <div className="overflow-y-auto flex-1">
@@ -142,35 +144,34 @@ export default function Navbar() {
         )}
       </div>
 
-      {/* Center */}
-      <div className="flex-1 flex items-center justify-center gap-8">
-        {LEFT_LINKS.map((l) => (
-          <Link key={l.href} href={l.href}
-            className="relative text-[11px] font-semibold tracking-widest uppercase text-[#111827] no-underline pb-0.5 transition-colors duration-200 hover:text-[#0a4c8a] group whitespace-nowrap">
-            {l.label}
-            <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#1e88e5] scale-x-0 origin-left transition-transform duration-200 group-hover:scale-x-100" />
-          </Link>
-        ))}
+      {/* Center — logo always visible; links hidden on mobile */}
+      <div className="flex-1 flex items-center justify-center gap-6 lg:gap-8 min-w-0">
+        {/* Left links — desktop only */}
+        <div className="hidden md:flex items-center gap-6 lg:gap-8">
+          {LEFT_LINKS.map((l) => (
+            <NavLink key={l.href} href={l.href} label={l.label} />
+          ))}
+        </div>
 
-        <Link href="/" className="flex items-center justify-center no-underline shrink-0 px-4">
-          <img src="/logo2.png" alt="Mavzer" className="h-10 object-contain" />
+        {/* Logo */}
+        <Link href="/" className="flex items-center justify-center no-underline shrink-0 px-2 sm:px-4">
+          <img src="/logo2.png" alt="Mavzer" className="h-8 sm:h-10 object-contain" />
         </Link>
 
-        {RIGHT_LINKS.map((l) => (
-          <Link key={l.href} href={l.href}
-            className="relative text-[11px] font-semibold tracking-widest uppercase text-[#111827] no-underline pb-0.5 transition-colors duration-200 hover:text-[#0a4c8a] group whitespace-nowrap">
-            {l.label}
-            <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#1e88e5] scale-x-0 origin-left transition-transform duration-200 group-hover:scale-x-100" />
-          </Link>
-        ))}
+        {/* Right links — desktop only */}
+        <div className="hidden md:flex items-center gap-6 lg:gap-8">
+          {RIGHT_LINKS.map((l) => (
+            <NavLink key={l.href} href={l.href} label={l.label} />
+          ))}
+        </div>
       </div>
 
-      {/* Language switcher — flag icons */}
-      <div className="pr-6 shrink-0 flex items-center gap-2">
+      {/* Language switcher — always visible */}
+      <div className="pr-4 sm:pr-6 shrink-0 flex items-center gap-1.5 sm:gap-2">
         <button
           onClick={() => switchLang('tr')}
           title="Türkçe"
-          className={`w-8 h-5 rounded overflow-hidden border-2 transition-all duration-200 focus:outline-none
+          className={`w-7 sm:w-8 h-[18px] sm:h-5 rounded overflow-hidden border-2 transition-all duration-200 focus:outline-none
             ${lang === 'tr' ? 'border-[#071e3d] shadow-[0_0_0_2px_rgba(7,30,61,0.15)]' : 'border-transparent opacity-50 hover:opacity-100'}`}
         >
           <TurkeyFlag />
@@ -178,13 +179,36 @@ export default function Navbar() {
         <button
           onClick={() => switchLang('en')}
           title="English"
-          className={`w-8 h-5 rounded overflow-hidden border-2 transition-all duration-200 focus:outline-none
+          className={`w-7 sm:w-8 h-[18px] sm:h-5 rounded overflow-hidden border-2 transition-all duration-200 focus:outline-none
             ${lang === 'en' ? 'border-[#071e3d] shadow-[0_0_0_2px_rgba(7,30,61,0.15)]' : 'border-transparent opacity-50 hover:opacity-100'}`}
         >
           <USFlag />
         </button>
       </div>
+
+      {/* Slide-down animation keyframes */}
+      <style jsx global>{`
+        @keyframes slideDown {
+          from { opacity: 0; transform: translateY(-8px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slideDown {
+          animation: slideDown 0.18s ease forwards;
+        }
+      `}</style>
     </nav>
+  );
+}
+
+function NavLink({ href, label }) {
+  return (
+    <Link
+      href={href}
+      className="relative text-[11px] font-semibold tracking-widest uppercase text-[#111827] no-underline pb-0.5 transition-colors duration-200 hover:text-[#0a4c8a] group whitespace-nowrap"
+    >
+      {label}
+      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#1e88e5] scale-x-0 origin-left transition-transform duration-200 group-hover:scale-x-100" />
+    </Link>
   );
 }
 
@@ -202,14 +226,11 @@ function TurkeyFlag() {
 function USFlag() {
   return (
     <svg viewBox="0 0 30 20" width="32" height="20" xmlns="http://www.w3.org/2000/svg">
-      {/* stripes */}
       {[0,1,2,3,4,5,6,7,8,9,10,11,12].map((i) => (
         <rect key={i} x="0" y={i * (20/13)} width="30" height={20/13}
           fill={i % 2 === 0 ? "#B22234" : "white"} />
       ))}
-      {/* canton */}
       <rect x="0" y="0" width="12" height="10.8" fill="#3C3B6E" />
-      {/* stars — 5 rows */}
       {[
         [1.2,1.1],[3.0,1.1],[4.8,1.1],[6.6,1.1],[8.4,1.1],[10.2,1.1],
         [2.1,2.2],[3.9,2.2],[5.7,2.2],[7.5,2.2],[9.3,2.2],

@@ -4,8 +4,31 @@ import prisma from "../../database.js";
 
 const router = Router();
 
+/**
+ * Parse the comma-separated `image` field into { image, images }
+ * image  = first URL (thumbnail / primary)
+ * images = full array
+ */
+function parseImages(raw) {
+  if (!raw) return { image: null, images: [] };
+  const images = raw
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return { image: images[0] ?? null, images };
+}
+
+function withImages(product) {
+  if (!product) return product;
+  const { image: raw, ...rest } = product;
+  return { ...rest, ...parseImages(raw) };
+}
+
+function withImagesMany(products) {
+  return products.map(withImages);
+}
+
 // GET /api/public/sectors — all active sectors
-// Now returns sectors WITHOUT categories (products linked directly via ProductSector)
 router.get("/sectors", async (req, res) => {
   try {
     const sectors = await prisma.sector.findMany({
@@ -22,7 +45,7 @@ router.get("/sectors", async (req, res) => {
   }
 });
 
-// GET /api/public/sector-products?sectorId=x — depth-0 products linked to a sector via ProductSector
+// GET /api/public/sector-products?sectorId=x
 router.get("/sector-products", async (req, res) => {
   try {
     const { sectorId } = req.query;
@@ -47,21 +70,18 @@ router.get("/sector-products", async (req, res) => {
       .map((r) => r.product)
       .filter((p) => p && p.isActive && p.depth === 0);
 
-    return res.json(products);
+    return res.json(withImagesMany(products));
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Failed to fetch sector products" });
   }
 });
 
-// GET /api/public/products?parentId=x — sub-products of a group (unchanged)
+// GET /api/public/products?parentId=x
 router.get("/products", async (req, res) => {
   try {
     const { parentId } = req.query;
-
-    if (!parentId) {
-      return res.status(400).json({ message: "parentId is required" });
-    }
+    if (!parentId) return res.status(400).json({ message: "parentId is required" });
 
     const products = await prisma.product.findMany({
       where: { parentId, isActive: true },
@@ -72,14 +92,14 @@ router.get("/products", async (req, res) => {
         _count: { select: { subProducts: true } },
       },
     });
-    return res.json(products);
+    return res.json(withImagesMany(products));
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Failed to fetch products" });
   }
 });
 
-// GET /api/public/products/:id — single product details
+// GET /api/public/products/:id
 router.get("/products/:id", async (req, res) => {
   try {
     const product = await prisma.product.findUnique({
@@ -89,7 +109,7 @@ router.get("/products/:id", async (req, res) => {
       },
     });
     if (!product) return res.status(404).json({ message: "Product not found" });
-    return res.json(product);
+    return res.json(withImages(product));
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Failed to fetch product" });
@@ -108,14 +128,14 @@ router.get("/products/:id/subproducts", async (req, res) => {
         _count: { select: { subProducts: true } },
       },
     });
-    return res.json(products);
+    return res.json(withImagesMany(products));
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Failed to fetch subproducts" });
   }
 });
 
-// GET /api/public/groups — unchanged
+// GET /api/public/groups
 router.get("/groups", async (req, res) => {
   try {
     const groups = await prisma.group.findMany({
@@ -152,9 +172,9 @@ router.get("/groups/:id", async (req, res) => {
       },
     });
 
-    const products = rows
-      .map((r) => r.product)
-      .filter((p) => p && p.isActive && p.depth === 0);
+    const products = withImagesMany(
+      rows.map((r) => r.product).filter((p) => p && p.isActive && p.depth === 0)
+    );
 
     return res.json({ ...group, products });
   } catch (err) {
@@ -176,15 +196,14 @@ router.get("/featured", async (req, res) => {
         sectors: { include: { sector: true } },
       },
     });
-    return res.json(products);
+    return res.json(withImagesMany(products));
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Failed to fetch featured products" });
   }
 });
 
-
-// GET /api/public/sector-products/all — all depth-0 active products (public)
+// GET /api/public/sector-products/all
 router.get("/sector-products/all", async (req, res) => {
   try {
     const products = await prisma.product.findMany({
@@ -196,7 +215,7 @@ router.get("/sector-products/all", async (req, res) => {
         _count: { select: { subProducts: true } },
       },
     });
-    return res.json(products);
+    return res.json(withImagesMany(products));
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Failed to fetch all products" });
@@ -206,8 +225,16 @@ router.get("/sector-products/all", async (req, res) => {
 // GET /api/public/banners
 router.get("/banners", async (req, res) => {
   try {
+    const { device } = req.query;
     const banners = await prisma.banner.findMany({
-      where: { isActive: true },
+      where: {
+        isActive: true,
+        ...(device === "mobile"
+          ? { type: { in: ["MOBILE", "BOTH"] } }
+          : device === "desktop"
+          ? { type: { in: ["DESKTOP", "BOTH"] } }
+          : {}),
+      },
       orderBy: { order: "asc" },
     });
     return res.json(banners);
