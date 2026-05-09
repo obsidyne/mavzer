@@ -304,7 +304,7 @@ export default function Products2FormPage() {
                 />
               </div>
 
-              {!showingGroup && (
+              {/* {!showingGroup && (
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[#666] text-[11px] tracking-widest uppercase">Price</label>
                   <input
@@ -313,7 +313,7 @@ export default function Products2FormPage() {
                     className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:border-[#444] transition-colors placeholder:text-[#333]"
                   />
                 </div>
-              )}
+              )} */}
             </div>
 
             {/* Specs — only for leaf products */}

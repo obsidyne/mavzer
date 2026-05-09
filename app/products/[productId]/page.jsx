@@ -313,7 +313,7 @@ export default function ProductDetailPage() {
                     </p>
                   )}
 
-                  {display?.price && (
+                  {/* {display?.price && (
                     <div className="mt-4 py-3 border-t border-[#f0f3f8]">
                       <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-[#9aa3af]">
                         Birim Fiyat
@@ -322,7 +322,7 @@ export default function ProductDetailPage() {
                         ₺{display.price}
                       </div>
                     </div>
-                  )}
+                  )} */}
 
                   {/* Specs */}
                   {display?.details && Object.keys(display.details).length > 0 && (
