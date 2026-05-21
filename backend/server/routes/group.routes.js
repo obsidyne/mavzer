@@ -18,6 +18,60 @@ router.get("/", async (req, res) => {
   }
 });
 
+// ⚠️  STATIC routes MUST come before /:id — otherwise Express swallows them
+// POST /api/groups/reorder
+router.post("/reorder", async (req, res) => {
+  try {
+    const { groupIds } = req.body;
+    if (!Array.isArray(groupIds))
+      return res.status(400).json({ message: "groupIds must be an array" });
+
+    await Promise.all(
+      groupIds.map((id, index) =>
+        prisma.group.update({ where: { id }, data: { order: index } })
+      )
+    );
+    return res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Failed to reorder groups" });
+  }
+});
+
+// POST /api/groups/link
+router.post("/link", async (req, res) => {
+  try {
+    const { productId, groupId } = req.body;
+    if (!productId || !groupId)
+      return res.status(400).json({ message: "productId and groupId are required" });
+
+    await prisma.productGroup.create({ data: { productId, groupId } });
+    return res.json({ message: "Product linked to group" });
+  } catch (err) {
+    if (err.code === "P2002")
+      return res.status(409).json({ message: "Product already in group" });
+    return res.status(500).json({ message: "Failed to link product" });
+  }
+});
+
+// DELETE /api/groups/unlink
+router.delete("/unlink", async (req, res) => {
+  try {
+    const { productId, groupId } = req.body;
+    if (!productId || !groupId)
+      return res.status(400).json({ message: "productId and groupId are required" });
+
+    await prisma.productGroup.delete({
+      where: { productId_groupId: { productId, groupId } },
+    });
+    return res.json({ message: "Product unlinked from group" });
+  } catch (err) {
+    if (err.code === "P2025")
+      return res.status(404).json({ message: "Link not found" });
+    return res.status(500).json({ message: "Failed to unlink product" });
+  }
+});
+
 // GET /api/groups/:id
 router.get("/:id", async (req, res) => {
   try {
@@ -38,13 +92,12 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const { name, description, image, isActive } = req.body;
-
     if (!name) return res.status(400).json({ message: "Name is required" });
 
     const slug = name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
-
     const existing = await prisma.group.findUnique({ where: { slug } });
-    if (existing) return res.status(400).json({ message: "A group with this name already exists" });
+    if (existing)
+      return res.status(400).json({ message: "A group with this name already exists" });
 
     const group = await prisma.group.create({
       data: { name, slug, description, image, isActive: isActive ?? true },
@@ -60,7 +113,6 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
   try {
     const { name, description, image, isActive, order } = req.body;
-
     const data = {};
     if (name !== undefined) {
       data.name = name;
@@ -78,22 +130,9 @@ router.put("/:id", async (req, res) => {
     });
     return res.json(group);
   } catch (err) {
-    if (err.code === "P2025") return res.status(404).json({ message: "Group not found" });
+    if (err.code === "P2025")
+      return res.status(404).json({ message: "Group not found" });
     return res.status(500).json({ message: "Failed to update group" });
-  }
-});
-
-// DELETE /api/groups/unlink — remove a product from a group
-router.delete("/unlink", async (req, res) => {
-  try {
-    const { productId, groupId } = req.body;
-    if (!productId || !groupId) return res.status(400).json({ message: "productId and groupId are required" });
-
-    await prisma.productGroup.delete({ where: { productId_groupId: { productId, groupId } } });
-    return res.json({ message: "Product unlinked from group" });
-  } catch (err) {
-    if (err.code === "P2025") return res.status(404).json({ message: "Link not found" });
-    return res.status(500).json({ message: "Failed to unlink product" });
   }
 });
 
@@ -103,31 +142,18 @@ router.delete("/:id", async (req, res) => {
     await prisma.group.delete({ where: { id: req.params.id } });
     return res.json({ message: "Group deleted" });
   } catch (err) {
-    if (err.code === "P2025") return res.status(404).json({ message: "Group not found" });
+    if (err.code === "P2025")
+      return res.status(404).json({ message: "Group not found" });
     return res.status(500).json({ message: "Failed to delete group" });
   }
 });
 
-// POST /api/groups/link — add a product to a group
-router.post("/link", async (req, res) => {
-  try {
-    const { productId, groupId } = req.body;
-    if (!productId || !groupId) return res.status(400).json({ message: "productId and groupId are required" });
-
-    await prisma.productGroup.create({ data: { productId, groupId } });
-    return res.json({ message: "Product linked to group" });
-  } catch (err) {
-    if (err.code === "P2002") return res.status(409).json({ message: "Product already in group" });
-    return res.status(500).json({ message: "Failed to link product" });
-  }
-});
-
-
-// GET /api/groups/:id/products — products in a specific group
+// GET /api/groups/:id/products  ← FIX: now orders by ProductGroup.order
 router.get("/:id/products", async (req, res) => {
   try {
-    const rows = await prisma.productGroup.findMany({ 
+    const rows = await prisma.productGroup.findMany({
       where: { groupId: req.params.id },
+      orderBy: { order: "asc" },          // ← THIS was missing
       include: {
         product: {
           include: { _count: { select: { subProducts: true } } },
@@ -140,23 +166,6 @@ router.get("/:id/products", async (req, res) => {
   }
 });
 
-router.post("/reorder", async (req, res) => {
-  try {
-    const { groupIds } = req.body;
-    if (!Array.isArray(groupIds))
-      return res.status(400).json({ message: "groupIds must be an array" });
-
-    await Promise.all(
-      groupIds.map((id, index) =>
-        prisma.group.update({ where: { id }, data: { order: index } })
-      )
-    );
-    return res.json({ success: true });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: "Failed to reorder groups" });
-  }
-});
 // POST /api/groups/:id/reorder
 router.post("/:id/reorder", async (req, res) => {
   try {
@@ -178,4 +187,5 @@ router.post("/:id/reorder", async (req, res) => {
     return res.status(500).json({ message: "Failed to reorder products" });
   }
 });
+
 export default router;
