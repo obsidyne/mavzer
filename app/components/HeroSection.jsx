@@ -169,9 +169,10 @@ export default function HeroSection() {
       } catch (e) { setGridItems([]); }
       finally { setGridLoading(false); }
     } else {
-      router.push(`/products/${product.id}`);
+      // router.push(`/products/${product.id}`);
+      router.push(`/products/${product.id}${activeSector?.id ? `?from=${activeSector.id}` : ''}`);
     }
-  }, [layer, router]);
+  }, [layer, router, activeSector]);
 
   const handleBreadcrumbClick = useCallback(async (crumb, index) => {
     setBreadcrumbs((prev) => prev.slice(0, index + 1));

@@ -53,7 +53,10 @@ function CatalogueContent() {
   const [context, setContext]           = useState(null);
   const [breadcrumbs, setBreadcrumbs]   = useState([]);
   const [search, setSearch]             = useState("");
-  const fetchedRef = useRef(false);
+  const fetchedRef      = useRef(false);
+  const activeSectorRef = useRef(null);
+
+  useEffect(() => { activeSectorRef.current = activeSector; }, [activeSector]);
 
   const loadSectorProducts = useCallback(async (sector) => {
     setSearch("");
@@ -114,7 +117,8 @@ function CatalogueContent() {
     if (product.isGroup && layer < 3) {
       loadGroupProducts(product, breadcrumbs, layer + 1);
     } else {
-      router.push(`/products/${product.id}`);
+      const fromId = activeSectorRef.current?.id ?? null;
+      router.push(`/products/${product.id}${fromId ? `?from=${fromId}` : ""}`);
     }
   }, [layer, breadcrumbs, loadGroupProducts, router]);
 
@@ -131,7 +135,6 @@ function CatalogueContent() {
     <div className="min-h-screen bg-[#f4f6fa]">
       <Navbar />
 
-      {/* Header */}
       <div className="pt-[66px] bg-white border-b border-[#dde4ef]">
         <div className="max-w-5xl mx-auto px-8 py-6">
           <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase text-[#1e88e5] mb-1">
@@ -144,7 +147,6 @@ function CatalogueContent() {
           <p className="text-[13px] text-[#9aa3af] mt-1">{t.page_subtitle}</p>
         </div>
 
-        {/* Sector card tabs */}
         <div className="max-w-5xl mx-auto px-8 pb-5">
           {loading ? (
             <div className="flex gap-3 justify-center">
@@ -202,10 +204,7 @@ function CatalogueContent() {
         </div>
       </div>
 
-      {/* Main content */}
       <div className="max-w-5xl mx-auto px-8 py-8">
-
-        {/* Breadcrumb */}
         <div className="flex items-center gap-1.5 text-[11px] text-[#9aa3af] mb-5 flex-wrap min-h-[20px]">
           <button
             onClick={() => activeSector && loadSectorProducts(activeSector)}
@@ -224,7 +223,6 @@ function CatalogueContent() {
           ))}
         </div>
 
-        {/* Search — only when drilling into a group */}
         {layer > 1 && (
           <div className="relative mb-6 max-w-xs">
             <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#b0b8c4]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
@@ -240,7 +238,6 @@ function CatalogueContent() {
           </div>
         )}
 
-        {/* Products grid */}
         <ProductsGrid
           products={filteredProducts}
           loading={productsLoading}
