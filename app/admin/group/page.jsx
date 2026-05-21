@@ -21,14 +21,27 @@ function Badge({ children, variant = "default" }) {
   );
 }
 
-// ─── GroupProductRow (in-group, with arrows) ──────────────────────────────────
+// ─── GroupProductRow (in-group, draggable OUT + arrow reorder) ────────────────
 
-function GroupProductRow({ product, index, total, onMoveUp, onMoveDown, onUnlink }) {
+function GroupProductRow({ product, index, total, onMoveUp, onMoveDown, onUnlink, onDragStart, onDragEnd, isDragging }) {
   return (
-    <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-[#1f1f1f] bg-[#0e0e0e] hover:border-[#2a2a2a] transition-all duration-75 select-none">
-      <div className="flex flex-col gap-1 shrink-0">
+    <div
+      draggable
+      onDragStart={(e) => onDragStart(e, product)}
+      onDragEnd={onDragEnd}
+      className={`
+        flex items-center gap-2 px-3 py-2.5 rounded-xl border transition-all duration-75 select-none
+        cursor-grab active:cursor-grabbing
+        ${isDragging
+          ? "opacity-40 scale-95 border-[#333] bg-[#111]"
+          : "border-[#1f1f1f] bg-[#0e0e0e] hover:border-[#2a2a2a]"
+        }
+      `}
+    >
+      <div className="flex flex-col gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
         <button
-          onClick={onMoveUp}
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={(e) => { e.stopPropagation(); onMoveUp(); }}
           disabled={index === 0}
           title="Move up"
           className="w-6 h-6 flex items-center justify-center rounded-md border border-[#2a2a2a] text-[#555] hover:text-white hover:bg-[#1a1a1a] hover:border-[#444] transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
@@ -38,7 +51,8 @@ function GroupProductRow({ product, index, total, onMoveUp, onMoveDown, onUnlink
           </svg>
         </button>
         <button
-          onClick={onMoveDown}
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={(e) => { e.stopPropagation(); onMoveDown(); }}
           disabled={index === total - 1}
           title="Move down"
           className="w-6 h-6 flex items-center justify-center rounded-md border border-[#2a2a2a] text-[#555] hover:text-white hover:bg-[#1a1a1a] hover:border-[#444] transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
@@ -47,6 +61,15 @@ function GroupProductRow({ product, index, total, onMoveUp, onMoveDown, onUnlink
             <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
+      </div>
+
+      {/* drag handle visual */}
+      <div className="text-[#333] hover:text-[#555] transition-colors shrink-0">
+        <svg viewBox="0 0 10 16" width="8" height="12" fill="currentColor">
+          <circle cx="2" cy="2" r="1.5"/><circle cx="8" cy="2" r="1.5"/>
+          <circle cx="2" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/>
+          <circle cx="2" cy="14" r="1.5"/><circle cx="8" cy="14" r="1.5"/>
+        </svg>
       </div>
 
       <div className="w-8 h-8 rounded-lg bg-[#1a1a1a] overflow-hidden shrink-0 border border-[#1f1f1f]">
@@ -67,7 +90,8 @@ function GroupProductRow({ product, index, total, onMoveUp, onMoveDown, onUnlink
       <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${product.isActive ? "bg-green-500" : "bg-[#333]"}`} />
 
       <button
-        onClick={onUnlink}
+        onMouseDown={(e) => e.stopPropagation()}
+        onClick={(e) => { e.stopPropagation(); onUnlink(); }}
         title="Remove from group"
         className="w-6 h-6 flex items-center justify-center rounded-md border border-[#1f1f1f] text-[#444] hover:text-orange-400 hover:border-orange-900/50 transition-colors shrink-0"
       >
@@ -79,7 +103,7 @@ function GroupProductRow({ product, index, total, onMoveUp, onMoveDown, onUnlink
   );
 }
 
-// ─── ProductChip (pool side, draggable) ───────────────────────────────────────
+// ─── ProductChip (pool side, draggable IN) ────────────────────────────────────
 
 function ProductChip({ product, onDragStart, onDragEnd, isDragging }) {
   return (
@@ -120,24 +144,58 @@ function ProductChip({ product, onDragStart, onDragEnd, isDragging }) {
   );
 }
 
-// ─── DropZone ─────────────────────────────────────────────────────────────────
+// ─── DropPanel — full-height droppable container ──────────────────────────────
+// This replaces the old DropZone. It covers the ENTIRE column so there's no
+// "tiny target" problem. isOver highlight + dashed placeholder shown on hover.
 
-function DropZone({ children, onDrop, isEmpty, emptyMsg, emptyIcon }) {
+function DropPanel({ children, onDrop, isEmpty, emptyMsg, emptyIcon, isReceiver }) {
   const [isOver, setIsOver] = useState(false);
+
+  function handleDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    setIsOver(true);
+  }
+
+  function handleDragLeave(e) {
+    // Only clear if leaving the panel entirely (not entering a child)
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      setIsOver(false);
+    }
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    setIsOver(false);
+    onDrop(e);
+  }
 
   return (
     <div
-      onDragOver={(e) => { e.preventDefault(); setIsOver(true); }}
-      onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setIsOver(false); }}
-      onDrop={(e) => { e.preventDefault(); setIsOver(false); onDrop(e); }}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
       className={`
-        relative flex-1 rounded-xl border transition-all duration-200
-        ${isOver ? "border-white/20 bg-white/[0.03]" : "border-[#1a1a1a] bg-transparent"}
+        relative flex-1 rounded-xl border transition-all duration-150 overflow-hidden
+        ${isOver
+          ? isReceiver
+            ? "border-white/25 bg-white/[0.04] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)]"
+            : "border-orange-800/40 bg-orange-950/10"
+          : "border-[#1a1a1a] bg-transparent"
+        }
       `}
     >
+      {/* drop hint overlay — only shown when actively dragging over */}
       {isOver && (
-        <div className="absolute inset-0 rounded-xl pointer-events-none"
-          style={{ boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.12), 0 0 24px rgba(255,255,255,0.04)" }} />
+        <div className={`
+          absolute inset-x-3 bottom-3 h-10 rounded-xl border-2 border-dashed
+          flex items-center justify-center pointer-events-none z-10 transition-opacity
+          ${isReceiver ? "border-white/20" : "border-orange-700/40"}
+        `}>
+          <span className={`text-[11px] ${isReceiver ? "text-[#666]" : "text-orange-700/70"}`}>
+            {isReceiver ? "Drop to add" : "Drop to remove"}
+          </span>
+        </div>
       )}
 
       {isEmpty && !isOver ? (
@@ -146,20 +204,17 @@ function DropZone({ children, onDrop, isEmpty, emptyMsg, emptyIcon }) {
           <p className="text-[#3a3a3a] text-[12px]">{emptyMsg}</p>
         </div>
       ) : (
-        <div className="p-3 flex flex-col gap-1.5">
+        <div className="p-3 flex flex-col gap-1.5 overflow-y-auto h-full">
           {children}
-          {isOver && (
-            <div className="h-10 rounded-xl border-2 border-dashed border-white/20 flex items-center justify-center">
-              <span className="text-[#666] text-[11px]">Drop here</span>
-            </div>
-          )}
+          {/* spacer so bottom items don't hide under the drop hint */}
+          {isOver && <div className="h-12 shrink-0" />}
         </div>
       )}
     </div>
   );
 }
 
-// ─── GroupRow (arrow-based reorder) ──────────────────────────────────────────
+// ─── GroupRow ─────────────────────────────────────────────────────────────────
 
 function GroupRow({
   group, index, total, isSelected, onClick, onEdit, onDelete, onToggle,
@@ -179,7 +234,7 @@ function GroupRow({
       {/* up/down arrows */}
       <div className="flex flex-col gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
         <button
-          onClick={onMoveUp}
+          onClick={(e) => { e.stopPropagation(); onMoveUp(); }}
           disabled={index === 0}
           title="Move up"
           className="w-5 h-5 flex items-center justify-center rounded border border-[#2a2a2a] text-[#444] hover:text-white hover:bg-[#1a1a1a] hover:border-[#444] transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
@@ -189,7 +244,7 @@ function GroupRow({
           </svg>
         </button>
         <button
-          onClick={onMoveDown}
+          onClick={(e) => { e.stopPropagation(); onMoveDown(); }}
           disabled={index === total - 1}
           title="Move down"
           className="w-5 h-5 flex items-center justify-center rounded border border-[#2a2a2a] text-[#444] hover:text-white hover:bg-[#1a1a1a] hover:border-[#444] transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
@@ -279,9 +334,11 @@ export default function GroupsPage() {
 
   const [activeTab, setActiveTab] = useState("info");
 
-  // ── product drag (pool → group) ──
-  const productDragItem = useRef(null);
-  const [draggingProductId, setDraggingProductId] = useState(null);
+  // ── drag tracking ──
+  // source: "pool" = dragging from pool → group | "group" = dragging from group → pool
+  const dragItem = useRef(null);       // { product, source }
+  const [draggingId, setDraggingId] = useState(null);
+  const [draggingSource, setDraggingSource] = useState(null); // "pool" | "group"
 
   // debounce timers
   const productReorderTimer = useRef(null);
@@ -332,7 +389,7 @@ export default function GroupsPage() {
     setActiveTab("products");
   }
 
-  // ── product arrow reorder ──
+  // ── product arrow reorder (unchanged logic, no drag involvement) ──
   function moveProduct(index, direction) {
     const newList = [...groupProducts];
     const targetIndex = index + direction;
@@ -358,11 +415,10 @@ export default function GroupsPage() {
 
   // ── group arrow reorder ──
   function moveGroup(index, direction) {
-    const filtered = filteredGroups; // operate on filtered view
+    const filtered = filteredGroups;
     const targetIndex = index + direction;
     if (targetIndex < 0 || targetIndex >= filtered.length) return;
 
-    // find the actual indices in the full groups array
     const fromId = filtered[index].id;
     const toId = filtered[targetIndex].id;
 
@@ -388,22 +444,37 @@ export default function GroupsPage() {
     }, 500);
   }
 
-  // ── product drag (pool → group) ──
-  function handleProductDragStart(e, product) {
-    productDragItem.current = product;
-    setDraggingProductId(product.id);
+  // ─────────────────────────────────────────────────────────────────────────
+  // Drag handlers — two sources, two targets
+  // Pool chip  → drag source "pool"  → drops onto GROUP panel  → adds
+  // Group row  → drag source "group" → drops onto POOL panel   → removes
+  // ─────────────────────────────────────────────────────────────────────────
+
+  function handlePoolDragStart(e, product) {
+    dragItem.current = { product, source: "pool" };
+    setDraggingId(product.id);
+    setDraggingSource("pool");
     e.dataTransfer.effectAllowed = "move";
   }
 
-  function handleProductDragEnd() {
-    productDragItem.current = null;
-    setDraggingProductId(null);
+  function handleGroupDragStart(e, product) {
+    dragItem.current = { product, source: "group" };
+    setDraggingId(product.id);
+    setDraggingSource("group");
+    e.dataTransfer.effectAllowed = "move";
   }
 
-  // ── add product (drop from pool) ──
-  async function handleDropToGroup() {
-    const product = productDragItem.current;
-    if (!product || !selectedGroup) return;
+  function handleDragEnd() {
+    dragItem.current = null;
+    setDraggingId(null);
+    setDraggingSource(null);
+  }
+
+  // Drop onto the GROUP panel → add product
+  async function handleDropOnGroup() {
+    const item = dragItem.current;
+    if (!item || item.source !== "pool" || !selectedGroup) return;
+    const { product } = item;
     if (groupProducts.some((p) => p.id === product.id)) return;
 
     setGroupProducts((prev) => [...prev, product]);
@@ -436,7 +507,15 @@ export default function GroupsPage() {
     }
   }
 
-  // ── unlink product ──
+  // Drop onto the POOL panel → remove product from group
+  async function handleDropOnPool() {
+    const item = dragItem.current;
+    if (!item || item.source !== "group" || !selectedGroup) return;
+    const { product } = item;
+    await handleUnlinkProduct(product);
+  }
+
+  // ── unlink product (shared by drag-remove and button) ──
   async function handleUnlinkProduct(product) {
     if (!selectedGroup) return;
     setGroupProducts((prev) => prev.filter((p) => p.id !== product.id));
@@ -552,7 +631,7 @@ export default function GroupsPage() {
       {/* ── Two-column layout ── */}
       <div className="flex gap-4 flex-1 min-h-0">
 
-        {/* ══ LEFT — group list ══════════════════════════════════════════════ */}
+        {/* ══ LEFT — group list ══ */}
         <div className="w-[300px] shrink-0 flex flex-col bg-[#080808] border border-[#1a1a1a] rounded-2xl overflow-hidden">
 
           <div className="px-4 py-3 border-b border-[#111] flex items-center gap-2 shrink-0">
@@ -619,7 +698,7 @@ export default function GroupsPage() {
           </div>
         </div>
 
-        {/* ══ RIGHT — detail + product assignment ════════════════════════════ */}
+        {/* ══ RIGHT — detail + product assignment ══ */}
         <div className="flex-1 flex flex-col bg-[#080808] border border-[#1a1a1a] rounded-2xl overflow-hidden min-w-0">
 
           {selectedGroup ? (
@@ -691,41 +770,48 @@ export default function GroupsPage() {
               {activeTab === "products" && (
                 <div className="flex-1 flex gap-3 p-3 min-h-0 overflow-hidden">
 
-                  {/* LEFT col: products IN this group */}
+                  {/* ── LEFT col: products IN this group (drop target for pool→group) ── */}
                   <div className="flex-1 flex flex-col min-w-0">
                     <div className="flex items-center justify-between mb-2 px-1 shrink-0">
                       <span className="text-[#555] text-[10px] tracking-widest uppercase font-semibold">In Group</span>
-                      <span className="text-[#333] text-[10px]">{groupProducts.length}</span>
+                      <div className="flex items-center gap-2">
+                        {draggingSource === "pool" && (
+                          <span className="text-[9px] text-white/30 animate-pulse">← drop here to add</span>
+                        )}
+                        <span className="text-[#333] text-[10px]">{groupProducts.length}</span>
+                      </div>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto rounded-xl border border-[#1a1a1a]">
-                      {loadingProducts ? (
-                        <div className="p-3 flex flex-col gap-1.5">
-                          {[1, 2, 3].map((i) => (
-                            <div key={i} className="h-12 bg-[#111] rounded-xl animate-pulse border border-[#1a1a1a]" />
-                          ))}
-                        </div>
-                      ) : groupProducts.length === 0 ? (
-                        <div className="h-full flex flex-col items-center justify-center gap-2 py-16 text-center px-4">
-                          <div className="text-[#252525] text-3xl mb-1">⊞</div>
-                          <p className="text-[#3a3a3a] text-[12px]">Drag products from the right to add them</p>
-                        </div>
-                      ) : (
-                        <div className="p-3 flex flex-col gap-1.5">
-                          {groupProducts.map((p, index) => (
-                            <GroupProductRow
-                              key={p.id}
-                              product={p}
-                              index={index}
-                              total={groupProducts.length}
-                              onMoveUp={() => moveProduct(index, -1)}
-                              onMoveDown={() => moveProduct(index, 1)}
-                              onUnlink={() => handleUnlinkProduct(p)}
-                            />
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                    {loadingProducts ? (
+                      <div className="flex-1 rounded-xl border border-[#1a1a1a] p-3 flex flex-col gap-1.5">
+                        {[1, 2, 3].map((i) => (
+                          <div key={i} className="h-12 bg-[#111] rounded-xl animate-pulse border border-[#1a1a1a]" />
+                        ))}
+                      </div>
+                    ) : (
+                      <DropPanel
+                        onDrop={handleDropOnGroup}
+                        isEmpty={groupProducts.length === 0}
+                        emptyMsg="Drag products from the right to add them"
+                        emptyIcon="⊞"
+                        isReceiver={true}
+                      >
+                        {groupProducts.map((p, index) => (
+                          <GroupProductRow
+                            key={p.id}
+                            product={p}
+                            index={index}
+                            total={groupProducts.length}
+                            onMoveUp={() => moveProduct(index, -1)}
+                            onMoveDown={() => moveProduct(index, 1)}
+                            onUnlink={() => handleUnlinkProduct(p)}
+                            onDragStart={handleGroupDragStart}
+                            onDragEnd={handleDragEnd}
+                            isDragging={draggingId === p.id && draggingSource === "group"}
+                          />
+                        ))}
+                      </DropPanel>
+                    )}
                   </div>
 
                   {/* divider */}
@@ -739,11 +825,16 @@ export default function GroupsPage() {
                     <div className="flex-1 w-px bg-[#111]" />
                   </div>
 
-                  {/* RIGHT col: pool */}
+                  {/* ── RIGHT col: pool (drop target for group→pool) ── */}
                   <div className="flex-1 flex flex-col min-w-0">
                     <div className="flex items-center justify-between mb-2 px-1 shrink-0">
                       <span className="text-[#555] text-[10px] tracking-widest uppercase font-semibold">All Products</span>
-                      <span className="text-[#333] text-[10px]">{poolProducts.length}</span>
+                      <div className="flex items-center gap-2">
+                        {draggingSource === "group" && (
+                          <span className="text-[9px] text-orange-500/50 animate-pulse">drop here to remove →</span>
+                        )}
+                        <span className="text-[#333] text-[10px]">{poolProducts.length}</span>
+                      </div>
                     </div>
                     <div className="relative mb-2 shrink-0">
                       <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-[#333]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="11" height="11">
@@ -757,22 +848,24 @@ export default function GroupsPage() {
                         className="w-full bg-[#0e0e0e] border border-[#1a1a1a] rounded-lg pl-8 pr-3 py-1.5 text-[11px] text-white outline-none focus:border-[#2a2a2a] transition-colors placeholder:text-[#333]"
                       />
                     </div>
-                    <DropZone
-                      onDrop={handleDropToGroup}
+
+                    <DropPanel
+                      onDrop={handleDropOnPool}
                       isEmpty={poolProducts.length === 0}
                       emptyMsg={prodSearch ? "No products match your search" : "All products are in this group"}
                       emptyIcon="▦"
+                      isReceiver={false}
                     >
                       {poolProducts.map((p) => (
                         <ProductChip
                           key={p.id}
                           product={p}
-                          onDragStart={handleProductDragStart}
-                          onDragEnd={handleProductDragEnd}
-                          isDragging={draggingProductId === p.id}
+                          onDragStart={handlePoolDragStart}
+                          onDragEnd={handleDragEnd}
+                          isDragging={draggingId === p.id && draggingSource === "pool"}
                         />
                       ))}
-                    </DropZone>
+                    </DropPanel>
                   </div>
                 </div>
               )}
