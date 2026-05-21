@@ -21,13 +21,71 @@ function Badge({ children, variant = "default" }) {
   );
 }
 
-// ─── ProductChip (draggable) ──────────────────────────────────────────────────
+// ─── GroupProductRow (in-group, with arrows) ──────────────────────────────────
 
-function ProductChip({ product, side, onDragStart, onDragEnd, isDragging }) {
+function GroupProductRow({ product, index, total, onMoveUp, onMoveDown, onUnlink }) {
+  return (
+    <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-[#1f1f1f] bg-[#0e0e0e] hover:border-[#2a2a2a] transition-all duration-75 select-none">
+      <div className="flex flex-col gap-1 shrink-0">
+        <button
+          onClick={onMoveUp}
+          disabled={index === 0}
+          title="Move up"
+          className="w-6 h-6 flex items-center justify-center rounded-md border border-[#2a2a2a] text-[#555] hover:text-white hover:bg-[#1a1a1a] hover:border-[#444] transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="11" height="11">
+            <path d="M18 15l-6-6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+        <button
+          onClick={onMoveDown}
+          disabled={index === total - 1}
+          title="Move down"
+          className="w-6 h-6 flex items-center justify-center rounded-md border border-[#2a2a2a] text-[#555] hover:text-white hover:bg-[#1a1a1a] hover:border-[#444] transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="11" height="11">
+            <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+      </div>
+
+      <div className="w-8 h-8 rounded-lg bg-[#1a1a1a] overflow-hidden shrink-0 border border-[#1f1f1f]">
+        {product.image
+          ? <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+          : <div className="w-full h-full flex items-center justify-center text-[#333] text-xs">▦</div>
+        }
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <p className="text-[#ccc] text-[12px] font-medium truncate">{product.name}</p>
+        {product.isGroup && (
+          <p className="text-[#555] text-[10px]">Group · {product._count?.subProducts ?? 0} sub</p>
+        )}
+      </div>
+
+      <span className="text-[10px] text-[#2a2a2a] tabular-nums shrink-0 w-4 text-right">{index + 1}</span>
+      <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${product.isActive ? "bg-green-500" : "bg-[#333]"}`} />
+
+      <button
+        onClick={onUnlink}
+        title="Remove from group"
+        className="w-6 h-6 flex items-center justify-center rounded-md border border-[#1f1f1f] text-[#444] hover:text-orange-400 hover:border-orange-900/50 transition-colors shrink-0"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="10" height="10">
+          <path d="M18.36 6.64a9 9 0 11-12.73 0M12 2v10" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+    </div>
+  );
+}
+
+// ─── ProductChip (pool side, draggable) ───────────────────────────────────────
+
+function ProductChip({ product, onDragStart, onDragEnd, isDragging }) {
   return (
     <div
       draggable
-      onDragStart={(e) => onDragStart(e, product, side)}
+      onDragStart={(e) => onDragStart(e, product)}
       onDragEnd={onDragEnd}
       className={`
         group flex items-center gap-3 px-3 py-2.5 rounded-xl border cursor-grab active:cursor-grabbing
@@ -101,20 +159,47 @@ function DropZone({ children, onDrop, isEmpty, emptyMsg, emptyIcon }) {
   );
 }
 
-// ─── GroupRow ─────────────────────────────────────────────────────────────────
+// ─── GroupRow (arrow-based reorder) ──────────────────────────────────────────
 
-function GroupRow({ group, isSelected, onClick, onEdit, onDelete, onToggle }) {
+function GroupRow({
+  group, index, total, isSelected, onClick, onEdit, onDelete, onToggle,
+  onMoveUp, onMoveDown,
+}) {
   return (
     <div
       onClick={onClick}
       className={`
-        group flex items-center gap-3 px-4 py-3 rounded-xl border cursor-pointer transition-all duration-150
+        group flex items-center gap-2 px-3 py-2.5 rounded-xl border cursor-pointer transition-all duration-150
         ${isSelected
           ? "bg-[#111] border-[#2a2a2a]"
           : "bg-transparent border-transparent hover:bg-[#0e0e0e] hover:border-[#1a1a1a]"
         }
       `}
     >
+      {/* up/down arrows */}
+      <div className="flex flex-col gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+        <button
+          onClick={onMoveUp}
+          disabled={index === 0}
+          title="Move up"
+          className="w-5 h-5 flex items-center justify-center rounded border border-[#2a2a2a] text-[#444] hover:text-white hover:bg-[#1a1a1a] hover:border-[#444] transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="9" height="9">
+            <path d="M18 15l-6-6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+        <button
+          onClick={onMoveDown}
+          disabled={index === total - 1}
+          title="Move down"
+          className="w-5 h-5 flex items-center justify-center rounded border border-[#2a2a2a] text-[#444] hover:text-white hover:bg-[#1a1a1a] hover:border-[#444] transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="9" height="9">
+            <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+      </div>
+
       <div className="w-9 h-9 rounded-lg bg-[#1a1a1a] overflow-hidden shrink-0 border border-[#1f1f1f]">
         {group.image
           ? <img src={group.image} alt={group.name} className="w-full h-full object-cover" />
@@ -183,8 +268,8 @@ function InfoCard({ label, value }) {
 export default function GroupsPage() {
   const [groups, setGroups] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(null);
-  const [groupProducts, setGroupProducts] = useState([]);  // products IN selected group
-  const [allProducts, setAllProducts] = useState([]);       // all layer-3 products
+  const [groupProducts, setGroupProducts] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
 
   const [loadingGroups, setLoadingGroups] = useState(true);
   const [loadingProducts, setLoadingProducts] = useState(false);
@@ -194,8 +279,13 @@ export default function GroupsPage() {
 
   const [activeTab, setActiveTab] = useState("info");
 
-  const dragItem = useRef(null);
-  const [draggingId, setDraggingId] = useState(null);
+  // ── product drag (pool → group) ──
+  const productDragItem = useRef(null);
+  const [draggingProductId, setDraggingProductId] = useState(null);
+
+  // debounce timers
+  const productReorderTimer = useRef(null);
+  const groupReorderTimer = useRef(null);
 
   const [groupSearch, setGroupSearch] = useState("");
   const [prodSearch, setProdSearch] = useState("");
@@ -214,7 +304,7 @@ export default function GroupsPage() {
     })();
   }, []);
 
-  // ── fetch all layer-3 products once ──
+  // ── fetch all products once ──
   useEffect(() => {
     (async () => {
       try {
@@ -242,22 +332,79 @@ export default function GroupsPage() {
     setActiveTab("products");
   }
 
-  // ── drag & drop ──
-  function handleDragStart(e, product, side) {
-    dragItem.current = { product, side };
-    setDraggingId(product.id);
+  // ── product arrow reorder ──
+  function moveProduct(index, direction) {
+    const newList = [...groupProducts];
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= newList.length) return;
+    [newList[index], newList[targetIndex]] = [newList[targetIndex], newList[index]];
+    setGroupProducts(newList);
+
+    clearTimeout(productReorderTimer.current);
+    productReorderTimer.current = setTimeout(async () => {
+      try {
+        await fetch(`${API}/api/groups/${selectedGroup.id}/reorder`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ productIds: newList.map((p) => p.id) }),
+        });
+      } catch (e) {
+        console.error("Product reorder failed", e);
+        setError("Failed to save product order");
+      }
+    }, 500);
+  }
+
+  // ── group arrow reorder ──
+  function moveGroup(index, direction) {
+    const filtered = filteredGroups; // operate on filtered view
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= filtered.length) return;
+
+    // find the actual indices in the full groups array
+    const fromId = filtered[index].id;
+    const toId = filtered[targetIndex].id;
+
+    const newList = [...groups];
+    const fromIdx = newList.findIndex((g) => g.id === fromId);
+    const toIdx = newList.findIndex((g) => g.id === toId);
+    [newList[fromIdx], newList[toIdx]] = [newList[toIdx], newList[fromIdx]];
+    setGroups(newList);
+
+    clearTimeout(groupReorderTimer.current);
+    groupReorderTimer.current = setTimeout(async () => {
+      try {
+        await fetch(`${API}/api/groups/reorder`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ groupIds: newList.map((g) => g.id) }),
+        });
+      } catch (e) {
+        console.error("Group reorder failed", e);
+        setError("Failed to save group order");
+      }
+    }, 500);
+  }
+
+  // ── product drag (pool → group) ──
+  function handleProductDragStart(e, product) {
+    productDragItem.current = product;
+    setDraggingProductId(product.id);
     e.dataTransfer.effectAllowed = "move";
   }
 
-  function handleDragEnd() {
-    dragItem.current = null;
-    setDraggingId(null);
+  function handleProductDragEnd() {
+    productDragItem.current = null;
+    setDraggingProductId(null);
   }
 
+  // ── add product (drop from pool) ──
   async function handleDropToGroup() {
-    const item = dragItem.current;
-    if (!item || item.side !== "right" || !selectedGroup) return;
-    const product = item.product;
+    const product = productDragItem.current;
+    if (!product || !selectedGroup) return;
+    if (groupProducts.some((p) => p.id === product.id)) return;
 
     setGroupProducts((prev) => [...prev, product]);
 
@@ -289,11 +436,9 @@ export default function GroupsPage() {
     }
   }
 
-  async function handleDropToPool() {
-    const item = dragItem.current;
-    if (!item || item.side !== "left" || !selectedGroup) return;
-    const product = item.product;
-
+  // ── unlink product ──
+  async function handleUnlinkProduct(product) {
+    if (!selectedGroup) return;
     setGroupProducts((prev) => prev.filter((p) => p.id !== product.id));
 
     try {
@@ -388,9 +533,6 @@ export default function GroupsPage() {
       <div className="flex items-start justify-between mb-6 shrink-0">
         <div>
           <h1 className="text-white text-2xl font-bold tracking-tight">Kategoriler</h1>
-          <p className="text-[#555] text-sm mt-1">
-            {/* Curate product collections independent of categories */}
-          </p>
         </div>
         <button
           onClick={() => { setEditingGroup(null); setModalOpen(true); }}
@@ -453,20 +595,24 @@ export default function GroupsPage() {
                     onClick={() => { setEditingGroup(null); setModalOpen(true); }}
                     className="mt-2 text-[#555] text-[11px] border border-[#1f1f1f] rounded-lg px-3 py-1.5 hover:text-white hover:border-[#333] transition-colors"
                   >
-                   İlk kategoriyi ekle
+                    İlk kategoriyi ekle
                   </button>
                 )}
               </div>
             ) : (
-              filteredGroups.map((g) => (
+              filteredGroups.map((g, index) => (
                 <GroupRow
                   key={g.id}
                   group={g}
+                  index={index}
+                  total={filteredGroups.length}
                   isSelected={selectedGroup?.id === g.id}
                   onClick={() => handleSelectGroup(g)}
                   onEdit={(x) => { setEditingGroup(x); setModalOpen(true); }}
                   onDelete={handleDeleteGroup}
                   onToggle={handleToggleGroup}
+                  onMoveUp={() => moveGroup(index, -1)}
+                  onMoveDown={() => moveGroup(index, 1)}
                 />
               ))
             )}
@@ -494,7 +640,6 @@ export default function GroupsPage() {
                   <p className="text-[#444] text-[11px]">{selectedGroup._count?.products ?? 0} products assigned</p>
                 </div>
 
-                {/* tab switcher */}
                 <div className="flex items-center gap-1 bg-[#0e0e0e] border border-[#1a1a1a] rounded-lg p-0.5 shrink-0">
                   {[["info", "Group Info"], ["products", "Assign Products"]].map(([tab, label]) => (
                     <button
@@ -542,38 +687,45 @@ export default function GroupsPage() {
                 </div>
               )}
 
-              {/* ─ Tab: Assign Products (drag & drop) ─ */}
+              {/* ─ Tab: Assign Products ─ */}
               {activeTab === "products" && (
                 <div className="flex-1 flex gap-3 p-3 min-h-0 overflow-hidden">
 
-                  {/* LEFT: products IN this group */}
+                  {/* LEFT col: products IN this group */}
                   <div className="flex-1 flex flex-col min-w-0">
                     <div className="flex items-center justify-between mb-2 px-1 shrink-0">
                       <span className="text-[#555] text-[10px] tracking-widest uppercase font-semibold">In Group</span>
                       <span className="text-[#333] text-[10px]">{groupProducts.length}</span>
                     </div>
-                    <DropZone
-                      onDrop={handleDropToGroup}
-                      isEmpty={groupProducts.length === 0}
-                      emptyMsg="Drag products here to add them to this group"
-                      emptyIcon="⊞"
-                    >
-                      {loadingProducts
-                        ? [1, 2, 3].map((i) => (
+
+                    <div className="flex-1 overflow-y-auto rounded-xl border border-[#1a1a1a]">
+                      {loadingProducts ? (
+                        <div className="p-3 flex flex-col gap-1.5">
+                          {[1, 2, 3].map((i) => (
                             <div key={i} className="h-12 bg-[#111] rounded-xl animate-pulse border border-[#1a1a1a]" />
-                          ))
-                        : groupProducts.map((p) => (
-                            <ProductChip
+                          ))}
+                        </div>
+                      ) : groupProducts.length === 0 ? (
+                        <div className="h-full flex flex-col items-center justify-center gap-2 py-16 text-center px-4">
+                          <div className="text-[#252525] text-3xl mb-1">⊞</div>
+                          <p className="text-[#3a3a3a] text-[12px]">Drag products from the right to add them</p>
+                        </div>
+                      ) : (
+                        <div className="p-3 flex flex-col gap-1.5">
+                          {groupProducts.map((p, index) => (
+                            <GroupProductRow
                               key={p.id}
                               product={p}
-                              side="left"
-                              onDragStart={handleDragStart}
-                              onDragEnd={handleDragEnd}
-                              isDragging={draggingId === p.id}
+                              index={index}
+                              total={groupProducts.length}
+                              onMoveUp={() => moveProduct(index, -1)}
+                              onMoveDown={() => moveProduct(index, 1)}
+                              onUnlink={() => handleUnlinkProduct(p)}
                             />
-                          ))
-                      }
-                    </DropZone>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* divider */}
@@ -587,10 +739,10 @@ export default function GroupsPage() {
                     <div className="flex-1 w-px bg-[#111]" />
                   </div>
 
-                  {/* RIGHT: all products NOT in group */}
+                  {/* RIGHT col: pool */}
                   <div className="flex-1 flex flex-col min-w-0">
                     <div className="flex items-center justify-between mb-2 px-1 shrink-0">
-                      <span className="text-[#555] text-[10px] tracking-widests uppercase font-semibold">All Products</span>
+                      <span className="text-[#555] text-[10px] tracking-widest uppercase font-semibold">All Products</span>
                       <span className="text-[#333] text-[10px]">{poolProducts.length}</span>
                     </div>
                     <div className="relative mb-2 shrink-0">
@@ -606,7 +758,7 @@ export default function GroupsPage() {
                       />
                     </div>
                     <DropZone
-                      onDrop={handleDropToPool}
+                      onDrop={handleDropToGroup}
                       isEmpty={poolProducts.length === 0}
                       emptyMsg={prodSearch ? "No products match your search" : "All products are in this group"}
                       emptyIcon="▦"
@@ -615,10 +767,9 @@ export default function GroupsPage() {
                         <ProductChip
                           key={p.id}
                           product={p}
-                          side="right"
-                          onDragStart={handleDragStart}
-                          onDragEnd={handleDragEnd}
-                          isDragging={draggingId === p.id}
+                          onDragStart={handleProductDragStart}
+                          onDragEnd={handleProductDragEnd}
+                          isDragging={draggingProductId === p.id}
                         />
                       ))}
                     </DropZone>
@@ -633,14 +784,13 @@ export default function GroupsPage() {
               </div>
               <p className="text-[#3a3a3a] text-[13px] font-medium">Select a group</p>
               <p className="text-[#2a2a2a] text-[11px] max-w-xs leading-relaxed">
-                Choose a group from the left panel to view its details and assign products via drag & drop
+                Choose a group from the left panel to view its details and assign products
               </p>
             </div>
           )}
         </div>
       </div>
 
-      {/* ── Modal ── */}
       {modalOpen && (
         <GroupModal
           group={editingGroup}

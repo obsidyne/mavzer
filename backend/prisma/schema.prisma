@@ -141,6 +141,7 @@ model Group {
 model ProductGroup {
   productId String
   groupId   String
+  order     Int     @default(0)    // ← add this
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   group     Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)
 

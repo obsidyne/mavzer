@@ -140,4 +140,42 @@ router.get("/:id/products", async (req, res) => {
   }
 });
 
+router.post("/reorder", async (req, res) => {
+  try {
+    const { groupIds } = req.body;
+    if (!Array.isArray(groupIds))
+      return res.status(400).json({ message: "groupIds must be an array" });
+
+    await Promise.all(
+      groupIds.map((id, index) =>
+        prisma.group.update({ where: { id }, data: { order: index } })
+      )
+    );
+    return res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Failed to reorder groups" });
+  }
+});
+// POST /api/groups/:id/reorder
+router.post("/:id/reorder", async (req, res) => {
+  try {
+    const { productIds } = req.body;
+    if (!Array.isArray(productIds))
+      return res.status(400).json({ message: "productIds must be an array" });
+
+    await Promise.all(
+      productIds.map((productId, index) =>
+        prisma.productGroup.updateMany({
+          where: { groupId: req.params.id, productId },
+          data: { order: index },
+        })
+      )
+    );
+    return res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Failed to reorder products" });
+  }
+});
 export default router;
