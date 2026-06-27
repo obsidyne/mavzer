@@ -169,6 +169,7 @@ export default function HeroSection() {
       } catch (e) { setGridItems([]); }
       finally { setGridLoading(false); }
     } else {
+      // router.push(`/products/${product.id}`);
       router.push(`/products/${product.id}${activeSector?.id ? `?from=${activeSector.id}` : ''}`);
     }
   }, [layer, router, activeSector]);
@@ -195,6 +196,7 @@ export default function HeroSection() {
   }, [activeSector, router]);
 
   const isCondensed = gridVisible;
+  // on mobile never auto-condense the sector bar
   const cols        = isMobile ? Math.min(sectors.length, 3) : 6;
 
   return (
@@ -306,76 +308,71 @@ export default function HeroSection() {
       <div className="mt-[66px] md:mt-[66px]" style={{ display: 'flex', flexDirection: 'column' }}>
 
         {/* ── Banner slider ── */}
-        <div className="w-full max-w-[1150px] mx-auto px-3 md:px-6 shrink-0">
-          <section
-            className="relative w-full overflow-hidden bg-[#071e3d]"
-            style={{ height: isMobile ? '40vh' : '50vh' }}
-          >
-            {slides.map((slide, i) => (
-              <SlideImage key={i} slide={slide} active={i === current} />
+        <section
+          className="relative w-full overflow-hidden bg-[#071e3d] shrink-0"
+          style={{ height: isMobile ? '40vh' : '50vh' }}
+        >
+          {slides.map((slide, i) => (
+            <SlideImage key={i} slide={slide} active={i === current} />
+          ))}
+
+          {/* dots */}
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2">
+            {slides.map((_, i) => (
+              <button key={i} onClick={() => goTo(i)} aria-label={`Slide ${i + 1}`}
+                style={{ width: i === current ? '44px' : '28px' }}
+                className={`h-[3px] border-none cursor-pointer p-0 rounded-sm transition-all duration-300 ${i === current ? 'bg-[#1e88e5]' : 'bg-white/30'}`} />
             ))}
+          </div>
 
-            {/* dots */}
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2">
-              {slides.map((_, i) => (
-                <button key={i} onClick={() => goTo(i)} aria-label={`Slide ${i + 1}`}
-                  style={{ width: i === current ? '44px' : '28px' }}
-                  className={`h-[3px] border-none cursor-pointer p-0 rounded-sm transition-all duration-300 ${i === current ? 'bg-[#1e88e5]' : 'bg-white/30'}`} />
-              ))}
-            </div>
-
-            {/* prev/next — hidden on very small screens */}
-            <div className="absolute bottom-2 right-4 md:right-8 z-10 hidden sm:flex gap-1.5">
-              {[{ label: 'Prev', dir: -1, path: 'M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z' }, { label: 'Next', dir: 1, path: 'M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z' }].map(({ label, dir, path }) => (
-                <button key={label} onClick={() => goTo(current + dir)} aria-label={label}
-                  className="w-6 h-6 rounded flex items-center justify-center bg-white/20 border border-white/40 cursor-pointer transition-all duration-200 hover:bg-white hover:border-white">
-                  <svg viewBox="0 0 24 24" fill="white" width="11" height="11"><path d={path} /></svg>
-                </button>
-              ))}
-            </div>
-          </section>
-        </div>
+          {/* prev/next — hidden on very small screens */}
+          <div className="absolute bottom-2 right-4 md:right-8 z-10 hidden sm:flex gap-1.5">
+            {[{ label: 'Prev', dir: -1, path: 'M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z' }, { label: 'Next', dir: 1, path: 'M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z' }].map(({ label, dir, path }) => (
+              <button key={label} onClick={() => goTo(current + dir)} aria-label={label}
+                className="w-6 h-6 rounded flex items-center justify-center bg-white/20 border border-white/40 cursor-pointer transition-all duration-200 hover:bg-white hover:border-white">
+                <svg viewBox="0 0 24 24" fill="white" width="11" height="11"><path d={path} /></svg>
+              </button>
+            ))}
+          </div>
+        </section>
 
         {/* ── Badges strip ── */}
-        <div className="shrink-0 w-full max-w-[1150px] mx-auto px-3 md:px-6">
-          <div
-            className="w-full flex items-center justify-between overflow-hidden"
-            style={{ height: isMobile ? '40px' : '48px', background: 'linear-gradient(135deg,#0a3a6e 0%,#1565c0 50%,#0a3a6e 100%)' }}
-          >
-            {/* Badge: Free Delivery */}
-            <div className="slide-left flex flex-col items-center justify-center h-full shrink-0 border-r border-white/20" style={{ gap: '2px', padding: '0 16px', minWidth: isMobile ? '60px' : '80px' }}>
-              <div className="truck-anim text-white/90"><TruckIcon /></div>
-              <span className="text-white font-extrabold uppercase whitespace-nowrap" style={{ fontSize: isMobile ? '6px' : '8px', letterSpacing: '0.1em' }}>{t.hero_badge}</span>
-            </div>
-
-            {/* Badge: 30+ Years */}
-            <div className="slide-left-2 flex flex-col items-center justify-center h-full shrink-0 border-r border-white/20" style={{ gap: '2px', padding: '0 16px', minWidth: isMobile ? '60px' : '80px' }}>
-              <div className="pulse-anim text-white/90"><ExpIcon /></div>
-              <span className="text-white font-extrabold uppercase whitespace-nowrap" style={{ fontSize: isMobile ? '6px' : '8px', letterSpacing: '0.1em' }}>{t.hero_exp}</span>
-            </div>
-
-            {/* Center slogan */}
-            <div className="flex items-center flex-1 justify-center min-w-0 px-1" style={{ gap: '4px' }}>
-              <div className="flex flex-col items-center shrink-0">
-                {[0,1,2].map((i) => (<svg key={i} viewBox="0 0 24 24" fill="white" style={{ width: '8px', height: '8px', animation:'chevronBlink 1.2s ease-in-out infinite', animationDelay:`${i*0.2}s` }}><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" /></svg>))}
+        <div
+          className="shrink-0 w-full flex items-center justify-between overflow-hidden"
+          style={{ height: isMobile ? '44px' : '55px', background: 'linear-gradient(135deg,#0a3a6e 0%,#1565c0 50%,#0a3a6e 100%)' }}
+        >
+          <div className="flex items-center h-full divide-x divide-white/20 shrink-0">
+            {[
+              { cls: 'slide-left',   icon: <TruckIcon />, label: t.hero_badge },
+              { cls: 'slide-left-2', icon: <ExpIcon />,   label: t.hero_exp  },
+            ].map(({ cls, icon, label }, i) => (
+              <div key={i} className={`badge-item ${cls} flex flex-col items-center justify-center h-full`} style={{ gap: '3px', padding: '0 2.5vw', minWidth: '10vw' }}>
+                <div className={i === 0 ? 'truck-anim text-white/90' : 'pulse-anim text-white/90'}>{icon}</div>
+                <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: 'clamp(7px,0.65vw,11px)', letterSpacing: '0.12em', padding: '1px 0.5vw' }}>{label}</span>
               </div>
-              <span className="font-bold uppercase text-white whitespace-nowrap" style={{ fontSize: isMobile ? '8px' : '11px', letterSpacing: '0.08em' }}>{t.hero_cta}</span>
-              <div className="flex flex-col items-center shrink-0">
-                {[0,1,2].map((i) => (<svg key={i} viewBox="0 0 24 24" fill="white" style={{ width: '8px', height: '8px', animation:'chevronBlink 1.2s ease-in-out infinite', animationDelay:`${i*0.2}s` }}><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" /></svg>))}
+            ))}
+          </div>
+
+          <div className="badge-strip-center flex items-center flex-1 justify-center min-w-0 px-2" style={{ gap: '0.5vw' }}>
+            <div className="flex flex-col items-center shrink-0">
+              {[0,1,2].map((i) => (<svg key={i} viewBox="0 0 24 24" fill="white" style={{ width:'clamp(10px,1vw,16px)', height:'clamp(10px,1vw,16px)', animation:'chevronBlink 1.2s ease-in-out infinite', animationDelay:`${i*0.2}s` }}><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" /></svg>))}
+            </div>
+            <span className="font-bold uppercase text-white whitespace-nowrap" style={{ fontSize: isMobile ? '11px' : '14px', letterSpacing: '0.08em' }}>{t.hero_cta}</span>
+            <div className="flex flex-col items-center shrink-0">
+              {[0,1,2].map((i) => (<svg key={i} viewBox="0 0 24 24" fill="white" style={{ width:'clamp(10px,1vw,16px)', height:'clamp(10px,1vw,16px)', animation:'chevronBlink 1.2s ease-in-out infinite', animationDelay:`${i*0.2}s` }}><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" /></svg>))}
+            </div>
+          </div>
+
+          <div className="flex items-center h-full divide-x divide-white/20 shrink-0">
+            {[
+              { cls: 'slide-right',   icon: <QualityIcon />, label: t.hero_quality, animCls: 'badge-anim' },
+              { cls: 'slide-right-2', icon: <ClockIcon />,   label: t.hero_ontime,  animCls: 'clock-anim' },
+            ].map(({ cls, icon, label, animCls }, i) => (
+              <div key={i} className={`badge-item ${cls} flex flex-col items-center justify-center h-full`} style={{ gap: '3px', padding: '0 2.5vw', minWidth: '10vw' }}>
+                <div className={`${animCls} text-white/90`}>{icon}</div>
+                <span className="text-white font-extrabold uppercase border border-white/40 whitespace-nowrap" style={{ fontSize: 'clamp(7px,0.65vw,11px)', letterSpacing: '0.12em', padding: '1px 0.5vw' }}>{label}</span>
               </div>
-            </div>
-
-            {/* Badge: Quality */}
-            <div className="slide-right flex flex-col items-center justify-center h-full shrink-0 border-l border-white/20" style={{ gap: '2px', padding: '0 16px', minWidth: isMobile ? '60px' : '80px' }}>
-              <div className="badge-anim text-white/90"><QualityIcon /></div>
-              <span className="text-white font-extrabold uppercase whitespace-nowrap" style={{ fontSize: isMobile ? '6px' : '8px', letterSpacing: '0.1em' }}>{t.hero_quality}</span>
-            </div>
-
-            {/* Badge: On Time */}
-            <div className="slide-right-2 flex flex-col items-center justify-center h-full shrink-0 border-l border-white/20" style={{ gap: '2px', padding: '0 16px', minWidth: isMobile ? '60px' : '80px' }}>
-              <div className="clock-anim text-white/90"><ClockIcon /></div>
-              <span className="text-white font-extrabold uppercase whitespace-nowrap" style={{ fontSize: isMobile ? '6px' : '8px', letterSpacing: '0.1em' }}>{t.hero_ontime}</span>
-            </div>
+            ))}
           </div>
         </div>
 
