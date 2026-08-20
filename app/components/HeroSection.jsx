@@ -307,9 +307,8 @@ export default function HeroSection() {
         }
 
         /* ── badges strip ── */
-        @media (max-width: 480px) {
-          .badge-strip-center { display: none !important; }
-          .badge-item { padding: 0 3vw !important; min-width: 22vw !important; }
+        @media (max-width: 767px) {
+          .badge-item { padding: 0 2vw !important; min-width: 20vw !important; }
         }
       `}</style>
 
@@ -354,13 +353,13 @@ export default function HeroSection() {
             style={{ height: isMobile ? '40px' : '48px', background: 'linear-gradient(135deg,#0a3a6e 0%,#1565c0 50%,#0a3a6e 100%)' }}
           >
             {/* Badge: Free Delivery */}
-            <div className="slide-left flex flex-col items-center justify-center h-full shrink-0 border-r border-white/20" style={{ gap: '2px', padding: '0 16px', minWidth: isMobile ? '60px' : '80px' }}>
+            <div className="badge-item slide-left flex flex-col items-center justify-center h-full shrink-0 border-r border-white/20" style={{ gap: '2px', padding: '0 16px', minWidth: isMobile ? '60px' : '80px' }}>
               <div className="truck-anim text-white/90"><TruckIcon /></div>
               <span className="text-white font-extrabold uppercase whitespace-nowrap" style={{ fontSize: isMobile ? '6px' : '8px', letterSpacing: '0.1em' }}>{t.hero_badge}</span>
             </div>
 
             {/* Badge: 30+ Years */}
-            <div className="slide-left-2 flex flex-col items-center justify-center h-full shrink-0 border-r border-white/20" style={{ gap: '2px', padding: '0 16px', minWidth: isMobile ? '60px' : '80px' }}>
+            <div className="badge-item slide-left-2 flex flex-col items-center justify-center h-full shrink-0 border-r border-white/20" style={{ gap: '2px', padding: '0 16px', minWidth: isMobile ? '60px' : '80px' }}>
               <div className="pulse-anim text-white/90"><ExpIcon /></div>
               <span className="text-white font-extrabold uppercase whitespace-nowrap" style={{ fontSize: isMobile ? '6px' : '8px', letterSpacing: '0.1em' }}>{t.hero_exp}</span>
             </div>
@@ -377,13 +376,13 @@ export default function HeroSection() {
             </div>
 
             {/* Badge: Quality */}
-            <div className="slide-right flex flex-col items-center justify-center h-full shrink-0 border-l border-white/20" style={{ gap: '2px', padding: '0 16px', minWidth: isMobile ? '60px' : '80px' }}>
+            <div className="badge-item slide-right flex flex-col items-center justify-center h-full shrink-0 border-l border-white/20" style={{ gap: '2px', padding: '0 16px', minWidth: isMobile ? '60px' : '80px' }}>
               <div className="badge-anim text-white/90"><QualityIcon /></div>
               <span className="text-white font-extrabold uppercase whitespace-nowrap" style={{ fontSize: isMobile ? '6px' : '8px', letterSpacing: '0.1em' }}>{t.hero_quality}</span>
             </div>
 
             {/* Badge: On Time */}
-            <div className="slide-right-2 flex flex-col items-center justify-center h-full shrink-0 border-l border-white/20" style={{ gap: '2px', padding: '0 16px', minWidth: isMobile ? '60px' : '80px' }}>
+            <div className="badge-item slide-right-2 flex flex-col items-center justify-center h-full shrink-0 border-l border-white/20" style={{ gap: '2px', padding: '0 16px', minWidth: isMobile ? '60px' : '80px' }}>
               <div className="clock-anim text-white/90"><ClockIcon /></div>
               <span className="text-white font-extrabold uppercase whitespace-nowrap" style={{ fontSize: isMobile ? '6px' : '8px', letterSpacing: '0.1em' }}>{t.hero_ontime}</span>
             </div>

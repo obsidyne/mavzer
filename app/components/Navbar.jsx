@@ -214,7 +214,7 @@ function NavLink({ href, label }) {
 
 function TurkeyFlag() {
   return (
-    <svg viewBox="0 0 30 20" width="32" height="20" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 30 20" className="block w-full h-full" xmlns="http://www.w3.org/2000/svg">
       <rect width="30" height="20" fill="#E30A17" />
       <circle cx="11" cy="10" r="4.5" fill="white" />
       <circle cx="12.8" cy="10" r="3.5" fill="#E30A17" />
@@ -225,7 +225,7 @@ function TurkeyFlag() {
 
 function USFlag() {
   return (
-    <svg viewBox="0 0 30 20" width="32" height="20" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 30 20" className="block w-full h-full" xmlns="http://www.w3.org/2000/svg">
       {[0,1,2,3,4,5,6,7,8,9,10,11,12].map((i) => (
         <rect key={i} x="0" y={i * (20/13)} width="30" height={20/13}
           fill={i % 2 === 0 ? "#B22234" : "white"} />
