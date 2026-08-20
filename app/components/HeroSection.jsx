@@ -39,7 +39,7 @@ function SlideImage({ slide, active }) {
   const src = useBannerSrc(slide);
   return (
     <div className={`absolute inset-0 transition-opacity duration-1000 ${active ? 'opacity-100' : 'opacity-0'}`}>
-      <img src={src} alt={slide.title || 'Banner'} className="w-full h-full object-cover" />
+      <img src={src} alt={slide.title || 'Banner'} className="w-full h-full object-contain" />
     </div>
   );
 }
@@ -220,6 +220,16 @@ export default function HeroSection() {
         .slide-right-2{ animation:slideInRight 0.7s ease-out 0.15s both }
         .fade-slide-up{ animation:fadeSlideUp 0.35s ease-out both }
 
+        /* ── hero banner ── */
+        .hero-banner {
+          width: 100%;
+          aspect-ratio: 18 / 5;
+          max-height: 50vh;
+        }
+        @media (max-width: 767px) {
+          .hero-banner { aspect-ratio: 12 / 5; max-height: 42vh; }
+        }
+
         /* ── sector bar ── */
         .sector-bar {
           position: sticky;
@@ -307,20 +317,21 @@ export default function HeroSection() {
 
         {/* ── Banner slider ── */}
         <div className="w-full max-w-[1150px] mx-auto px-3 md:px-6 shrink-0">
-          <section
-            className="relative w-full overflow-hidden bg-[#071e3d]"
-            style={{ height: isMobile ? '40vh' : '50vh' }}
-          >
+          <section className="hero-banner relative overflow-hidden bg-[#071e3d]">
             {slides.map((slide, i) => (
               <SlideImage key={i} slide={slide} active={i === current} />
             ))}
 
             {/* dots */}
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2">
+            <div className="absolute bottom-1 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1">
               {slides.map((_, i) => (
                 <button key={i} onClick={() => goTo(i)} aria-label={`Slide ${i + 1}`}
-                  style={{ width: i === current ? '44px' : '28px' }}
-                  className={`h-[3px] border-none cursor-pointer p-0 rounded-sm transition-all duration-300 ${i === current ? 'bg-[#1e88e5]' : 'bg-white/30'}`} />
+                  className="flex items-center justify-center border-none bg-transparent cursor-pointer p-2">
+                  <span
+                    style={{ width: i === current ? '44px' : '28px' }}
+                    className={`block h-[3px] rounded-sm transition-all duration-300 ${i === current ? 'bg-[#1e88e5]' : 'bg-white/30'}`}
+                  />
+                </button>
               ))}
             </div>
 
@@ -355,7 +366,7 @@ export default function HeroSection() {
             </div>
 
             {/* Center slogan */}
-            <div className="flex items-center flex-1 justify-center min-w-0 px-1" style={{ gap: '4px' }}>
+            <div className="hidden md:flex items-center flex-1 justify-center min-w-0 px-1" style={{ gap: '4px' }}>
               <div className="flex flex-col items-center shrink-0">
                 {[0,1,2].map((i) => (<svg key={i} viewBox="0 0 24 24" fill="white" style={{ width: '8px', height: '8px', animation:'chevronBlink 1.2s ease-in-out infinite', animationDelay:`${i*0.2}s` }}><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" /></svg>))}
               </div>
