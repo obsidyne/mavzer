@@ -16,7 +16,7 @@ export default function ProductsSidebar({
 
   if (loading) {
     return (
-      <div className="w-52 shrink-0 sticky top-24">
+      <div className="w-full md:w-52 shrink-0 md:sticky md:top-24">
         {[1, 2, 3, 4].map((i) => (
           <div key={i} className="h-11 bg-[#eef1f6] rounded-lg mb-1.5 animate-pulse" />
         ))}
@@ -25,7 +25,7 @@ export default function ProductsSidebar({
   }
 
   return (
-    <div className="w-52 shrink-0 sticky top-24">
+    <div className="w-full md:w-52 shrink-0 md:sticky md:top-24">
       <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9aa3af] mb-3 px-1">
         Sektöre Göre
       </p>

@@ -136,18 +136,18 @@ function CatalogueContent() {
       <Navbar />
 
       <div className="pt-[66px] bg-white border-b border-[#dde4ef]">
-        <div className="max-w-5xl mx-auto px-8 py-6">
+        <div className="max-w-5xl mx-auto px-4 md:px-8 py-6">
           <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase text-[#1e88e5] mb-1">
             <span className="block w-5 h-px bg-[#1e88e5]" />
             {t.fast_delivery}
           </div>
-          <h1 className="font-condensed text-[28px] font-extrabold uppercase text-[#071e3d] leading-tight tracking-wide">
+          <h1 className="font-condensed text-[22px] md:text-[28px] font-extrabold uppercase text-[#071e3d] leading-tight tracking-wide">
             {t.quality_prod}
           </h1>
           <p className="text-[13px] text-[#9aa3af] mt-1">{t.page_subtitle}</p>
         </div>
 
-        <div className="max-w-5xl mx-auto px-8 pb-5">
+        <div className="max-w-5xl mx-auto px-4 md:px-8 pb-5">
           {loading ? (
             <div className="flex gap-3 justify-center">
               {[1, 2, 3, 4, 5].map((i) => (
@@ -204,7 +204,7 @@ function CatalogueContent() {
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-8 py-8">
+      <div className="max-w-5xl mx-auto px-4 md:px-8 py-6 md:py-8">
         <div className="flex items-center gap-1.5 text-[11px] text-[#9aa3af] mb-5 flex-wrap min-h-[20px]">
           <button
             onClick={() => activeSector && loadSectorProducts(activeSector)}

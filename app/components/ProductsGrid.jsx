@@ -21,10 +21,10 @@ export default function ProductsGrid({ products, loading, context, layer, search
 
   if (loading) {
     return (
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">
         {[1, 2, 3, 4, 5, 6].map((i) => (
           <div key={i} className="rounded-xl border border-[#dde4ef] bg-white overflow-hidden animate-pulse">
-            <div className="h-48 bg-[#f4f6fa]" />
+            <div className="h-32 sm:h-48 bg-[#f4f6fa]" />
             <div className="p-4">
               <div className="h-3 bg-[#f4f6fa] rounded w-3/4 mb-2" />
               <div className="h-2 bg-[#f4f6fa] rounded w-1/2" />
@@ -50,7 +50,7 @@ export default function ProductsGrid({ products, loading, context, layer, search
       <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9aa3af] mb-4">
         {context.label} — {products.length} {t.products_label}
       </p>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">
         {products.map((product) => (
           <ProductGridCard
             key={product.id}
@@ -74,7 +74,7 @@ function ProductGridCard({ product, layer, t, onClick }) {
       onClick={onClick}
       className="group cursor-pointer rounded-xl border border-[#dde4ef] bg-white overflow-hidden hover:border-[#1e88e5] hover:shadow-[0_8px_32px_rgba(30,136,229,0.08)] transition-all duration-200"
     >
-      <div className="h-48 bg-[#f4f6fa] flex items-center justify-center overflow-hidden relative">
+      <div className="h-32 sm:h-48 bg-[#f4f6fa] flex items-center justify-center overflow-hidden relative">
         {product.image ? (
           <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
         ) : (

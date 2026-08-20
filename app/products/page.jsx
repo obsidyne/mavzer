@@ -143,20 +143,20 @@ function ProductsContent() {
       <Navbar />
 
       <div className="pt-[66px] bg-white border-b border-[#dde4ef]">
-        <div className="max-w-5xl mx-auto px-8 py-8">
+        <div className="max-w-5xl mx-auto px-4 md:px-8 py-6 md:py-8">
           <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase text-[#1e88e5] mb-2">
             <span className="block w-5 h-px bg-[#1e88e5]" />
             {t.fast_delivery}
           </div>
-          <h1 className="font-condensed text-[34px] font-extrabold uppercase text-[#071e3d] leading-tight tracking-wide">
+          <h1 className="font-condensed text-[24px] md:text-[34px] font-extrabold uppercase text-[#071e3d] leading-tight tracking-wide">
             {t.quality_prod}
           </h1>
           <p className="text-[13px] text-[#9aa3af] mt-1">{t.page_subtitle}</p>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-8 py-8">
-        <div className="flex gap-8 items-start">
+      <div className="max-w-5xl mx-auto px-4 md:px-8 py-6 md:py-8">
+        <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
           <ProductsSidebar
             sectors={sectors}
             loading={loading}
