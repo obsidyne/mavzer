@@ -22,8 +22,20 @@ import productSectorRoutes from "./server/routes/sectors.routes.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  "https://mavzerambalaj.com.tr",
+  "https://www.mavzerambalaj.com.tr",
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.CLIENT_URL,
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true
 }));
 
