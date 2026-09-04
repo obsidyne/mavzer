@@ -18,6 +18,7 @@ import bannerRoutes        from "./server/routes/banners.routes.js";
 import clientRoutes        from "./server/routes/clients.route.js";
 import groupRoutes         from "./server/routes/group.routes.js";
 import productSectorRoutes from "./server/routes/sectors.routes.js";
+import { normalizeBodyImages } from "./server/utils/imageUrl.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -44,6 +45,16 @@ app.use(express.urlencoded({ limit: "100mb", extended: true }));
 app.use(express.raw({ limit: "100mb" }));
 app.use(express.json());
 app.use(cookieParser());
+
+// Response interceptor to normalize image URLs to the current request domain/SERVER_URL
+app.use((req, res, next) => {
+  const originalJson = res.json;
+  res.json = function (body) {
+    const normalizedBody = normalizeBodyImages(body, req);
+    return originalJson.call(this, normalizedBody);
+  };
+  next();
+});
 
 app.use("/uploads", (req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
