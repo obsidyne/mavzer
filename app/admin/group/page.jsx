@@ -5,6 +5,15 @@ import GroupModal from "../../components/admin/GroupModal";
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
+// The category that drives the public site's default "all products" listing is stored as
+// "All Products" (or "Tüm Ürünler"). Display it as "Ürünler" in the admin UI without touching
+// the stored name, since /products2 matches on it by name.
+const ALL_PRODUCTS_CATEGORY_NAMES = ["all products", "tüm ürünler"];
+
+function displayGroupName(name) {
+  return ALL_PRODUCTS_CATEGORY_NAMES.includes((name || "").trim().toLowerCase()) ? "Ürünler" : name;
+}
+
 // ─── Badge ────────────────────────────────────────────────────────────────────
 
 function Badge({ children, variant = "default" }) {
@@ -265,7 +274,7 @@ function GroupRow({
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 flex-wrap">
           <span className={`text-[13px] font-semibold truncate ${isSelected ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]"}`}>
-            {group.name}
+            {displayGroupName(group.name)}
           </span>
           {!group.isActive && <Badge variant="inactive">Off</Badge>}
         </div>
@@ -704,7 +713,7 @@ export default function GroupsPage() {
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-[var(--text-primary)] text-[13px] font-semibold truncate">{selectedGroup.name}</span>
+                    <span className="text-[var(--text-primary)] text-[13px] font-semibold truncate">{displayGroupName(selectedGroup.name)}</span>
                     <Badge variant={selectedGroup.isActive ? "green" : "inactive"}>
                       {selectedGroup.isActive ? "Active" : "Inactive"}
                     </Badge>
@@ -740,7 +749,7 @@ export default function GroupsPage() {
                       </div>
                     )}
                     <div className="grid grid-cols-2 gap-3">
-                      <InfoCard label="Name" value={selectedGroup.name} />
+                      <InfoCard label="Name" value={displayGroupName(selectedGroup.name)} />
                       <InfoCard label="Status" value={selectedGroup.isActive ? "Active" : "Inactive"} />
                       <InfoCard label="Products" value={selectedGroup._count?.products ?? 0} />
                     </div>
@@ -816,7 +825,7 @@ export default function GroupsPage() {
                   {/* ── RIGHT col: pool (drop target for group→pool) ── */}
                   <div className="flex-1 flex flex-col min-w-0">
                     <div className="flex items-center justify-between mb-2 px-1 shrink-0">
-                      <span className="text-[var(--text-muted)] text-[10px] tracking-widest uppercase font-semibold">All Products</span>
+                      <span className="text-[var(--text-muted)] text-[10px] tracking-widest uppercase font-semibold">Tüm Ürünler</span>
                       <div className="flex items-center gap-2">
                         {draggingSource === "group" && (
                           <span className="text-[9px] text-orange-500/50 animate-pulse">drop here to remove →</span>
