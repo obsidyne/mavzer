@@ -14,7 +14,7 @@ const navItems = [
   { label: "sektörler",     href: "/admin/sectors",     icon: "▦" },
   { label: "sektör ürünleri", href: "/admin/products2", icon: "▤" },
   // { label: "Categories",     href: "/admin/categories",     icon: "▦" },
-  { label: "kategoriler",     href: "/admin/group",     icon: "▦" },
+  { label: "ürünler",     href: "/admin/group",     icon: "▦" },
   // { label: "Featured",     href: "/admin/featured",     icon: "★" },
   { label: "afişler",      href: "/admin/banners",      icon: "▬" },
   // { label: "About",        href: "/admin/about",        icon: "✦" },

@@ -217,7 +217,7 @@ function DropPanel({ children, onDrop, isEmpty, emptyMsg, emptyIcon, isReceiver 
 // ─── GroupRow ─────────────────────────────────────────────────────────────────
 
 function GroupRow({
-  group, index, total, isSelected, onClick, onEdit, onDelete, onToggle,
+  group, index, total, isSelected, onClick, onDelete, onToggle,
   onMoveUp, onMoveDown,
 }) {
   return (
@@ -284,15 +284,6 @@ function GroupRow({
           className="w-7 h-7 flex items-center justify-center rounded-lg border border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--border-mid)] transition-colors text-xs"
         >
           {group.isActive ? "○" : "●"}
-        </button>
-        <button
-          onClick={() => onEdit(group)}
-          className="w-7 h-7 flex items-center justify-center rounded-lg border border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--border-mid)] transition-colors"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="11" height="11">
-            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" strokeLinecap="round"/>
-            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" strokeLinecap="round"/>
-          </svg>
         </button>
         <button
           onClick={() => onDelete(group)}
@@ -611,7 +602,7 @@ export default function GroupsPage() {
       {/* ── Header ── */}
       <div className="flex items-start justify-between mb-6 shrink-0">
         <div>
-          <h1 className="text-[var(--text-primary)] text-2xl font-bold tracking-tight">Kategoriler</h1>
+          <h1 className="text-[var(--text-primary)] text-2xl font-bold tracking-tight">Ürünler</h1>
         </div>
         {/* "Add Category" button hidden — category creation is disabled from the admin UI.
         <button
@@ -637,7 +628,7 @@ export default function GroupsPage() {
         <div className="w-[300px] shrink-0 flex flex-col bg-[var(--bg-deep)] border border-[var(--border-faint)] rounded-2xl overflow-hidden">
 
           <div className="px-4 py-3 border-b border-[var(--border-faint)] flex items-center gap-2 shrink-0">
-            <span className="text-[var(--text-tertiary)] text-[11px] tracking-widest uppercase font-semibold">Kategoriler</span>
+            <span className="text-[var(--text-tertiary)] text-[11px] tracking-widest uppercase font-semibold">Ürünler</span>
             <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-[var(--bg-surface)] text-[var(--text-muted)] border border-[var(--border-faint)]">
               {filteredGroups.length}
             </span>
@@ -691,7 +682,6 @@ export default function GroupsPage() {
                   total={filteredGroups.length}
                   isSelected={selectedGroup?.id === g.id}
                   onClick={() => handleSelectGroup(g)}
-                  onEdit={(x) => { setEditingGroup(x); setModalOpen(true); }}
                   onDelete={handleDeleteGroup}
                   onToggle={handleToggleGroup}
                   onMoveUp={() => moveGroup(index, -1)}
@@ -760,12 +750,6 @@ export default function GroupsPage() {
                         <p className="text-[var(--text-tertiary)] text-sm leading-relaxed">{selectedGroup.description}</p>
                       </div>
                     )}
-                    <button
-                      onClick={() => { setEditingGroup(selectedGroup); setModalOpen(true); }}
-                      className="text-sm text-[var(--text-primary)] border border-[var(--border-default)] rounded-lg px-4 py-2.5 hover:border-[var(--border-strong)] transition-colors w-fit"
-                    >
-                      Edit Group
-                    </button>
                   </div>
                 </div>
               )}
