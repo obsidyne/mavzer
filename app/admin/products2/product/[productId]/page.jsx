@@ -44,10 +44,10 @@ function MultiImageUpload({ images = [], onChange }) {
           {images.map((url, idx) => (
             <div
               key={url}
-              className="flex items-center gap-3 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-3 py-2"
+              className="flex items-center gap-3 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg px-3 py-2"
             >
               {/* Thumbnail */}
-              <div className="w-10 h-10 rounded border border-[#2a2a2a] overflow-hidden shrink-0 bg-[#0d0d0d]">
+              <div className="w-10 h-10 rounded border border-[var(--border-default)] overflow-hidden shrink-0 bg-[var(--bg-page)]">
                 <img src={url} alt="" className="w-full h-full object-cover" />
               </div>
 
@@ -59,7 +59,7 @@ function MultiImageUpload({ images = [], onChange }) {
               )}
 
               {/* URL preview */}
-              <p className="flex-1 text-[11px] text-[#555] truncate min-w-0">{url}</p>
+              <p className="flex-1 text-[11px] text-[var(--text-muted)] truncate min-w-0">{url}</p>
 
               {/* Reorder buttons */}
               <div className="flex gap-0.5 shrink-0">
@@ -68,7 +68,7 @@ function MultiImageUpload({ images = [], onChange }) {
                   disabled={idx === 0}
                   onClick={() => move(idx, idx - 1)}
                   title="Move up"
-                  className="w-6 h-6 flex items-center justify-center text-[#444] hover:text-white transition-colors disabled:opacity-20 rounded text-xs"
+                  className="w-6 h-6 flex items-center justify-center text-[var(--text-faint)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-20 rounded text-xs"
                 >
                   ↑
                 </button>
@@ -77,7 +77,7 @@ function MultiImageUpload({ images = [], onChange }) {
                   disabled={idx === images.length - 1}
                   onClick={() => move(idx, idx + 1)}
                   title="Move down"
-                  className="w-6 h-6 flex items-center justify-center text-[#444] hover:text-white transition-colors disabled:opacity-20 rounded text-xs"
+                  className="w-6 h-6 flex items-center justify-center text-[var(--text-faint)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-20 rounded text-xs"
                 >
                   ↓
                 </button>
@@ -87,7 +87,7 @@ function MultiImageUpload({ images = [], onChange }) {
               <button
                 type="button"
                 onClick={() => remove(idx)}
-                className="w-6 h-6 flex items-center justify-center text-[#444] hover:text-red-400 transition-colors rounded text-sm shrink-0"
+                className="w-6 h-6 flex items-center justify-center text-[var(--text-faint)] hover:text-red-400 transition-colors rounded text-sm shrink-0"
               >
                 ✕
               </button>
@@ -97,7 +97,7 @@ function MultiImageUpload({ images = [], onChange }) {
       )}
 
       {/* Upload widget — always shown to add more */}
-      <div className="border border-dashed border-[#2a2a2a] rounded-lg overflow-hidden">
+      <div className="border border-dashed border-[var(--border-default)] rounded-lg overflow-hidden">
         <ImageUpload
           value=""
           onChange={handleNewUpload}
@@ -105,7 +105,7 @@ function MultiImageUpload({ images = [], onChange }) {
         />
       </div>
 
-      <p className="text-[#3a3a3a] text-[10px] leading-relaxed">
+      <p className="text-[var(--text-faint)] text-[10px] leading-relaxed">
         Upload images one at a time.{" "}
         <span className="text-blue-500">First image</span> is the primary thumbnail shown in listings.
         Use ↑↓ to reorder.
@@ -249,7 +249,7 @@ export default function Products2FormPage() {
     }
   }
 
-  if (loading) return <div className="text-[#555] text-sm">Loading...</div>;
+  if (loading) return <div className="text-[var(--text-muted)] text-sm">Loading...</div>;
 
   const showingGroup = isNew ? creatingGroup : isGroup;
   const pageTitle = isNew
@@ -261,20 +261,20 @@ export default function Products2FormPage() {
   return (
     <div>
       {/* Back + breadcrumb */}
-      <div className="flex items-center gap-2 text-xs text-[#444] mb-6">
-        <button onClick={() => router.back()} className="hover:text-white transition-colors">
+      <div className="flex items-center gap-2 text-xs text-[var(--text-faint)] mb-6">
+        <button onClick={() => router.back()} className="hover:text-[var(--text-primary)] transition-colors">
           {backLabel}
         </button>
         {parentId && (
           <>
             <span>›</span>
-            <span className="text-[#555]">depth {depth}</span>
+            <span className="text-[var(--text-muted)]">depth {depth}</span>
           </>
         )}
       </div>
 
       <div className="flex items-center gap-3 mb-8">
-        <h1 className="text-white text-2xl font-bold tracking-tight">{pageTitle}</h1>
+        <h1 className="text-[var(--text-primary)] text-2xl font-bold tracking-tight">{pageTitle}</h1>
         {showingGroup && (
           <span className="text-[10px] px-2.5 py-1 rounded-full bg-blue-950 text-blue-400 font-medium">Group</span>
         )}
@@ -285,32 +285,32 @@ export default function Products2FormPage() {
 
           {/* Left column */}
           <div className="flex-1 flex flex-col gap-5">
-            <div className="bg-[#111] border border-[#1f1f1f] rounded-xl p-6 flex flex-col gap-5">
+            <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl p-6 flex flex-col gap-5">
               <div className="flex flex-col gap-1.5">
-                <label className="text-[#666] text-[11px] tracking-widest uppercase">Name *</label>
+                <label className="text-[var(--text-tertiary)] text-[11px] tracking-widest uppercase">Name *</label>
                 <input
                   type="text" value={name} onChange={(e) => setName(e.target.value)}
                   placeholder="Product name" required
-                  className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:border-[#444] transition-colors placeholder:text-[#333]"
+                  className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg px-4 py-2.5 text-[var(--text-primary)] text-sm outline-none focus:border-[var(--border-strong)] transition-colors placeholder:text-[var(--text-disabled)]"
                 />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[#666] text-[11px] tracking-widest uppercase">Description</label>
+                <label className="text-[var(--text-tertiary)] text-[11px] tracking-widest uppercase">Description</label>
                 <textarea
                   value={description} onChange={(e) => setDescription(e.target.value)}
                   placeholder="Product description..." rows={4}
-                  className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:border-[#444] transition-colors placeholder:text-[#333] resize-none"
+                  className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg px-4 py-2.5 text-[var(--text-primary)] text-sm outline-none focus:border-[var(--border-strong)] transition-colors placeholder:text-[var(--text-disabled)] resize-none"
                 />
               </div>
 
               {/* {!showingGroup && (
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[#666] text-[11px] tracking-widest uppercase">Price</label>
+                  <label className="text-[var(--text-tertiary)] text-[11px] tracking-widest uppercase">Price</label>
                   <input
                     type="hidden" value={price} onChange={(e) => setPrice(e.target.value)}
                     placeholder="0.00" step="0.01" min="0"
-                    className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:border-[#444] transition-colors placeholder:text-[#333]"
+                    className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg px-4 py-2.5 text-[var(--text-primary)] text-sm outline-none focus:border-[var(--border-strong)] transition-colors placeholder:text-[var(--text-disabled)]"
                   />
                 </div>
               )} */}
@@ -318,11 +318,11 @@ export default function Products2FormPage() {
 
             {/* Specs — only for leaf products */}
             {!showingGroup && (
-              <div className="bg-[#111] border border-[#1f1f1f] rounded-xl p-6">
+              <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <label className="text-[#666] text-[11px] tracking-widest uppercase">Specifications</label>
+                  <label className="text-[var(--text-tertiary)] text-[11px] tracking-widest uppercase">Specifications</label>
                   <button type="button" onClick={addDetailRow}
-                    className="text-xs text-[#666] border border-[#2a2a2a] px-3 py-1 rounded-lg hover:text-white hover:border-[#444] transition-colors">
+                    className="text-xs text-[var(--text-tertiary)] border border-[var(--border-default)] px-3 py-1 rounded-lg hover:text-[var(--text-primary)] hover:border-[var(--border-strong)] transition-colors">
                     + Add Row
                   </button>
                 </div>
@@ -331,12 +331,12 @@ export default function Products2FormPage() {
                     <div key={i} className="flex gap-2">
                       <input type="text" value={detail.key} onChange={(e) => updateDetail(i, "key", e.target.value)}
                         placeholder="e.g. Weight"
-                        className="flex-1 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-[#444] transition-colors placeholder:text-[#333]" />
+                        className="flex-1 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg px-3 py-2 text-[var(--text-primary)] text-sm outline-none focus:border-[var(--border-strong)] transition-colors placeholder:text-[var(--text-disabled)]" />
                       <input type="text" value={detail.value} onChange={(e) => updateDetail(i, "value", e.target.value)}
                         placeholder="e.g. 500g"
-                        className="flex-1 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-[#444] transition-colors placeholder:text-[#333]" />
+                        className="flex-1 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg px-3 py-2 text-[var(--text-primary)] text-sm outline-none focus:border-[var(--border-strong)] transition-colors placeholder:text-[var(--text-disabled)]" />
                       <button type="button" onClick={() => removeDetailRow(i)}
-                        className="text-[#444] hover:text-red-400 transition-colors px-2">✕</button>
+                        className="text-[var(--text-faint)] hover:text-red-400 transition-colors px-2">✕</button>
                     </div>
                   ))}
                 </div>
@@ -345,8 +345,8 @@ export default function Products2FormPage() {
 
             {/* Group hint */}
             {showingGroup && isNew && (
-              <div className="bg-[#0f1a0f] border border-[#1a2e1a] rounded-xl p-4">
-                <p className="text-green-700 text-xs leading-relaxed">
+              <div className="bg-[var(--badge-green-bg)] border border-[var(--badge-green-border)] rounded-xl p-4">
+                <p className="text-[var(--badge-green-text)] text-xs leading-relaxed">
                   After creating this group, you can drill into it and add sub-products (layer 4).
                   Sub-products can themselves be groups with layer-5 children.
                 </p>
@@ -358,11 +358,11 @@ export default function Products2FormPage() {
           <div className="w-72 flex flex-col gap-5">
 
             {/* Multi-image upload */}
-            <div className="bg-[#111] border border-[#1f1f1f] rounded-xl p-6 flex flex-col gap-3">
-              <label className="text-[#666] text-[11px] tracking-widest uppercase flex items-center justify-between">
+            <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl p-6 flex flex-col gap-3">
+              <label className="text-[var(--text-tertiary)] text-[11px] tracking-widest uppercase flex items-center justify-between">
                 Images
                 {images.length > 0 && (
-                  <span className="normal-case text-[#444] font-normal tracking-normal text-[11px]">
+                  <span className="normal-case text-[var(--text-faint)] font-normal tracking-normal text-[11px]">
                     {images.length} uploaded
                   </span>
                 )}
@@ -370,22 +370,22 @@ export default function Products2FormPage() {
               <MultiImageUpload images={images} onChange={setImages} />
             </div>
 
-            <div className="bg-[#111] border border-[#1f1f1f] rounded-xl p-6">
+            <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl p-6">
               <div className="flex items-center justify-between">
-                <label className="text-[#666] text-[11px] tracking-widest uppercase">Active</label>
+                <label className="text-[var(--text-tertiary)] text-[11px] tracking-widest uppercase">Active</label>
                 <button type="button" onClick={() => setIsActive(!isActive)}
-                  className={`w-10 h-5 rounded-full transition-colors relative ${isActive ? "bg-white" : "bg-[#2a2a2a]"}`}>
+                  className={`w-10 h-5 rounded-full transition-colors relative ${isActive ? "bg-[var(--invert-bg)]" : "bg-[var(--bg-elevated-2)]"}`}>
                   <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-black transition-all ${isActive ? "left-5" : "left-0.5"}`} />
                 </button>
               </div>
             </div>
 
             {/* Category info box — read-only */}
-            <div className="bg-[#111] border border-[#1f1f1f] rounded-xl p-5">
-              <p className="text-[#666] text-[11px] tracking-widest uppercase mb-2">Categories</p>
-              <p className="text-[#444] text-xs leading-relaxed">
+            <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl p-5">
+              <p className="text-[var(--text-tertiary)] text-[11px] tracking-widest uppercase mb-2">Categories</p>
+              <p className="text-[var(--text-faint)] text-xs leading-relaxed">
                 Category links are managed from the{" "}
-                <span className="text-[#666]">Sector Management</span> page using drag-and-drop.
+                <span className="text-[var(--text-tertiary)]">Sector Management</span> page using drag-and-drop.
               </p>
             </div>
           </div>
@@ -395,11 +395,11 @@ export default function Products2FormPage() {
 
         <div className="flex gap-3 mt-6">
           <button type="button" onClick={() => router.back()}
-            className="text-sm text-[#666] border border-[#2a2a2a] rounded-lg px-6 py-2.5 hover:text-white hover:border-[#444] transition-colors">
+            className="text-sm text-[var(--text-tertiary)] border border-[var(--border-default)] rounded-lg px-6 py-2.5 hover:text-[var(--text-primary)] hover:border-[var(--border-strong)] transition-colors">
             Cancel
           </button>
           <button type="submit" disabled={saving}
-            className="text-sm bg-white text-black font-semibold rounded-lg px-6 py-2.5 hover:bg-neutral-200 transition-colors disabled:opacity-50">
+            className="text-sm bg-[var(--invert-bg)] text-[var(--invert-text)] font-semibold rounded-lg px-6 py-2.5 hover:bg-[var(--invert-hover)] transition-colors disabled:opacity-50">
             {saving ? "Saving..." : isNew ? (showingGroup ? "Create Group" : "Add Product") : "Save Changes"}
           </button>
         </div>

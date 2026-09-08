@@ -222,14 +222,14 @@ export default function Products2Page() {
     <div className="flex h-screen overflow-hidden -m-8">
 
       {/* LEFT — sectors */}
-      <div className="w-[170px] shrink-0 border-r border-[#1a1a1a] flex flex-col bg-[#0a0a0a]">
-        <div className="px-4 py-4 border-b border-[#1a1a1a]">
-          <p className="text-[10px] font-bold tracking-widest uppercase text-[#333]">sektörler</p>
+      <div className="w-[170px] shrink-0 border-r border-[var(--border-faint)] flex flex-col bg-[var(--bg-sidebar)]">
+        <div className="px-4 py-4 border-b border-[var(--border-faint)]">
+          <p className="text-[10px] font-bold tracking-widest uppercase text-[var(--text-disabled)]">sektörler</p>
         </div>
         <div className="flex-1 overflow-y-auto py-1">
           {loadingSectors
             ? Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="mx-2 mb-1 h-9 bg-[#111] rounded-lg animate-pulse" />
+                <div key={i} className="mx-2 mb-1 h-9 bg-[var(--bg-surface)] rounded-lg animate-pulse" />
               ))
             : sectors.map((sector) => {
                 const isActive = activeSector?.id === sector.id;
@@ -238,10 +238,10 @@ export default function Products2Page() {
                     key={sector.id}
                     onClick={() => selectSector(sector)}
                     className={`w-full text-left px-4 py-2.5 text-[11px] font-medium transition-colors flex items-center justify-between gap-2
-                      ${isActive ? "bg-white text-black" : "text-[#555] hover:text-white hover:bg-[#111]"}`}
+                      ${isActive ? "bg-[var(--invert-bg)] text-[var(--invert-text)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]"}`}
                   >
                     <span className="truncate">{sector.name}</span>
-                    <span className={`text-[10px] shrink-0 tabular-nums ${isActive ? "text-black/40" : "text-[#2a2a2a]"}`}>
+                    <span className={`text-[10px] shrink-0 tabular-nums ${isActive ? "text-[var(--invert-text)]/40" : "text-[var(--text-disabled)]"}`}>
                       {sector._count?.products ?? 0}
                     </span>
                   </button>
@@ -253,17 +253,17 @@ export default function Products2Page() {
 
       {/* CENTER — products in sector with up/down arrows */}
       <div
-        className={`flex-1 flex flex-col border-r border-[#1a1a1a] transition-colors duration-100
-          ${centerDropActive ? "bg-[#0f1a0f]" : "bg-[#0d0d0d]"}`}
+        className={`flex-1 flex flex-col border-r border-[var(--border-faint)] transition-colors duration-100
+          ${centerDropActive ? "bg-[var(--badge-green-bg)]" : "bg-[var(--bg-page)]"}`}
         onDragOver={(e) => { e.preventDefault(); if (draggingFrom.current === "right") setCenterDropActive(true); }}
         onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setCenterDropActive(false); }}
         onDrop={onCenterDrop}
       >
-        <div className="px-5 py-4 border-b border-[#1a1a1a] shrink-0">
-          <h2 className="text-white text-xs font-bold tracking-widest uppercase">
+        <div className="px-5 py-4 border-b border-[var(--border-faint)] shrink-0">
+          <h2 className="text-[var(--text-primary)] text-xs font-bold tracking-widest uppercase">
             {activeSector?.name ?? "—"}
           </h2>
-          <p className="text-[#333] text-[10px] mt-0.5">
+          <p className="text-[var(--text-disabled)] text-[10px] mt-0.5">
             {/* {sectorProducts.length} products · use arrows to reorder · drag right to remove */}
           </p>
         </div>
@@ -277,15 +277,15 @@ export default function Products2Page() {
         <div className="flex-1 overflow-y-auto px-4 py-3 flex flex-col gap-0.5">
           {loadingCenter
             ? Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="h-[52px] bg-[#111] border border-[#1a1a1a] rounded-xl animate-pulse mb-0.5" />
+                <div key={i} className="h-[52px] bg-[var(--bg-surface)] border border-[var(--border-faint)] rounded-xl animate-pulse mb-0.5" />
               ))
             : !activeSector
-              ? <p className="text-[#222] text-xs text-center mt-16">Select a sector</p>
+              ? <p className="text-[var(--text-disabled)] text-xs text-center mt-16">Select a sector</p>
               : sectorProducts.length === 0
                 ? (
                   <div className="flex flex-col items-center justify-center mt-16 text-center">
-                    <p className="text-[#333] text-xs">No products yet</p>
-                    <p className="text-[#222] text-[10px] mt-1">Drag from the right panel to add</p>
+                    <p className="text-[var(--text-disabled)] text-xs">No products yet</p>
+                    <p className="text-[var(--text-disabled)] text-[10px] mt-1">Drag from the right panel to add</p>
                   </div>
                 )
                 : sectorProducts.map((product, index) => (
@@ -310,23 +310,23 @@ export default function Products2Page() {
       {/* RIGHT — all products not in sector */}
       <div
         className={`w-[290px] shrink-0 flex flex-col transition-colors duration-100
-          ${rightDropActive ? "bg-[#1a0a0a]" : "bg-[#0a0a0a]"}`}
+          ${rightDropActive ? "bg-[var(--badge-red-bg)]" : "bg-[var(--bg-sidebar)]"}`}
         onDragOver={(e) => { e.preventDefault(); if (draggingFrom.current === "center") setRightDropActive(true); }}
         onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setRightDropActive(false); }}
         onDrop={onRightDrop}
       >
-        <div className="px-4 py-4 border-b border-[#1a1a1a] shrink-0">
-          <p className="text-[10px] font-bold tracking-widest uppercase text-[#333]">Tüm Ürünler</p>
-          {/* <p className="text-[#222] text-[10px] mt-0.5">Not in selected sector · drag to center to add</p> */}
+        <div className="px-4 py-4 border-b border-[var(--border-faint)] shrink-0">
+          <p className="text-[10px] font-bold tracking-widest uppercase text-[var(--text-disabled)]">Tüm Ürünler</p>
+          {/* <p className="text-[var(--text-disabled)] text-[10px] mt-0.5">Not in selected sector · drag to center to add</p> */}
         </div>
 
-        <div className="px-4 py-3 border-b border-[#1a1a1a] shrink-0">
+        <div className="px-4 py-3 border-b border-[var(--border-faint)] shrink-0">
           <input
             type="text"
             placeholder="Search..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-[#111] border border-[#1f1f1f] rounded-lg px-3 py-2 text-white text-xs outline-none focus:border-[#333] transition-colors placeholder:text-[#2a2a2a]"
+            className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-lg px-3 py-2 text-[var(--text-primary)] text-xs outline-none focus:border-[var(--border-mid)] transition-colors placeholder:text-[var(--text-disabled)]"
           />
         </div>
 
@@ -339,10 +339,10 @@ export default function Products2Page() {
         <div className="flex-1 overflow-y-auto px-3 py-3 flex flex-col gap-0.5">
           {loadingRight
             ? Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-[52px] bg-[#111] border border-[#1a1a1a] rounded-xl animate-pulse mb-0.5" />
+                <div key={i} className="h-[52px] bg-[var(--bg-surface)] border border-[var(--border-faint)] rounded-xl animate-pulse mb-0.5" />
               ))
             : filteredRight.length === 0
-              ? <p className="text-[#222] text-xs text-center mt-10">
+              ? <p className="text-[var(--text-disabled)] text-xs text-center mt-10">
                   {search ? "No results" : "All products are in this sector"}
                 </p>
               : filteredRight.map((product) => (
@@ -362,7 +362,7 @@ export default function Products2Page() {
 
       {toast && (
         <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[300] px-5 py-2.5 rounded-xl text-xs font-semibold shadow-2xl pointer-events-none
-          ${toast.type === "error" ? "bg-red-600 text-white" : "bg-white text-black"}`}>
+          ${toast.type === "error" ? "bg-red-600 text-white" : "bg-[var(--invert-bg)] text-[var(--invert-text)]"}`}>
           {toast.msg}
         </div>
       )}
@@ -378,14 +378,14 @@ function CenterRow({ product, index, total, onMoveUp, onMoveDown, onDragStart, o
       draggable
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
-      className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-[#1a1a1a] bg-[#111] hover:border-[#252525] select-none transition-all duration-75 cursor-grab active:cursor-grabbing"
+      className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-[var(--border-faint)] bg-[var(--bg-surface)] hover:border-[var(--border-default)] select-none transition-all duration-75 cursor-grab active:cursor-grabbing"
     >
       {/* up/down arrows */}
       <div className="flex flex-col gap-1 shrink-0">
         <button
           onClick={(e) => { e.stopPropagation(); onMoveUp(); }}
           disabled={index === 0}
-          className="w-7 h-7 flex items-center justify-center rounded-lg border border-[#2a2a2a] text-[#555] hover:text-white hover:bg-[#1a1a1a] hover:border-[#444] transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+          className="w-7 h-7 flex items-center justify-center rounded-lg border border-[var(--border-default)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:border-[var(--border-strong)] transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
           title="Move up"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="13" height="13">
@@ -395,7 +395,7 @@ function CenterRow({ product, index, total, onMoveUp, onMoveDown, onDragStart, o
         <button
           onClick={(e) => { e.stopPropagation(); onMoveDown(); }}
           disabled={index === total - 1}
-          className="w-7 h-7 flex items-center justify-center rounded-lg border border-[#2a2a2a] text-[#555] hover:text-white hover:bg-[#1a1a1a] hover:border-[#444] transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+          className="w-7 h-7 flex items-center justify-center rounded-lg border border-[var(--border-default)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:border-[var(--border-strong)] transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
           title="Move down"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="13" height="13">
@@ -405,27 +405,27 @@ function CenterRow({ product, index, total, onMoveUp, onMoveDown, onDragStart, o
       </div>
 
       {/* image */}
-      <div className="w-8 h-8 rounded-lg bg-[#1a1a1a] overflow-hidden shrink-0">
+      <div className="w-8 h-8 rounded-lg bg-[var(--bg-elevated)] overflow-hidden shrink-0">
         {product.image
           ? <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-          : <div className="w-full h-full flex items-center justify-center text-[#2a2a2a] text-[10px]">▦</div>
+          : <div className="w-full h-full flex items-center justify-center text-[var(--text-disabled)] text-[10px]">▦</div>
         }
       </div>
 
       {/* name */}
       <div className="flex-1 min-w-0">
-        <p className="text-white text-[11px] font-medium truncate">{product.name}</p>
-        <p className="text-[#333] text-[9px]">
+        <p className="text-[var(--text-primary)] text-[11px] font-medium truncate">{product.name}</p>
+        <p className="text-[var(--text-disabled)] text-[9px]">
           {product.isGroup ? `${product._count?.subProducts ?? 0} sub` : "Single"}
         </p>
       </div>
 
       {/* index */}
-      <span className="text-[10px] text-[#2a2a2a] w-4 text-right shrink-0 tabular-nums">{index + 1}</span>
+      <span className="text-[10px] text-[var(--text-disabled)] w-4 text-right shrink-0 tabular-nums">{index + 1}</span>
 
       {/* actions */}
       <div className="flex items-center gap-0.5 shrink-0">
-        <IconBtn onClick={onEdit} title="Edit" color="hover:text-white">
+        <IconBtn onClick={onEdit} title="Edit" color="hover:text-[var(--text-primary)]">
           <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" strokeLinecap="round" strokeLinejoin="round"/>
           <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" strokeLinecap="round" strokeLinejoin="round"/>
         </IconBtn>
@@ -452,25 +452,25 @@ function RightRow({ product, isDragging, onDragStart, onDragEnd, onEdit, onDelet
       onDragEnd={onDragEnd}
       className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border select-none transition-all duration-75
         ${isDragging
-          ? "opacity-20 border-[#222] bg-[#0a0a0a]"
-          : "border-[#1a1a1a] bg-[#111] hover:border-[#252525] cursor-grab active:cursor-grabbing"
+          ? "opacity-20 border-[var(--border-faint)] bg-[var(--bg-sidebar)]"
+          : "border-[var(--border-faint)] bg-[var(--bg-surface)] hover:border-[var(--border-default)] cursor-grab active:cursor-grabbing"
         }`}
     >
-      <div className="w-8 h-8 rounded-lg bg-[#1a1a1a] overflow-hidden shrink-0">
+      <div className="w-8 h-8 rounded-lg bg-[var(--bg-elevated)] overflow-hidden shrink-0">
         {product.image
           ? <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-          : <div className="w-full h-full flex items-center justify-center text-[#2a2a2a] text-[10px]">▦</div>
+          : <div className="w-full h-full flex items-center justify-center text-[var(--text-disabled)] text-[10px]">▦</div>
         }
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-white text-[11px] font-medium truncate">{product.name}</p>
-        <p className="text-[#333] text-[9px]">
+        <p className="text-[var(--text-primary)] text-[11px] font-medium truncate">{product.name}</p>
+        <p className="text-[var(--text-disabled)] text-[9px]">
           {product.isGroup ? `${product._count?.subProducts ?? 0} sub` : "Single"}
           {product.sectors?.length > 0 && <span className="ml-1">· {product.sectors.length}s</span>}
         </p>
       </div>
       <div className="flex items-center gap-0.5 shrink-0">
-        <IconBtn onClick={onEdit} title="Edit" color="hover:text-white">
+        <IconBtn onClick={onEdit} title="Edit" color="hover:text-[var(--text-primary)]">
           <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" strokeLinecap="round" strokeLinejoin="round"/>
           <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" strokeLinecap="round" strokeLinejoin="round"/>
         </IconBtn>
@@ -489,7 +489,7 @@ function IconBtn({ onClick, title, color, children }) {
     <button
       onClick={(e) => { e.stopPropagation(); onClick(); }}
       title={title}
-      className={`p-1.5 text-[#333] transition-colors ${color}`}
+      className={`p-1.5 text-[var(--text-disabled)] transition-colors ${color}`}
     >
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         {children}

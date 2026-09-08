@@ -13,7 +13,7 @@ function Toggle({ value, onChange }) {
       type="button"
       onClick={() => onChange(!value)}
       className={`w-9 h-[18px] rounded-full relative transition-colors shrink-0
-        ${value ? "bg-white" : "bg-[#2a2a2a]"}`}
+        ${value ? "bg-[var(--invert-bg)]" : "bg-[var(--bg-elevated-2)]"}`}
     >
       <span
         className={`absolute top-[2px] w-[14px] h-[14px] rounded-full bg-black transition-all
@@ -25,10 +25,10 @@ function Toggle({ value, onChange }) {
 
 function Badge({ children, variant = "default" }) {
   const styles = {
-    default: "bg-[#1a1a1a] text-[#888] border-[#2a2a2a]",
-    green: "bg-green-950/60 text-green-400 border-green-900/40",
-    inactive: "bg-[#111] text-[#444] border-[#1a1a1a]",
-    sector: "bg-[#0f1629] text-[#6b8fd4] border-[#1a2550]",
+    default: "bg-[var(--bg-elevated)] text-[var(--text-tertiary)] border-[var(--border-default)]",
+    green: "bg-[var(--badge-green-bg)] text-[var(--badge-green-text)] border-[var(--badge-green-border)]",
+    inactive: "bg-[var(--bg-surface)] text-[var(--text-faint)] border-[var(--border-faint)]",
+    sector: "bg-[var(--badge-blue-bg)] text-[var(--badge-blue-text)] border-[var(--badge-blue-border)]",
   };
   return (
     <span className={`text-[10px] px-2 py-0.5 rounded-full border font-medium shrink-0 ${styles[variant]}`}>
@@ -49,15 +49,15 @@ function ProductChip({ product, side, onDragStart, onDragEnd, isDragging, isOver
         group flex items-center gap-3 px-3 py-2.5 rounded-xl border cursor-grab active:cursor-grabbing
         transition-all duration-150 select-none
         ${isDragging
-          ? "opacity-40 scale-95 border-[#333] bg-[#111]"
+          ? "opacity-40 scale-95 border-[var(--border-mid)] bg-[var(--bg-surface)]"
           : isOver
-          ? "border-[#444] bg-[#1a1a1a]"
-          : "border-[#1f1f1f] bg-[#0e0e0e] hover:border-[#2a2a2a] hover:bg-[#111]"
+          ? "border-[var(--border-strong)] bg-[var(--bg-elevated)]"
+          : "border-[var(--border-subtle)] bg-[var(--bg-surface-2)] hover:border-[var(--border-default)] hover:bg-[var(--bg-surface)]"
         }
       `}
     >
       {/* drag handle */}
-      <div className="text-[#333] group-hover:text-[#555] transition-colors shrink-0">
+      <div className="text-[var(--text-disabled)] group-hover:text-[var(--text-muted)] transition-colors shrink-0">
         <svg viewBox="0 0 10 16" width="8" height="12" fill="currentColor">
           <circle cx="2" cy="2" r="1.5"/><circle cx="8" cy="2" r="1.5"/>
           <circle cx="2" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/>
@@ -66,23 +66,23 @@ function ProductChip({ product, side, onDragStart, onDragEnd, isDragging, isOver
       </div>
 
       {/* image */}
-      <div className="w-8 h-8 rounded-lg bg-[#1a1a1a] overflow-hidden shrink-0 border border-[#1f1f1f]">
+      <div className="w-8 h-8 rounded-lg bg-[var(--bg-elevated)] overflow-hidden shrink-0 border border-[var(--border-subtle)]">
         {product.image
           ? <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-          : <div className="w-full h-full flex items-center justify-center text-[#333] text-xs">▦</div>
+          : <div className="w-full h-full flex items-center justify-center text-[var(--text-disabled)] text-xs">▦</div>
         }
       </div>
 
       {/* name */}
       <div className="flex-1 min-w-0">
-        <p className="text-[#ccc] text-[12px] font-medium truncate">{product.name}</p>
+        <p className="text-[var(--text-secondary)] text-[12px] font-medium truncate">{product.name}</p>
         {product.isGroup && (
-          <p className="text-[#555] text-[10px]">Group · {product._count?.subProducts ?? 0} sub</p>
+          <p className="text-[var(--text-muted)] text-[10px]">Group · {product._count?.subProducts ?? 0} sub</p>
         )}
       </div>
 
       {/* active dot */}
-      <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${product.isActive ? "bg-green-500" : "bg-[#333]"}`} />
+      <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${product.isActive ? "bg-green-500" : "bg-[var(--bg-elevated-2)]"}`} />
     </div>
   );
 }
@@ -100,8 +100,8 @@ function DropZone({ children, onDrop, accepts, isEmpty, emptyMsg, emptyIcon, cla
       className={`
         relative flex-1 rounded-xl border transition-all duration-200
         ${isOver
-          ? "border-white/20 bg-white/[0.03]"
-          : "border-[#1a1a1a] bg-transparent"
+          ? "border-[#1e88e5]/40 bg-[#1e88e5]/[0.06]"
+          : "border-[var(--border-faint)] bg-transparent"
         }
         ${className}
       `}
@@ -109,20 +109,20 @@ function DropZone({ children, onDrop, accepts, isEmpty, emptyMsg, emptyIcon, cla
       {/* glowing border on hover */}
       {isOver && (
         <div className="absolute inset-0 rounded-xl pointer-events-none"
-          style={{ boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.12), 0 0 24px rgba(255,255,255,0.04)" }} />
+          style={{ boxShadow: "inset 0 0 0 1px rgba(30,136,229,0.3), 0 0 24px rgba(30,136,229,0.1)" }} />
       )}
 
       {isEmpty && !isOver ? (
         <div className="h-full flex flex-col items-center justify-center gap-2 py-16 text-center px-4">
-          <div className="text-[#252525] text-3xl mb-1">{emptyIcon}</div>
-          <p className="text-[#3a3a3a] text-[12px]">{emptyMsg}</p>
+          <div className="text-[var(--text-disabled)] text-3xl mb-1">{emptyIcon}</div>
+          <p className="text-[var(--text-faint)] text-[12px]">{emptyMsg}</p>
         </div>
       ) : (
         <div className="p-3 flex flex-col gap-1.5">
           {children}
           {isOver && (
-            <div className="h-10 rounded-xl border-2 border-dashed border-white/20 flex items-center justify-center">
-              <span className="text-[#666] text-[11px]">Drop here</span>
+            <div className="h-10 rounded-xl border-2 border-dashed border-[#1e88e5]/40 flex items-center justify-center">
+              <span className="text-[var(--text-tertiary)] text-[11px]">Drop here</span>
             </div>
           )}
         </div>
@@ -141,34 +141,34 @@ function CategoryRow({ category, isSelected, onClick, onEdit, onDelete, onToggle
         group flex items-center gap-3 px-4 py-3 rounded-xl border cursor-pointer
         transition-all duration-150
         ${isSelected
-          ? "bg-[#111] border-[#2a2a2a]"
-          : "bg-transparent border-transparent hover:bg-[#0e0e0e] hover:border-[#1a1a1a]"
+          ? "bg-[var(--bg-surface)] border-[var(--border-default)]"
+          : "bg-transparent border-transparent hover:bg-[var(--bg-surface-2)] hover:border-[var(--border-faint)]"
         }
       `}
     >
       {/* image */}
-      <div className="w-9 h-9 rounded-lg bg-[#1a1a1a] overflow-hidden shrink-0 border border-[#1f1f1f]">
+      <div className="w-9 h-9 rounded-lg bg-[var(--bg-elevated)] overflow-hidden shrink-0 border border-[var(--border-subtle)]">
         {category.image
           ? <img src={category.image} alt={category.name} className="w-full h-full object-cover" />
-          : <div className="w-full h-full flex items-center justify-center text-[#333] text-xs">◈</div>
+          : <div className="w-full h-full flex items-center justify-center text-[var(--text-disabled)] text-xs">◈</div>
         }
       </div>
 
       {/* info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 flex-wrap">
-          <span className={`text-[13px] font-semibold truncate ${isSelected ? "text-white" : "text-[#bbb]"}`}>
+          <span className={`text-[13px] font-semibold truncate ${isSelected ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]"}`}>
             {category.name}
           </span>
           {!category.isActive && <Badge variant="inactive">Off</Badge>}
         </div>
-        <p className="text-[#444] text-[11px] mt-0.5">
+        <p className="text-[var(--text-faint)] text-[11px] mt-0.5">
           {category._count?.products ?? 0} products
         </p>
       </div>
 
       {/* selected indicator */}
-      {isSelected && <div className="w-1 h-6 rounded-full bg-white shrink-0" />}
+      {isSelected && <div className="w-1 h-6 rounded-full bg-[var(--invert-bg)] shrink-0" />}
 
       {/* action buttons - only show on hover/selected */}
       <div className={`flex items-center gap-1 shrink-0 transition-opacity ${isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
@@ -176,13 +176,13 @@ function CategoryRow({ category, isSelected, onClick, onEdit, onDelete, onToggle
         <button
           onClick={() => onToggle(category)}
           title={category.isActive ? "Deactivate" : "Activate"}
-          className="w-7 h-7 flex items-center justify-center rounded-lg border border-[#1f1f1f] text-[#555] hover:text-white hover:border-[#333] transition-colors text-xs"
+          className="w-7 h-7 flex items-center justify-center rounded-lg border border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--border-mid)] transition-colors text-xs"
         >
           {category.isActive ? "○" : "●"}
         </button>
         <button
           onClick={() => onEdit(category)}
-          className="w-7 h-7 flex items-center justify-center rounded-lg border border-[#1f1f1f] text-[#555] hover:text-white hover:border-[#333] transition-colors"
+          className="w-7 h-7 flex items-center justify-center rounded-lg border border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--border-mid)] transition-colors"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="11" height="11">
             <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" strokeLinecap="round"/>
@@ -191,7 +191,7 @@ function CategoryRow({ category, isSelected, onClick, onEdit, onDelete, onToggle
         </button>
         <button
           onClick={() => onDelete(category)}
-          className="w-7 h-7 flex items-center justify-center rounded-lg border border-[#1f1f1f] text-[#555] hover:text-red-400 hover:border-red-900/60 transition-colors"
+          className="w-7 h-7 flex items-center justify-center rounded-lg border border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-red-400 hover:border-red-900/60 transition-colors"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="11" height="11">
             <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" strokeLinecap="round" strokeLinejoin="round"/>
@@ -468,15 +468,15 @@ function handleCategorySaved(cat) {
       {/* ── Page header ── */}
       <div className="flex items-start justify-between mb-6 shrink-0">
         <div>
-          <h1 className="text-white text-2xl font-bold tracking-tight">Categories</h1>
-          <p className="text-[#555] text-sm mt-1">
+          <h1 className="text-[var(--text-primary)] text-2xl font-bold tracking-tight">Categories</h1>
+          <p className="text-[var(--text-muted)] text-sm mt-1">
             Manage categories and assign products via drag & drop
           </p>
         </div>
         <button
           onClick={() => { setEditingCategory(null); setModalOpen(true); }}
           disabled={!selectedSectorId}
-          className="bg-white text-black text-sm font-semibold px-4 py-2 rounded-lg hover:bg-neutral-200 transition-colors disabled:opacity-40 shrink-0"
+          className="bg-[var(--invert-bg)] text-[var(--invert-text)] text-sm font-semibold px-4 py-2 rounded-lg hover:bg-[var(--invert-hover)] transition-colors disabled:opacity-40 shrink-0"
         >
           + Add Category
         </button>
@@ -492,7 +492,7 @@ function handleCategorySaved(cat) {
       {/* ── Sector selector ── */}
       {loadingSectors ? (
         <div className="flex gap-2 mb-5 shrink-0">
-          {[1,2,3].map((i) => <div key={i} className="h-8 w-24 bg-[#111] rounded-lg animate-pulse" />)}
+          {[1,2,3].map((i) => <div key={i} className="h-8 w-24 bg-[var(--bg-surface)] rounded-lg animate-pulse" />)}
         </div>
       ) : (
         <div className="flex gap-2 mb-5 shrink-0 flex-wrap">
@@ -502,8 +502,8 @@ function handleCategorySaved(cat) {
               onClick={() => setSelectedSectorId(s.id)}
               className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg border text-[12px] font-medium transition-all
                 ${selectedSectorId === s.id
-                  ? "bg-[#1a1a1a] border-[#333] text-white"
-                  : "bg-transparent border-[#1a1a1a] text-[#555] hover:border-[#2a2a2a] hover:text-[#888]"
+                  ? "bg-[var(--bg-elevated)] border-[var(--border-mid)] text-[var(--text-primary)]"
+                  : "bg-transparent border-[var(--border-faint)] text-[var(--text-muted)] hover:border-[var(--border-default)] hover:text-[var(--text-tertiary)]"
                 }`}
             >
               {s.image && <img src={s.image} alt="" className="w-4 h-4 rounded object-cover" />}
@@ -518,13 +518,13 @@ function handleCategorySaved(cat) {
       <div className="flex gap-4 flex-1 min-h-0">
 
         {/* ══ LEFT PANEL — categories ══════════════════════════════════════ */}
-        <div className="w-[300px] shrink-0 flex flex-col bg-[#080808] border border-[#1a1a1a] rounded-2xl overflow-hidden">
+        <div className="w-[300px] shrink-0 flex flex-col bg-[var(--bg-deep)] border border-[var(--border-faint)] rounded-2xl overflow-hidden">
 
           {/* panel header */}
-          <div className="px-4 py-3 border-b border-[#111] flex items-center justify-between shrink-0">
+          <div className="px-4 py-3 border-b border-[var(--border-faint)] flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2">
-              <span className="text-[#777] text-[11px] tracking-widest uppercase font-semibold">Categories</span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-[#111] text-[#555] border border-[#1a1a1a]">
+              <span className="text-[var(--text-tertiary)] text-[11px] tracking-widest uppercase font-semibold">Categories</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-[var(--bg-surface)] text-[var(--text-muted)] border border-[var(--border-faint)]">
                 {filteredCategories.length}
               </span>
             </div>
@@ -533,7 +533,7 @@ function handleCategorySaved(cat) {
           {/* search */}
           <div className="px-3 pt-3 shrink-0">
             <div className="relative">
-              <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-[#333]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="12" height="12">
+              <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-disabled)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="12" height="12">
                 <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35" strokeLinecap="round"/>
               </svg>
               <input
@@ -541,7 +541,7 @@ function handleCategorySaved(cat) {
                 value={catSearch}
                 onChange={(e) => setCatSearch(e.target.value)}
                 placeholder="Search categories…"
-                className="w-full bg-[#0e0e0e] border border-[#1a1a1a] rounded-lg pl-8 pr-3 py-2 text-[12px] text-white outline-none focus:border-[#2a2a2a] transition-colors placeholder:text-[#333]"
+                className="w-full bg-[var(--bg-surface-2)] border border-[var(--border-faint)] rounded-lg pl-8 pr-3 py-2 text-[12px] text-[var(--text-primary)] outline-none focus:border-[var(--border-default)] transition-colors placeholder:text-[var(--text-disabled)]"
               />
             </div>
           </div>
@@ -551,19 +551,19 @@ function handleCategorySaved(cat) {
             {loadingCategories ? (
               <div className="flex flex-col gap-1.5 p-2">
                 {[1,2,3,4].map((i) => (
-                  <div key={i} className="h-14 bg-[#0e0e0e] rounded-xl animate-pulse border border-[#111]" />
+                  <div key={i} className="h-14 bg-[var(--bg-surface-2)] rounded-xl animate-pulse border border-[var(--border-faint)]" />
                 ))}
               </div>
             ) : filteredCategories.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 gap-2">
-                <span className="text-[#252525] text-3xl">◈</span>
-                <p className="text-[#3a3a3a] text-[12px]">
+                <span className="text-[var(--text-disabled)] text-3xl">◈</span>
+                <p className="text-[var(--text-faint)] text-[12px]">
                   {catSearch ? "No categories match" : "No categories yet"}
                 </p>
                 {!catSearch && selectedSectorId && (
                   <button
                     onClick={() => { setEditingCategory(null); setModalOpen(true); }}
-                    className="mt-2 text-[#555] text-[11px] border border-[#1f1f1f] rounded-lg px-3 py-1.5 hover:text-white hover:border-[#333] transition-colors"
+                    className="mt-2 text-[var(--text-muted)] text-[11px] border border-[var(--border-subtle)] rounded-lg px-3 py-1.5 hover:text-[var(--text-primary)] hover:border-[var(--border-mid)] transition-colors"
                   >
                     Add first category
                   </button>
@@ -586,36 +586,36 @@ function handleCategorySaved(cat) {
         </div>
 
         {/* ══ RIGHT PANEL — product management ══════════════════════════════ */}
-        <div className="flex-1 flex flex-col bg-[#080808] border border-[#1a1a1a] rounded-2xl overflow-hidden min-w-0">
+        <div className="flex-1 flex flex-col bg-[var(--bg-deep)] border border-[var(--border-faint)] rounded-2xl overflow-hidden min-w-0">
 
           {selectedCategory ? (
             <>
               {/* panel header with category info */}
-              <div className="px-5 py-3 border-b border-[#111] flex items-center gap-3 shrink-0">
+              <div className="px-5 py-3 border-b border-[var(--border-faint)] flex items-center gap-3 shrink-0">
                 {selectedCategory.image && (
                   <img src={selectedCategory.image} alt="" className="w-7 h-7 rounded-lg object-cover shrink-0" />
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-white text-[13px] font-semibold truncate">{selectedCategory.name}</span>
+                    <span className="text-[var(--text-primary)] text-[13px] font-semibold truncate">{selectedCategory.name}</span>
                     <Badge variant={selectedCategory.isActive ? "green" : "inactive"}>
                       {selectedCategory.isActive ? "Active" : "Inactive"}
                     </Badge>
                     {selectedSector && <Badge variant="sector">{selectedSector.name}</Badge>}
                   </div>
-                  <p className="text-[#444] text-[11px]">{selectedCategory._count?.products ?? 0} products assigned</p>
+                  <p className="text-[var(--text-faint)] text-[11px]">{selectedCategory._count?.products ?? 0} products assigned</p>
                 </div>
 
                 {/* tab switcher */}
-                <div className="flex items-center gap-1 bg-[#0e0e0e] border border-[#1a1a1a] rounded-lg p-0.5 shrink-0">
+                <div className="flex items-center gap-1 bg-[var(--bg-surface-2)] border border-[var(--border-faint)] rounded-lg p-0.5 shrink-0">
                   {["categories", "products"].map((tab) => (
                     <button
                       key={tab}
                       onClick={() => setActiveTab(tab)}
                       className={`px-3 py-1.5 rounded-md text-[11px] font-medium capitalize transition-all
                         ${activeTab === tab
-                          ? "bg-[#1a1a1a] text-white border border-[#2a2a2a]"
-                          : "text-[#555] hover:text-[#888]"
+                          ? "bg-[var(--bg-elevated)] text-[var(--text-primary)] border border-[var(--border-default)]"
+                          : "text-[var(--text-muted)] hover:text-[var(--text-tertiary)]"
                         }`}
                     >
                       {tab === "products" ? "Assign Products" : "Category Info"}
@@ -631,7 +631,7 @@ function handleCategorySaved(cat) {
                     <div className="flex flex-col gap-5">
                       {/* preview image */}
                       {selectedCategory.image && (
-                        <div className="w-full h-40 rounded-xl overflow-hidden border border-[#1f1f1f]">
+                        <div className="w-full h-40 rounded-xl overflow-hidden border border-[var(--border-subtle)]">
                           <img src={selectedCategory.image} alt={selectedCategory.name} className="w-full h-full object-cover" />
                         </div>
                       )}
@@ -644,15 +644,15 @@ function handleCategorySaved(cat) {
                       </div>
 
                       {selectedCategory.description && (
-                        <div className="bg-[#0e0e0e] border border-[#1a1a1a] rounded-xl p-4">
-                          <p className="text-[#555] text-[10px] tracking-widest uppercase mb-2">Description</p>
-                          <p className="text-[#888] text-sm leading-relaxed">{selectedCategory.description}</p>
+                        <div className="bg-[var(--bg-surface-2)] border border-[var(--border-faint)] rounded-xl p-4">
+                          <p className="text-[var(--text-muted)] text-[10px] tracking-widest uppercase mb-2">Description</p>
+                          <p className="text-[var(--text-tertiary)] text-sm leading-relaxed">{selectedCategory.description}</p>
                         </div>
                       )}
 
                       <button
                         onClick={() => { setEditingCategory(selectedCategory); setModalOpen(true); }}
-                        className="text-sm text-white border border-[#2a2a2a] rounded-lg px-4 py-2.5 hover:border-[#444] transition-colors w-fit"
+                        className="text-sm text-[var(--text-primary)] border border-[var(--border-default)] rounded-lg px-4 py-2.5 hover:border-[var(--border-strong)] transition-colors w-fit"
                       >
                         Edit Category
                       </button>
@@ -668,10 +668,10 @@ function handleCategorySaved(cat) {
                   {/* LEFT: products IN this category */}
                   <div className="flex-1 flex flex-col min-w-0">
                     <div className="flex items-center justify-between mb-2 px-1 shrink-0">
-                      <span className="text-[#555] text-[10px] tracking-widest uppercase font-semibold">
+                      <span className="text-[var(--text-muted)] text-[10px] tracking-widest uppercase font-semibold">
                         In Category
                       </span>
-                      <span className="text-[#333] text-[10px]">{categoryProducts.length}</span>
+                      <span className="text-[var(--text-disabled)] text-[10px]">{categoryProducts.length}</span>
                     </div>
 
                     <DropZone
@@ -682,7 +682,7 @@ function handleCategorySaved(cat) {
                     >
                       {loadingProducts
                         ? [1,2,3].map((i) => (
-                            <div key={i} className="h-12 bg-[#111] rounded-xl animate-pulse border border-[#1a1a1a]" />
+                            <div key={i} className="h-12 bg-[var(--bg-surface)] rounded-xl animate-pulse border border-[var(--border-faint)]" />
                           ))
                         : categoryProducts.map((p) => (
                             <ProductChip
@@ -700,27 +700,27 @@ function handleCategorySaved(cat) {
 
                   {/* divider with arrow */}
                   <div className="flex flex-col items-center justify-center gap-2 shrink-0 w-8">
-                    <div className="flex-1 w-px bg-[#111]" />
-                    <div className="w-6 h-6 rounded-full bg-[#111] border border-[#1f1f1f] flex items-center justify-center">
+                    <div className="flex-1 w-px bg-[var(--bg-surface)]" />
+                    <div className="w-6 h-6 rounded-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] flex items-center justify-center">
                       <svg viewBox="0 0 24 24" fill="none" stroke="#444" strokeWidth="2" width="10" height="10">
                         <path d="M8 3H5a2 2 0 00-2 2v14a2 2 0 002 2h3M16 3h3a2 2 0 012 2v14a2 2 0 01-2 2h-3M12 8l-4 4 4 4M8 12h8" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                     </div>
-                    <div className="flex-1 w-px bg-[#111]" />
+                    <div className="flex-1 w-px bg-[var(--bg-surface)]" />
                   </div>
 
                   {/* RIGHT: all products NOT in category */}
                   <div className="flex-1 flex flex-col min-w-0">
                     <div className="flex items-center justify-between mb-2 px-1 shrink-0">
-                      <span className="text-[#555] text-[10px] tracking-widest uppercase font-semibold">
+                      <span className="text-[var(--text-muted)] text-[10px] tracking-widest uppercase font-semibold">
                         All Products
                       </span>
-                      <span className="text-[#333] text-[10px]">{poolProducts.length}</span>
+                      <span className="text-[var(--text-disabled)] text-[10px]">{poolProducts.length}</span>
                     </div>
 
                     {/* search the pool */}
                     <div className="relative mb-2 shrink-0">
-                      <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-[#333]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="11" height="11">
+                      <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-disabled)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="11" height="11">
                         <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35" strokeLinecap="round"/>
                       </svg>
                       <input
@@ -728,7 +728,7 @@ function handleCategorySaved(cat) {
                         value={prodSearch}
                         onChange={(e) => setProdSearch(e.target.value)}
                         placeholder="Search products…"
-                        className="w-full bg-[#0e0e0e] border border-[#1a1a1a] rounded-lg pl-8 pr-3 py-1.5 text-[11px] text-white outline-none focus:border-[#2a2a2a] transition-colors placeholder:text-[#333]"
+                        className="w-full bg-[var(--bg-surface-2)] border border-[var(--border-faint)] rounded-lg pl-8 pr-3 py-1.5 text-[11px] text-[var(--text-primary)] outline-none focus:border-[var(--border-default)] transition-colors placeholder:text-[var(--text-disabled)]"
                       />
                     </div>
 
@@ -756,11 +756,11 @@ function handleCategorySaved(cat) {
           ) : (
             /* no category selected */
             <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center p-8">
-              <div className="w-14 h-14 rounded-2xl bg-[#0e0e0e] border border-[#1a1a1a] flex items-center justify-center mb-1">
-                <span className="text-[#333] text-2xl">◈</span>
+              <div className="w-14 h-14 rounded-2xl bg-[var(--bg-surface-2)] border border-[var(--border-faint)] flex items-center justify-center mb-1">
+                <span className="text-[var(--text-disabled)] text-2xl">◈</span>
               </div>
-              <p className="text-[#3a3a3a] text-[13px] font-medium">Select a category</p>
-              <p className="text-[#2a2a2a] text-[11px] max-w-xs leading-relaxed">
+              <p className="text-[var(--text-faint)] text-[13px] font-medium">Select a category</p>
+              <p className="text-[var(--text-disabled)] text-[11px] max-w-xs leading-relaxed">
                 Choose a category from the left panel to view its details and assign products via drag & drop
               </p>
             </div>
@@ -784,9 +784,9 @@ function handleCategorySaved(cat) {
 // small helper card
 function InfoCard({ label, value }) {
   return (
-    <div className="bg-[#0e0e0e] border border-[#1a1a1a] rounded-xl p-3">
-      <p className="text-[#444] text-[10px] tracking-widest uppercase mb-1">{label}</p>
-      <p className="text-white text-[13px] font-semibold truncate">{String(value)}</p>
+    <div className="bg-[var(--bg-surface-2)] border border-[var(--border-faint)] rounded-xl p-3">
+      <p className="text-[var(--text-faint)] text-[10px] tracking-widest uppercase mb-1">{label}</p>
+      <p className="text-[var(--text-primary)] text-[13px] font-semibold truncate">{String(value)}</p>
     </div>
   );
 }

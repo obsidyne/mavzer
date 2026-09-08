@@ -83,8 +83,8 @@ export default function BannersPage() {
     <div className="p-8 max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-xl font-bold text-white">Afişler</h1>
-          {/* <p className="text-[#555] text-sm mt-0.5">Manage hero section slider images</p> */}
+          <h1 className="text-xl font-bold text-[var(--text-primary)]">Afişler</h1>
+          {/* <p className="text-[var(--text-muted)] text-sm mt-0.5">Manage hero section slider images</p> */}
         </div>
         <button onClick={openAdd} className="bg-[#1e88e5] text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#1565c0] transition-colors">
           + banner ekle
@@ -93,17 +93,17 @@ export default function BannersPage() {
 
       {loading ? (
         <div className="grid grid-cols-3 gap-4">
-          {[1,2,3].map((i) => <div key={i} className="h-48 bg-[#1a1a1a] rounded-xl animate-pulse" />)}
+          {[1,2,3].map((i) => <div key={i} className="h-48 bg-[var(--bg-elevated)] rounded-xl animate-pulse" />)}
         </div>
       ) : banners.length === 0 ? (
-        <div className="border border-dashed border-[#2a2a2a] rounded-xl py-20 text-center">
-          <p className="text-[#444] text-sm">No banners yet</p>
+        <div className="border border-dashed border-[var(--border-default)] rounded-xl py-20 text-center">
+          <p className="text-[var(--text-faint)] text-sm">No banners yet</p>
           <button onClick={openAdd} className="mt-3 text-[#1e88e5] text-sm hover:underline">Add your first banner</button>
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-4">
           {banners.map((banner) => (
-            <div key={banner.id} className="bg-[#111] rounded-xl overflow-hidden border border-[#1f1f1f]">
+            <div key={banner.id} className="bg-[var(--bg-surface)] rounded-xl overflow-hidden border border-[var(--border-subtle)]">
               <div className="relative aspect-video">
                 <img src={banner.image} alt={banner.title || "Banner"} className="w-full h-full object-cover" />
                 <div className="absolute top-2 right-2 flex gap-1.5 flex-wrap justify-end">
@@ -112,7 +112,7 @@ export default function BannersPage() {
                   </span>
                   <button
                     onClick={() => toggleActive(banner)}
-                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${banner.isActive ? "bg-green-500/20 border-green-500/40 text-green-400" : "bg-[#222] border-[#333] text-[#555]"}`}
+                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${banner.isActive ? "bg-green-500/20 border-green-500/40 text-green-400" : "bg-[var(--bg-muted)] border-[var(--border-mid)] text-[var(--text-muted)]"}`}
                   >
                     {banner.isActive ? "Active" : "Inactive"}
                   </button>
@@ -127,10 +127,10 @@ export default function BannersPage() {
                 )}
               </div>
               <div className="p-3">
-                <p className="text-white text-sm font-medium truncate">{banner.title || <span className="text-[#444]">No title</span>}</p>
+                <p className="text-[var(--text-primary)] text-sm font-medium truncate">{banner.title || <span className="text-[var(--text-faint)]">No title</span>}</p>
                 <div className="flex gap-2 mt-3">
-                  <button onClick={() => openEdit(banner)} className="flex-1 py-1.5 text-xs text-[#aaa] border border-[#2a2a2a] rounded-lg hover:border-[#444] hover:text-white transition-colors">Edit</button>
-                  <button onClick={() => handleDelete(banner.id)} className="flex-1 py-1.5 text-xs text-red-400 border border-[#2a2a2a] rounded-lg hover:border-red-500/40 hover:bg-red-500/10 transition-colors">Delete</button>
+                  <button onClick={() => openEdit(banner)} className="flex-1 py-1.5 text-xs text-[var(--text-secondary)] border border-[var(--border-default)] rounded-lg hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] transition-colors">Edit</button>
+                  <button onClick={() => handleDelete(banner.id)} className="flex-1 py-1.5 text-xs text-red-400 border border-[var(--border-default)] rounded-lg hover:border-red-500/40 hover:bg-red-500/10 transition-colors">Delete</button>
                 </div>
               </div>
             </div>
@@ -141,10 +141,10 @@ export default function BannersPage() {
       {/* Modal */}
       {modal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-[#111] border border-[#1f1f1f] rounded-2xl w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-white font-bold text-[15px]">{modal.mode === "add" ? "Add Banner" : "Edit Banner"}</h2>
-              <button onClick={() => setModal(null)} className="text-[#555] hover:text-white transition-colors">
+              <h2 className="text-[var(--text-primary)] font-bold text-[15px]">{modal.mode === "add" ? "Add Banner" : "Edit Banner"}</h2>
+              <button onClick={() => setModal(null)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18"><path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" /></svg>
               </button>
             </div>
@@ -153,16 +153,16 @@ export default function BannersPage() {
 
               {/* Type selector */}
               <div>
-                <label className="text-[#555] text-[11px] uppercase tracking-widest font-bold block mb-2">Display On</label>
+                <label className="text-[var(--text-muted)] text-[11px] uppercase tracking-widest font-bold block mb-2">Display On</label>
                 <div className="grid grid-cols-3 gap-2">
                   {TYPE_OPTIONS.map((opt) => (
                     <button
                       key={opt.value}
                       onClick={() => setForm((f) => ({ ...f, type: opt.value }))}
-                      className={`py-2 px-3 rounded-lg border text-left transition-colors ${form.type === opt.value ? "border-[#1e88e5] bg-[#1e88e5]/10" : "border-[#2a2a2a] hover:border-[#444]"}`}
+                      className={`py-2 px-3 rounded-lg border text-left transition-colors ${form.type === opt.value ? "border-[#1e88e5] bg-[#1e88e5]/10" : "border-[var(--border-default)] hover:border-[var(--border-strong)]"}`}
                     >
-                      <p className={`text-xs font-bold ${form.type === opt.value ? "text-[#1e88e5]" : "text-white"}`}>{opt.label}</p>
-                      <p className="text-[10px] text-[#555] mt-0.5">{opt.desc}</p>
+                      <p className={`text-xs font-bold ${form.type === opt.value ? "text-[#1e88e5]" : "text-[var(--text-primary)]"}`}>{opt.label}</p>
+                      <p className="text-[10px] text-[var(--text-muted)] mt-0.5">{opt.desc}</p>
                     </button>
                   ))}
                 </div>
@@ -170,7 +170,7 @@ export default function BannersPage() {
 
               {/* Main image */}
               <div>
-                <label className="text-[#555] text-[11px] uppercase tracking-widest font-bold block mb-2">
+                <label className="text-[var(--text-muted)] text-[11px] uppercase tracking-widest font-bold block mb-2">
                   {form.type === "MOBILE" ? "Mobile Image" : "Desktop Image"}
                 </label>
                 <ImageUpload value={form.image} onChange={(url) => setForm((f) => ({ ...f, image: url }))} />
@@ -179,45 +179,45 @@ export default function BannersPage() {
               {/* Mobile image — only shown for BOTH or DESKTOP (so you can provide an alternate mobile crop) */}
               {form.type === "BOTH" && (
                 <div>
-                  <label className="text-[#555] text-[11px] uppercase tracking-widest font-bold block mb-1.5">
-                    Mobile Image <span className="text-[#333] normal-case tracking-normal font-normal">(optional — uses desktop if not set)</span>
+                  <label className="text-[var(--text-muted)] text-[11px] uppercase tracking-widest font-bold block mb-1.5">
+                    Mobile Image <span className="text-[var(--text-disabled)] normal-case tracking-normal font-normal">(optional — uses desktop if not set)</span>
                   </label>
                   <ImageUpload value={form.mobileImage} onChange={(url) => setForm((f) => ({ ...f, mobileImage: url }))} />
                 </div>
               )}
 
               <div>
-                <label className="text-[#555] text-[11px] uppercase tracking-widest font-bold block mb-1.5">Title (optional)</label>
+                <label className="text-[var(--text-muted)] text-[11px] uppercase tracking-widest font-bold block mb-1.5">Title (optional)</label>
                 <input
                   type="text" value={form.title}
                   onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
                   placeholder="Banner title or caption"
-                  className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-[#333] outline-none focus:border-[#444]"
+                  className="w-full bg-[var(--bg-sidebar)] border border-[var(--border-default)] rounded-lg px-3 py-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-disabled)] outline-none focus:border-[var(--border-strong)]"
                 />
               </div>
 
               <div>
-                <label className="text-[#555] text-[11px] uppercase tracking-widest font-bold block mb-1.5">Order</label>
+                <label className="text-[var(--text-muted)] text-[11px] uppercase tracking-widest font-bold block mb-1.5">Order</label>
                 <input
                   type="number" value={form.order} min={0}
                   onChange={(e) => setForm((f) => ({ ...f, order: parseInt(e.target.value) || 0 }))}
-                  className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2.5 text-sm text-white outline-none focus:border-[#444]"
+                  className="w-full bg-[var(--bg-sidebar)] border border-[var(--border-default)] rounded-lg px-3 py-2.5 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--border-strong)]"
                 />
               </div>
 
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setForm((f) => ({ ...f, isActive: !f.isActive }))}
-                  className={`w-10 h-5 rounded-full transition-colors relative ${form.isActive ? "bg-[#1e88e5]" : "bg-[#2a2a2a]"}`}
+                  className={`w-10 h-5 rounded-full transition-colors relative ${form.isActive ? "bg-[#1e88e5]" : "bg-[var(--bg-elevated-2)]"}`}
                 >
-                  <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all ${form.isActive ? "left-5" : "left-0.5"}`} />
+                  <span className={`absolute top-0.5 w-4 h-4 bg-[var(--invert-bg)] rounded-full transition-all ${form.isActive ? "left-5" : "left-0.5"}`} />
                 </button>
-                <span className="text-sm text-[#aaa]">{form.isActive ? "Active" : "Inactive"}</span>
+                <span className="text-sm text-[var(--text-secondary)]">{form.isActive ? "Active" : "Inactive"}</span>
               </div>
             </div>
 
             <div className="flex gap-3 mt-6">
-              <button onClick={() => setModal(null)} className="flex-1 py-2.5 text-sm text-[#aaa] border border-[#2a2a2a] rounded-lg hover:border-[#444] transition-colors">Cancel</button>
+              <button onClick={() => setModal(null)} className="flex-1 py-2.5 text-sm text-[var(--text-secondary)] border border-[var(--border-default)] rounded-lg hover:border-[var(--border-strong)] transition-colors">Cancel</button>
               <button onClick={handleSave} disabled={saving} className="flex-1 py-2.5 text-sm font-semibold bg-[#1e88e5] text-white rounded-lg hover:bg-[#1565c0] disabled:opacity-50 transition-colors">
                 {saving ? "Saving..." : "Save Banner"}
               </button>

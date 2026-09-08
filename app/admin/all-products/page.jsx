@@ -75,36 +75,36 @@ export default function AllProductsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-white">tüm ürünler</h1>
-          {/* <p className="text-[#555] text-sm mt-0.5">Manage all depth-0 products and groups. Click a group to drill in.</p> */}
+          <h1 className="text-xl font-bold text-[var(--text-primary)]">tüm ürünler</h1>
+          {/* <p className="text-[var(--text-muted)] text-sm mt-0.5">Manage all depth-0 products and groups. Click a group to drill in.</p> */}
         </div>
 
         {/* Add button */}
         <div className="relative">
           <button
             onClick={() => setAddMenuOpen(!addMenuOpen)}
-            className="bg-white text-black text-sm font-semibold px-4 py-2 rounded-lg hover:bg-neutral-200 transition-colors flex items-center gap-2"
+            className="bg-[var(--invert-bg)] text-[var(--invert-text)] text-sm font-semibold px-4 py-2 rounded-lg hover:bg-[var(--invert-hover)] transition-colors flex items-center gap-2"
           >
             + ürün ekle <span className="text-xs opacity-60">▾</span>
           </button>
           {addMenuOpen && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setAddMenuOpen(false)} />
-              <div className="absolute right-0 top-full mt-2 z-20 w-56 bg-[#111] border border-[#2a2a2a] rounded-xl overflow-hidden shadow-xl">
+              <div className="absolute right-0 top-full mt-2 z-20 w-56 bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-xl overflow-hidden shadow-xl">
                 <button
                   onClick={() => { setAddMenuOpen(false); router.push("/admin/products2/product/new"); }}
-                  className="w-full text-left px-4 py-3 text-sm text-white hover:bg-[#1a1a1a] transition-colors"
+                  className="w-full text-left px-4 py-3 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition-colors"
                 >
                   <p className="font-medium">Yeni Tek Ürün</p>
-                  <p className="text-[#555] text-xs mt-0.5">Leaf ürününün özellikleri ve fiyatı</p>
+                  <p className="text-[var(--text-muted)] text-xs mt-0.5">Leaf ürününün özellikleri ve fiyatı</p>
                 </button>
-                <div className="border-t border-[#1f1f1f]" />
+                <div className="border-t border-[var(--border-subtle)]" />
                 <button
                   onClick={() => { setAddMenuOpen(false); setEditingGroup(null); setGroupModalOpen(true); }}
-                  className="w-full text-left px-4 py-3 text-sm text-white hover:bg-[#1a1a1a] transition-colors"
+                  className="w-full text-left px-4 py-3 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition-colors"
                 >
                   <p className="font-medium">Yeni Ürün Grubu</p>
-                  <p className="text-[#555] text-xs mt-0.5">İçinde alt ürünler bulunan grup</p>
+                  <p className="text-[var(--text-muted)] text-xs mt-0.5">İçinde alt ürünler bulunan grup</p>
                 </button>
               </div>
             </>
@@ -114,7 +114,7 @@ export default function AllProductsPage() {
 
       {/* Search */}
       <div className="relative mb-6">
-        <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#444]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
+        <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-faint)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
           <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35" strokeLinecap="round"/>
         </svg>
         <input
@@ -122,10 +122,10 @@ export default function AllProductsPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="aramak..."
-          className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder:text-[#333] outline-none focus:border-[#444] transition-colors"
+          className="w-full bg-[var(--bg-sidebar)] border border-[var(--border-default)] rounded-lg pl-10 pr-4 py-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-disabled)] outline-none focus:border-[var(--border-strong)] transition-colors"
         />
         {search && (
-          <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#444] hover:text-white transition-colors">
+          <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-faint)] hover:text-[var(--text-primary)] transition-colors">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
               <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round"/>
             </svg>
@@ -134,48 +134,48 @@ export default function AllProductsPage() {
       </div>
 
       {/* Count */}
-      <p className="text-[#555] text-xs mb-4">{products.length} ürünler</p>
+      <p className="text-[var(--text-muted)] text-xs mb-4">{products.length} ürünler</p>
 
       {/* Table */}
       {loading ? (
         <div className="flex flex-col gap-2">
           {[1,2,3,4,5].map((i) => (
-            <div key={i} className="h-16 bg-[#111] rounded-xl animate-pulse border border-[#1a1a1a]" />
+            <div key={i} className="h-16 bg-[var(--bg-surface)] rounded-xl animate-pulse border border-[var(--border-faint)]" />
           ))}
         </div>
       ) : products.length === 0 ? (
-        <div className="border border-dashed border-[#2a2a2a] rounded-xl py-20 text-center">
-          <p className="text-[#444] text-sm mb-4">
+        <div className="border border-dashed border-[var(--border-default)] rounded-xl py-20 text-center">
+          <p className="text-[var(--text-faint)] text-sm mb-4">
             {search ? `No products found for "${search}"` : "No products yet"}
           </p>
           {!search && (
             <button
               onClick={() => { setEditingGroup(null); setGroupModalOpen(true); }}
-              className="text-white text-sm border border-[#2a2a2a] px-4 py-2 rounded-lg hover:border-[#444] transition-colors"
+              className="text-[var(--text-primary)] text-sm border border-[var(--border-default)] px-4 py-2 rounded-lg hover:border-[var(--border-strong)] transition-colors"
             >
               İlk ürününüzü ekleyin
             </button>
           )}
         </div>
       ) : (
-        <div className="border border-[#1a1a1a] rounded-xl overflow-hidden">
+        <div className="border border-[var(--border-faint)] rounded-xl overflow-hidden">
           {/* Table header */}
-          <div className="grid grid-cols-[2fr_1fr_1fr_1fr_100px] gap-4 px-5 py-3 bg-[#0a0a0a] border-b border-[#1a1a1a]">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#444]">Product</span>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#444]">Sectors</span>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#444]">Sub-products</span>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#444]">Status</span>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#444]">Actions</span>
+          <div className="grid grid-cols-[2fr_1fr_1fr_1fr_100px] gap-4 px-5 py-3 bg-[var(--bg-sidebar)] border-b border-[var(--border-faint)]">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-faint)]">Product</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-faint)]">Sectors</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-faint)]">Sub-products</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-faint)]">Status</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-faint)]">Actions</span>
           </div>
 
           {products.map((product, idx) => (
             <div
               key={product.id}
-              className={`grid grid-cols-[2fr_1fr_1fr_1fr_100px] gap-4 px-5 py-4 items-center border-b border-[#1a1a1a] last:border-0 hover:bg-[#111] transition-colors ${idx % 2 === 0 ? "bg-[#0d0d0d]" : "bg-[#0a0a0a]"}`}
+              className={`grid grid-cols-[2fr_1fr_1fr_1fr_100px] gap-4 px-5 py-4 items-center border-b border-[var(--border-faint)] last:border-0 hover:bg-[var(--bg-surface)] transition-colors ${idx % 2 === 0 ? "bg-[var(--bg-page)]" : "bg-[var(--bg-sidebar)]"}`}
             >
               {/* Name */}
               <div className="flex items-center gap-3 cursor-pointer group" onClick={() => handleClick(product)}>
-                <div className="w-10 h-10 rounded-lg bg-[#1a1a1a] overflow-hidden shrink-0 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-lg bg-[var(--bg-elevated)] overflow-hidden shrink-0 flex items-center justify-center">
                   {product.image ? (
                     <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
                   ) : (
@@ -185,7 +185,7 @@ export default function AllProductsPage() {
                   )}
                 </div>
                 <div>
-                  <p className="text-white text-[13px] font-semibold group-hover:text-[#1e88e5] transition-colors">
+                  <p className="text-[var(--text-primary)] text-[13px] font-semibold group-hover:text-[#1e88e5] transition-colors">
                     {product.name}
                   </p>
                   <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase ${product.isGroup ? "bg-purple-500/15 text-purple-400" : "bg-blue-500/15 text-blue-400"}`}>
@@ -198,15 +198,15 @@ export default function AllProductsPage() {
               <div className="flex flex-wrap gap-1">
                 {product.sectors?.length > 0 ? (
                   product.sectors.slice(0, 2).map((ps) => (
-                    <span key={ps.sectorId} className="text-[10px] bg-[#1a1a1a] border border-[#2a2a2a] text-[#aaa] px-2 py-0.5 rounded-full whitespace-nowrap">
+                    <span key={ps.sectorId} className="text-[10px] bg-[var(--bg-elevated)] border border-[var(--border-default)] text-[var(--text-secondary)] px-2 py-0.5 rounded-full whitespace-nowrap">
                       {ps.sector?.name}
                     </span>
                   ))
                 ) : (
-                  <span className="text-[#444] text-[11px]">—</span>
+                  <span className="text-[var(--text-faint)] text-[11px]">—</span>
                 )}
                 {product.sectors?.length > 2 && (
-                  <span className="text-[10px] text-[#444]">+{product.sectors.length - 2}</span>
+                  <span className="text-[10px] text-[var(--text-faint)]">+{product.sectors.length - 2}</span>
                 )}
               </div>
 
@@ -215,22 +215,22 @@ export default function AllProductsPage() {
                 {product.isGroup ? (
                   <button
                     onClick={() => handleClick(product)}
-                    className="text-[13px] text-white font-semibold hover:text-[#1e88e5] transition-colors flex items-center gap-1"
+                    className="text-[13px] text-[var(--text-primary)] font-semibold hover:text-[#1e88e5] transition-colors flex items-center gap-1"
                   >
                     {product._count?.subProducts ?? 0}
-                    <span className="text-[#444] text-[11px] font-normal">sub-products</span>
-                    <svg viewBox="0 0 24 24" fill="currentColor" width="10" height="10" className="text-[#444]">
+                    <span className="text-[var(--text-faint)] text-[11px] font-normal">sub-products</span>
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="10" height="10" className="text-[var(--text-faint)]">
                       <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
                     </svg>
                   </button>
                 ) : (
-                  <span className="text-[#444] text-[11px]">—</span>
+                  <span className="text-[var(--text-faint)] text-[11px]">—</span>
                 )}
               </div>
 
               {/* Status */}
               <div>
-                <span className={`text-[10px] px-2 py-1 rounded-full font-bold uppercase ${product.isActive ? "bg-green-500/15 text-green-400" : "bg-[#222] text-[#444]"}`}>
+                <span className={`text-[10px] px-2 py-1 rounded-full font-bold uppercase ${product.isActive ? "bg-green-500/15 text-green-400" : "bg-[var(--bg-muted)] text-[var(--text-faint)]"}`}>
                   {product.isActive ? "Active" : "Inactive"}
                 </span>
               </div>
@@ -239,7 +239,7 @@ export default function AllProductsPage() {
               <div className="flex gap-2">
                 <button
                   onClick={() => handleEdit(product)}
-                  className="p-1.5 text-[#555] hover:text-white border border-[#2a2a2a] rounded-lg hover:border-[#444] transition-colors"
+                  className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] border border-[var(--border-default)] rounded-lg hover:border-[var(--border-strong)] transition-colors"
                   title="Edit"
                 >
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="13" height="13">
@@ -250,7 +250,7 @@ export default function AllProductsPage() {
                 {product.isGroup && (
                   <button
                     onClick={() => handleClick(product)}
-                    className="p-1.5 text-[#555] hover:text-blue-400 border border-[#2a2a2a] rounded-lg hover:border-blue-900 transition-colors"
+                    className="p-1.5 text-[var(--text-muted)] hover:text-blue-400 border border-[var(--border-default)] rounded-lg hover:border-blue-900 transition-colors"
                     title="Open group"
                   >
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="13" height="13">
@@ -260,7 +260,7 @@ export default function AllProductsPage() {
                 )}
                 <button
                   onClick={() => handleDelete(product)}
-                  className="p-1.5 text-red-500/60 hover:text-red-400 border border-[#2a2a2a] rounded-lg hover:border-red-500/40 hover:bg-red-500/10 transition-colors"
+                  className="p-1.5 text-red-500/60 hover:text-red-400 border border-[var(--border-default)] rounded-lg hover:border-red-500/40 hover:bg-red-500/10 transition-colors"
                   title="Delete"
                 >
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="13" height="13">

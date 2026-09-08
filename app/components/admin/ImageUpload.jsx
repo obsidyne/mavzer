@@ -66,7 +66,7 @@ export default function ImageUpload({ value, onChange, height = "h-40" }) {
         onDragLeave={() => setDragging(false)}
         onDrop={handleDrop}
         className={`relative ${height} rounded-lg border-2 border-dashed flex items-center justify-center cursor-pointer transition-all overflow-hidden
-          ${dragging ? "border-white bg-[#222]" : value ? "border-[#2a2a2a]" : "border-[#2a2a2a] hover:border-[#444]"}
+          ${dragging ? "border-[var(--text-primary)] bg-[var(--bg-muted)]" : value ? "border-[var(--border-default)]" : "border-[var(--border-default)] hover:border-[var(--border-strong)]"}
           ${uploading ? "opacity-60 cursor-wait" : ""}
         `}
       >
@@ -77,7 +77,7 @@ export default function ImageUpload({ value, onChange, height = "h-40" }) {
               <button
                 type="button"
                 onClick={() => !uploading && inputRef.current?.click()}
-                className="bg-white text-black text-xs font-semibold px-3 py-1.5 rounded-lg"
+                className="bg-[var(--invert-bg)] text-[var(--invert-text)] text-xs font-semibold px-3 py-1.5 rounded-lg"
               >
                 Change
               </button>
@@ -94,8 +94,8 @@ export default function ImageUpload({ value, onChange, height = "h-40" }) {
           <div className="flex flex-col items-center gap-2 text-center px-4">
             {uploading ? (
               <>
-                <div className="w-6 h-6 border-2 border-[#444] border-t-white rounded-full animate-spin" />
-                <p className="text-[#555] text-xs">Uploading...</p>
+                <div className="w-6 h-6 border-2 border-[var(--border-strong)] border-t-white rounded-full animate-spin" />
+                <p className="text-[var(--text-muted)] text-xs">Uploading...</p>
               </>
             ) : (
               <>
@@ -104,10 +104,10 @@ export default function ImageUpload({ value, onChange, height = "h-40" }) {
                   <polyline points="17 8 12 3 7 8" strokeLinecap="round" strokeLinejoin="round"/>
                   <line x1="12" y1="3" x2="12" y2="15" strokeLinecap="round"/>
                 </svg>
-                <p className="text-[#555] text-xs">
-                  Drop image here or <span className="text-white">click to upload</span>
+                <p className="text-[var(--text-muted)] text-xs">
+                  Drop image here or <span className="text-[var(--text-primary)]">click to upload</span>
                 </p>
-                <p className="text-[#333] text-[10px]">JPG, PNG, WEBP up to 5MB</p>
+                <p className="text-[var(--text-disabled)] text-[10px]">JPG, PNG, WEBP up to 5MB</p>
               </>
             )}
           </div>

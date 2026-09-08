@@ -9,10 +9,10 @@ const API = process.env.NEXT_PUBLIC_API_URL;
 
 function Badge({ children, variant = "default" }) {
   const styles = {
-    default: "bg-[#1a1a1a] text-[#888] border-[#2a2a2a]",
-    green: "bg-green-950/60 text-green-400 border-green-900/40",
-    inactive: "bg-[#111] text-[#444] border-[#1a1a1a]",
-    purple: "bg-[#130f29] text-[#9b7de8] border-[#1e1650]",
+    default: "bg-[var(--bg-elevated)] text-[var(--text-tertiary)] border-[var(--border-default)]",
+    green: "bg-[var(--badge-green-bg)] text-[var(--badge-green-text)] border-[var(--badge-green-border)]",
+    inactive: "bg-[var(--bg-surface)] text-[var(--text-faint)] border-[var(--border-faint)]",
+    purple: "bg-[var(--badge-purple-bg)] text-[var(--badge-purple-text)] border-[var(--badge-purple-border)]",
   };
   return (
     <span className={`text-[10px] px-2 py-0.5 rounded-full border font-medium shrink-0 ${styles[variant]}`}>
@@ -33,8 +33,8 @@ function GroupProductRow({ product, index, total, onMoveUp, onMoveDown, onUnlink
         flex items-center gap-2 px-3 py-2.5 rounded-xl border transition-all duration-75 select-none
         cursor-grab active:cursor-grabbing
         ${isDragging
-          ? "opacity-40 scale-95 border-[#333] bg-[#111]"
-          : "border-[#1f1f1f] bg-[#0e0e0e] hover:border-[#2a2a2a]"
+          ? "opacity-40 scale-95 border-[var(--border-mid)] bg-[var(--bg-surface)]"
+          : "border-[var(--border-subtle)] bg-[var(--bg-surface-2)] hover:border-[var(--border-default)]"
         }
       `}
     >
@@ -44,7 +44,7 @@ function GroupProductRow({ product, index, total, onMoveUp, onMoveDown, onUnlink
           onClick={(e) => { e.stopPropagation(); onMoveUp(); }}
           disabled={index === 0}
           title="Move up"
-          className="w-6 h-6 flex items-center justify-center rounded-md border border-[#2a2a2a] text-[#555] hover:text-white hover:bg-[#1a1a1a] hover:border-[#444] transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+          className="w-6 h-6 flex items-center justify-center rounded-md border border-[var(--border-default)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:border-[var(--border-strong)] transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="11" height="11">
             <path d="M18 15l-6-6-6 6" strokeLinecap="round" strokeLinejoin="round" />
@@ -55,7 +55,7 @@ function GroupProductRow({ product, index, total, onMoveUp, onMoveDown, onUnlink
           onClick={(e) => { e.stopPropagation(); onMoveDown(); }}
           disabled={index === total - 1}
           title="Move down"
-          className="w-6 h-6 flex items-center justify-center rounded-md border border-[#2a2a2a] text-[#555] hover:text-white hover:bg-[#1a1a1a] hover:border-[#444] transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+          className="w-6 h-6 flex items-center justify-center rounded-md border border-[var(--border-default)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:border-[var(--border-strong)] transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="11" height="11">
             <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
@@ -64,7 +64,7 @@ function GroupProductRow({ product, index, total, onMoveUp, onMoveDown, onUnlink
       </div>
 
       {/* drag handle visual */}
-      <div className="text-[#333] hover:text-[#555] transition-colors shrink-0">
+      <div className="text-[var(--text-disabled)] hover:text-[var(--text-muted)] transition-colors shrink-0">
         <svg viewBox="0 0 10 16" width="8" height="12" fill="currentColor">
           <circle cx="2" cy="2" r="1.5"/><circle cx="8" cy="2" r="1.5"/>
           <circle cx="2" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/>
@@ -72,28 +72,28 @@ function GroupProductRow({ product, index, total, onMoveUp, onMoveDown, onUnlink
         </svg>
       </div>
 
-      <div className="w-8 h-8 rounded-lg bg-[#1a1a1a] overflow-hidden shrink-0 border border-[#1f1f1f]">
+      <div className="w-8 h-8 rounded-lg bg-[var(--bg-elevated)] overflow-hidden shrink-0 border border-[var(--border-subtle)]">
         {product.image
           ? <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-          : <div className="w-full h-full flex items-center justify-center text-[#333] text-xs">▦</div>
+          : <div className="w-full h-full flex items-center justify-center text-[var(--text-disabled)] text-xs">▦</div>
         }
       </div>
 
       <div className="flex-1 min-w-0">
-        <p className="text-[#ccc] text-[12px] font-medium truncate">{product.name}</p>
+        <p className="text-[var(--text-secondary)] text-[12px] font-medium truncate">{product.name}</p>
         {product.isGroup && (
-          <p className="text-[#555] text-[10px]">Group · {product._count?.subProducts ?? 0} sub</p>
+          <p className="text-[var(--text-muted)] text-[10px]">Group · {product._count?.subProducts ?? 0} sub</p>
         )}
       </div>
 
-      <span className="text-[10px] text-[#2a2a2a] tabular-nums shrink-0 w-4 text-right">{index + 1}</span>
-      <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${product.isActive ? "bg-green-500" : "bg-[#333]"}`} />
+      <span className="text-[10px] text-[var(--text-disabled)] tabular-nums shrink-0 w-4 text-right">{index + 1}</span>
+      <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${product.isActive ? "bg-green-500" : "bg-[var(--bg-elevated-2)]"}`} />
 
       <button
         onMouseDown={(e) => e.stopPropagation()}
         onClick={(e) => { e.stopPropagation(); onUnlink(); }}
         title="Remove from group"
-        className="w-6 h-6 flex items-center justify-center rounded-md border border-[#1f1f1f] text-[#444] hover:text-orange-400 hover:border-orange-900/50 transition-colors shrink-0"
+        className="w-6 h-6 flex items-center justify-center rounded-md border border-[var(--border-subtle)] text-[var(--text-faint)] hover:text-orange-400 hover:border-orange-900/50 transition-colors shrink-0"
       >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="10" height="10">
           <path d="M18.36 6.64a9 9 0 11-12.73 0M12 2v10" strokeLinecap="round" strokeLinejoin="round" />
@@ -115,31 +115,31 @@ function ProductChip({ product, onDragStart, onDragEnd, isDragging }) {
         group flex items-center gap-3 px-3 py-2.5 rounded-xl border cursor-grab active:cursor-grabbing
         transition-all duration-150 select-none
         ${isDragging
-          ? "opacity-40 scale-95 border-[#333] bg-[#111]"
-          : "border-[#1f1f1f] bg-[#0e0e0e] hover:border-[#2a2a2a] hover:bg-[#111]"
+          ? "opacity-40 scale-95 border-[var(--border-mid)] bg-[var(--bg-surface)]"
+          : "border-[var(--border-subtle)] bg-[var(--bg-surface-2)] hover:border-[var(--border-default)] hover:bg-[var(--bg-surface)]"
         }
       `}
     >
-      <div className="text-[#333] group-hover:text-[#555] transition-colors shrink-0">
+      <div className="text-[var(--text-disabled)] group-hover:text-[var(--text-muted)] transition-colors shrink-0">
         <svg viewBox="0 0 10 16" width="8" height="12" fill="currentColor">
           <circle cx="2" cy="2" r="1.5"/><circle cx="8" cy="2" r="1.5"/>
           <circle cx="2" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/>
           <circle cx="2" cy="14" r="1.5"/><circle cx="8" cy="14" r="1.5"/>
         </svg>
       </div>
-      <div className="w-8 h-8 rounded-lg bg-[#1a1a1a] overflow-hidden shrink-0 border border-[#1f1f1f]">
+      <div className="w-8 h-8 rounded-lg bg-[var(--bg-elevated)] overflow-hidden shrink-0 border border-[var(--border-subtle)]">
         {product.image
           ? <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-          : <div className="w-full h-full flex items-center justify-center text-[#333] text-xs">▦</div>
+          : <div className="w-full h-full flex items-center justify-center text-[var(--text-disabled)] text-xs">▦</div>
         }
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-[#ccc] text-[12px] font-medium truncate">{product.name}</p>
+        <p className="text-[var(--text-secondary)] text-[12px] font-medium truncate">{product.name}</p>
         {product.isGroup && (
-          <p className="text-[#555] text-[10px]">Group · {product._count?.subProducts ?? 0} sub</p>
+          <p className="text-[var(--text-muted)] text-[10px]">Group · {product._count?.subProducts ?? 0} sub</p>
         )}
       </div>
-      <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${product.isActive ? "bg-green-500" : "bg-[#333]"}`} />
+      <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${product.isActive ? "bg-green-500" : "bg-[var(--bg-elevated-2)]"}`} />
     </div>
   );
 }
@@ -179,9 +179,9 @@ function DropPanel({ children, onDrop, isEmpty, emptyMsg, emptyIcon, isReceiver 
         relative flex-1 rounded-xl border transition-all duration-150 overflow-hidden
         ${isOver
           ? isReceiver
-            ? "border-white/25 bg-white/[0.04] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)]"
+            ? "border-[#1e88e5]/40 bg-[#1e88e5]/[0.06] shadow-[inset_0_0_0_1px_rgba(30,136,229,0.3)]"
             : "border-orange-800/40 bg-orange-950/10"
-          : "border-[#1a1a1a] bg-transparent"
+          : "border-[var(--border-faint)] bg-transparent"
         }
       `}
     >
@@ -190,9 +190,9 @@ function DropPanel({ children, onDrop, isEmpty, emptyMsg, emptyIcon, isReceiver 
         <div className={`
           absolute inset-x-3 bottom-3 h-10 rounded-xl border-2 border-dashed
           flex items-center justify-center pointer-events-none z-10 transition-opacity
-          ${isReceiver ? "border-white/20" : "border-orange-700/40"}
+          ${isReceiver ? "border-[#1e88e5]/40" : "border-orange-700/40"}
         `}>
-          <span className={`text-[11px] ${isReceiver ? "text-[#666]" : "text-orange-700/70"}`}>
+          <span className={`text-[11px] ${isReceiver ? "text-[var(--text-tertiary)]" : "text-orange-700/70"}`}>
             {isReceiver ? "Drop to add" : "Drop to remove"}
           </span>
         </div>
@@ -200,8 +200,8 @@ function DropPanel({ children, onDrop, isEmpty, emptyMsg, emptyIcon, isReceiver 
 
       {isEmpty && !isOver ? (
         <div className="h-full flex flex-col items-center justify-center gap-2 py-16 text-center px-4">
-          <div className="text-[#252525] text-3xl mb-1">{emptyIcon}</div>
-          <p className="text-[#3a3a3a] text-[12px]">{emptyMsg}</p>
+          <div className="text-[var(--text-disabled)] text-3xl mb-1">{emptyIcon}</div>
+          <p className="text-[var(--text-faint)] text-[12px]">{emptyMsg}</p>
         </div>
       ) : (
         <div className="p-3 flex flex-col gap-1.5 overflow-y-auto h-full">
@@ -226,8 +226,8 @@ function GroupRow({
       className={`
         group flex items-center gap-2 px-3 py-2.5 rounded-xl border cursor-pointer transition-all duration-150
         ${isSelected
-          ? "bg-[#111] border-[#2a2a2a]"
-          : "bg-transparent border-transparent hover:bg-[#0e0e0e] hover:border-[#1a1a1a]"
+          ? "bg-[var(--bg-surface)] border-[var(--border-default)]"
+          : "bg-transparent border-transparent hover:bg-[var(--bg-surface-2)] hover:border-[var(--border-faint)]"
         }
       `}
     >
@@ -237,7 +237,7 @@ function GroupRow({
           onClick={(e) => { e.stopPropagation(); onMoveUp(); }}
           disabled={index === 0}
           title="Move up"
-          className="w-5 h-5 flex items-center justify-center rounded border border-[#2a2a2a] text-[#444] hover:text-white hover:bg-[#1a1a1a] hover:border-[#444] transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+          className="w-5 h-5 flex items-center justify-center rounded border border-[var(--border-default)] text-[var(--text-faint)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:border-[var(--border-strong)] transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="9" height="9">
             <path d="M18 15l-6-6-6 6" strokeLinecap="round" strokeLinejoin="round" />
@@ -247,7 +247,7 @@ function GroupRow({
           onClick={(e) => { e.stopPropagation(); onMoveDown(); }}
           disabled={index === total - 1}
           title="Move down"
-          className="w-5 h-5 flex items-center justify-center rounded border border-[#2a2a2a] text-[#444] hover:text-white hover:bg-[#1a1a1a] hover:border-[#444] transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+          className="w-5 h-5 flex items-center justify-center rounded border border-[var(--border-default)] text-[var(--text-faint)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:border-[var(--border-strong)] transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="9" height="9">
             <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
@@ -255,24 +255,24 @@ function GroupRow({
         </button>
       </div>
 
-      <div className="w-9 h-9 rounded-lg bg-[#1a1a1a] overflow-hidden shrink-0 border border-[#1f1f1f]">
+      <div className="w-9 h-9 rounded-lg bg-[var(--bg-elevated)] overflow-hidden shrink-0 border border-[var(--border-subtle)]">
         {group.image
           ? <img src={group.image} alt={group.name} className="w-full h-full object-cover" />
-          : <div className="w-full h-full flex items-center justify-center text-[#333] text-xs">⊞</div>
+          : <div className="w-full h-full flex items-center justify-center text-[var(--text-disabled)] text-xs">⊞</div>
         }
       </div>
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 flex-wrap">
-          <span className={`text-[13px] font-semibold truncate ${isSelected ? "text-white" : "text-[#bbb]"}`}>
+          <span className={`text-[13px] font-semibold truncate ${isSelected ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]"}`}>
             {group.name}
           </span>
           {!group.isActive && <Badge variant="inactive">Off</Badge>}
         </div>
-        <p className="text-[#444] text-[11px] mt-0.5">{group._count?.products ?? 0} products</p>
+        <p className="text-[var(--text-faint)] text-[11px] mt-0.5">{group._count?.products ?? 0} products</p>
       </div>
 
-      {isSelected && <div className="w-1 h-6 rounded-full bg-white shrink-0" />}
+      {isSelected && <div className="w-1 h-6 rounded-full bg-[var(--invert-bg)] shrink-0" />}
 
       <div
         className={`flex items-center gap-1 shrink-0 transition-opacity ${isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
@@ -281,13 +281,13 @@ function GroupRow({
         <button
           onClick={() => onToggle(group)}
           title={group.isActive ? "Deactivate" : "Activate"}
-          className="w-7 h-7 flex items-center justify-center rounded-lg border border-[#1f1f1f] text-[#555] hover:text-white hover:border-[#333] transition-colors text-xs"
+          className="w-7 h-7 flex items-center justify-center rounded-lg border border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--border-mid)] transition-colors text-xs"
         >
           {group.isActive ? "○" : "●"}
         </button>
         <button
           onClick={() => onEdit(group)}
-          className="w-7 h-7 flex items-center justify-center rounded-lg border border-[#1f1f1f] text-[#555] hover:text-white hover:border-[#333] transition-colors"
+          className="w-7 h-7 flex items-center justify-center rounded-lg border border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--border-mid)] transition-colors"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="11" height="11">
             <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" strokeLinecap="round"/>
@@ -296,7 +296,7 @@ function GroupRow({
         </button>
         <button
           onClick={() => onDelete(group)}
-          className="w-7 h-7 flex items-center justify-center rounded-lg border border-[#1f1f1f] text-[#555] hover:text-red-400 hover:border-red-900/60 transition-colors"
+          className="w-7 h-7 flex items-center justify-center rounded-lg border border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-red-400 hover:border-red-900/60 transition-colors"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="11" height="11">
             <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" strokeLinecap="round" strokeLinejoin="round"/>
@@ -311,9 +311,9 @@ function GroupRow({
 
 function InfoCard({ label, value }) {
   return (
-    <div className="bg-[#0e0e0e] border border-[#1a1a1a] rounded-xl p-3">
-      <p className="text-[#444] text-[10px] tracking-widest uppercase mb-1">{label}</p>
-      <p className="text-white text-[13px] font-semibold truncate">{String(value)}</p>
+    <div className="bg-[var(--bg-surface-2)] border border-[var(--border-faint)] rounded-xl p-3">
+      <p className="text-[var(--text-faint)] text-[10px] tracking-widest uppercase mb-1">{label}</p>
+      <p className="text-[var(--text-primary)] text-[13px] font-semibold truncate">{String(value)}</p>
     </div>
   );
 }
@@ -611,11 +611,11 @@ export default function GroupsPage() {
       {/* ── Header ── */}
       <div className="flex items-start justify-between mb-6 shrink-0">
         <div>
-          <h1 className="text-white text-2xl font-bold tracking-tight">Kategoriler</h1>
+          <h1 className="text-[var(--text-primary)] text-2xl font-bold tracking-tight">Kategoriler</h1>
         </div>
         <button
           onClick={() => { setEditingGroup(null); setModalOpen(true); }}
-          className="bg-white text-black text-sm font-semibold px-4 py-2 rounded-lg hover:bg-neutral-200 transition-colors shrink-0"
+          className="bg-[var(--invert-bg)] text-[var(--invert-text)] text-sm font-semibold px-4 py-2 rounded-lg hover:bg-[var(--invert-hover)] transition-colors shrink-0"
         >
           + Kategori Ekle
         </button>
@@ -632,18 +632,18 @@ export default function GroupsPage() {
       <div className="flex gap-4 flex-1 min-h-0">
 
         {/* ══ LEFT — group list ══ */}
-        <div className="w-[300px] shrink-0 flex flex-col bg-[#080808] border border-[#1a1a1a] rounded-2xl overflow-hidden">
+        <div className="w-[300px] shrink-0 flex flex-col bg-[var(--bg-deep)] border border-[var(--border-faint)] rounded-2xl overflow-hidden">
 
-          <div className="px-4 py-3 border-b border-[#111] flex items-center gap-2 shrink-0">
-            <span className="text-[#777] text-[11px] tracking-widest uppercase font-semibold">Kategoriler</span>
-            <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-[#111] text-[#555] border border-[#1a1a1a]">
+          <div className="px-4 py-3 border-b border-[var(--border-faint)] flex items-center gap-2 shrink-0">
+            <span className="text-[var(--text-tertiary)] text-[11px] tracking-widest uppercase font-semibold">Kategoriler</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-[var(--bg-surface)] text-[var(--text-muted)] border border-[var(--border-faint)]">
               {filteredGroups.length}
             </span>
           </div>
 
           <div className="px-3 pt-3 shrink-0">
             <div className="relative">
-              <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-[#333]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="12" height="12">
+              <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-disabled)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="12" height="12">
                 <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35" strokeLinecap="round"/>
               </svg>
               <input
@@ -651,7 +651,7 @@ export default function GroupsPage() {
                 value={groupSearch}
                 onChange={(e) => setGroupSearch(e.target.value)}
                 placeholder="Search groups…"
-                className="w-full bg-[#0e0e0e] border border-[#1a1a1a] rounded-lg pl-8 pr-3 py-2 text-[12px] text-white outline-none focus:border-[#2a2a2a] transition-colors placeholder:text-[#333]"
+                className="w-full bg-[var(--bg-surface-2)] border border-[var(--border-faint)] rounded-lg pl-8 pr-3 py-2 text-[12px] text-[var(--text-primary)] outline-none focus:border-[var(--border-default)] transition-colors placeholder:text-[var(--text-disabled)]"
               />
             </div>
           </div>
@@ -660,19 +660,19 @@ export default function GroupsPage() {
             {loadingGroups ? (
               <div className="flex flex-col gap-1.5 p-2">
                 {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="h-14 bg-[#0e0e0e] rounded-xl animate-pulse border border-[#111]" />
+                  <div key={i} className="h-14 bg-[var(--bg-surface-2)] rounded-xl animate-pulse border border-[var(--border-faint)]" />
                 ))}
               </div>
             ) : filteredGroups.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 gap-2">
-                <span className="text-[#252525] text-3xl">⊞</span>
-                <p className="text-[#3a3a3a] text-[12px]">
+                <span className="text-[var(--text-disabled)] text-3xl">⊞</span>
+                <p className="text-[var(--text-faint)] text-[12px]">
                   {groupSearch ? "No groups match" : "No groups yet"}
                 </p>
                 {!groupSearch && (
                   <button
                     onClick={() => { setEditingGroup(null); setModalOpen(true); }}
-                    className="mt-2 text-[#555] text-[11px] border border-[#1f1f1f] rounded-lg px-3 py-1.5 hover:text-white hover:border-[#333] transition-colors"
+                    className="mt-2 text-[var(--text-muted)] text-[11px] border border-[var(--border-subtle)] rounded-lg px-3 py-1.5 hover:text-[var(--text-primary)] hover:border-[var(--border-mid)] transition-colors"
                   >
                     İlk kategoriyi ekle
                   </button>
@@ -699,35 +699,35 @@ export default function GroupsPage() {
         </div>
 
         {/* ══ RIGHT — detail + product assignment ══ */}
-        <div className="flex-1 flex flex-col bg-[#080808] border border-[#1a1a1a] rounded-2xl overflow-hidden min-w-0">
+        <div className="flex-1 flex flex-col bg-[var(--bg-deep)] border border-[var(--border-faint)] rounded-2xl overflow-hidden min-w-0">
 
           {selectedGroup ? (
             <>
               {/* panel header */}
-              <div className="px-5 py-3 border-b border-[#111] flex items-center gap-3 shrink-0">
+              <div className="px-5 py-3 border-b border-[var(--border-faint)] flex items-center gap-3 shrink-0">
                 {selectedGroup.image && (
                   <img src={selectedGroup.image} alt="" className="w-7 h-7 rounded-lg object-cover shrink-0" />
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-white text-[13px] font-semibold truncate">{selectedGroup.name}</span>
+                    <span className="text-[var(--text-primary)] text-[13px] font-semibold truncate">{selectedGroup.name}</span>
                     <Badge variant={selectedGroup.isActive ? "green" : "inactive"}>
                       {selectedGroup.isActive ? "Active" : "Inactive"}
                     </Badge>
                     <Badge variant="purple">Group</Badge>
                   </div>
-                  <p className="text-[#444] text-[11px]">{selectedGroup._count?.products ?? 0} products assigned</p>
+                  <p className="text-[var(--text-faint)] text-[11px]">{selectedGroup._count?.products ?? 0} products assigned</p>
                 </div>
 
-                <div className="flex items-center gap-1 bg-[#0e0e0e] border border-[#1a1a1a] rounded-lg p-0.5 shrink-0">
+                <div className="flex items-center gap-1 bg-[var(--bg-surface-2)] border border-[var(--border-faint)] rounded-lg p-0.5 shrink-0">
                   {[["info", "Group Info"], ["products", "Assign Products"]].map(([tab, label]) => (
                     <button
                       key={tab}
                       onClick={() => setActiveTab(tab)}
                       className={`px-3 py-1.5 rounded-md text-[11px] font-medium capitalize transition-all
                         ${activeTab === tab
-                          ? "bg-[#1a1a1a] text-white border border-[#2a2a2a]"
-                          : "text-[#555] hover:text-[#888]"
+                          ? "bg-[var(--bg-elevated)] text-[var(--text-primary)] border border-[var(--border-default)]"
+                          : "text-[var(--text-muted)] hover:text-[var(--text-tertiary)]"
                         }`}
                     >
                       {label}
@@ -741,7 +741,7 @@ export default function GroupsPage() {
                 <div className="flex-1 overflow-y-auto p-5">
                   <div className="max-w-lg flex flex-col gap-5">
                     {selectedGroup.image && (
-                      <div className="w-full h-40 rounded-xl overflow-hidden border border-[#1f1f1f]">
+                      <div className="w-full h-40 rounded-xl overflow-hidden border border-[var(--border-subtle)]">
                         <img src={selectedGroup.image} alt={selectedGroup.name} className="w-full h-full object-cover" />
                       </div>
                     )}
@@ -751,14 +751,14 @@ export default function GroupsPage() {
                       <InfoCard label="Products" value={selectedGroup._count?.products ?? 0} />
                     </div>
                     {selectedGroup.description && (
-                      <div className="bg-[#0e0e0e] border border-[#1a1a1a] rounded-xl p-4">
-                        <p className="text-[#555] text-[10px] tracking-widest uppercase mb-2">Description</p>
-                        <p className="text-[#888] text-sm leading-relaxed">{selectedGroup.description}</p>
+                      <div className="bg-[var(--bg-surface-2)] border border-[var(--border-faint)] rounded-xl p-4">
+                        <p className="text-[var(--text-muted)] text-[10px] tracking-widest uppercase mb-2">Description</p>
+                        <p className="text-[var(--text-tertiary)] text-sm leading-relaxed">{selectedGroup.description}</p>
                       </div>
                     )}
                     <button
                       onClick={() => { setEditingGroup(selectedGroup); setModalOpen(true); }}
-                      className="text-sm text-white border border-[#2a2a2a] rounded-lg px-4 py-2.5 hover:border-[#444] transition-colors w-fit"
+                      className="text-sm text-[var(--text-primary)] border border-[var(--border-default)] rounded-lg px-4 py-2.5 hover:border-[var(--border-strong)] transition-colors w-fit"
                     >
                       Edit Group
                     </button>
@@ -773,19 +773,19 @@ export default function GroupsPage() {
                   {/* ── LEFT col: products IN this group (drop target for pool→group) ── */}
                   <div className="flex-1 flex flex-col min-w-0">
                     <div className="flex items-center justify-between mb-2 px-1 shrink-0">
-                      <span className="text-[#555] text-[10px] tracking-widest uppercase font-semibold">In Group</span>
+                      <span className="text-[var(--text-muted)] text-[10px] tracking-widest uppercase font-semibold">In Group</span>
                       <div className="flex items-center gap-2">
                         {draggingSource === "pool" && (
-                          <span className="text-[9px] text-white/30 animate-pulse">← drop here to add</span>
+                          <span className="text-[9px] text-[var(--text-primary)]/30 animate-pulse">← drop here to add</span>
                         )}
-                        <span className="text-[#333] text-[10px]">{groupProducts.length}</span>
+                        <span className="text-[var(--text-disabled)] text-[10px]">{groupProducts.length}</span>
                       </div>
                     </div>
 
                     {loadingProducts ? (
-                      <div className="flex-1 rounded-xl border border-[#1a1a1a] p-3 flex flex-col gap-1.5">
+                      <div className="flex-1 rounded-xl border border-[var(--border-faint)] p-3 flex flex-col gap-1.5">
                         {[1, 2, 3].map((i) => (
-                          <div key={i} className="h-12 bg-[#111] rounded-xl animate-pulse border border-[#1a1a1a]" />
+                          <div key={i} className="h-12 bg-[var(--bg-surface)] rounded-xl animate-pulse border border-[var(--border-faint)]" />
                         ))}
                       </div>
                     ) : (
@@ -816,28 +816,28 @@ export default function GroupsPage() {
 
                   {/* divider */}
                   <div className="flex flex-col items-center justify-center gap-2 shrink-0 w-8">
-                    <div className="flex-1 w-px bg-[#111]" />
-                    <div className="w-6 h-6 rounded-full bg-[#111] border border-[#1f1f1f] flex items-center justify-center">
+                    <div className="flex-1 w-px bg-[var(--bg-surface)]" />
+                    <div className="w-6 h-6 rounded-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] flex items-center justify-center">
                       <svg viewBox="0 0 24 24" fill="none" stroke="#444" strokeWidth="2" width="10" height="10">
                         <path d="M8 3H5a2 2 0 00-2 2v14a2 2 0 002 2h3M16 3h3a2 2 0 012 2v14a2 2 0 01-2 2h-3M12 8l-4 4 4 4M8 12h8" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                     </div>
-                    <div className="flex-1 w-px bg-[#111]" />
+                    <div className="flex-1 w-px bg-[var(--bg-surface)]" />
                   </div>
 
                   {/* ── RIGHT col: pool (drop target for group→pool) ── */}
                   <div className="flex-1 flex flex-col min-w-0">
                     <div className="flex items-center justify-between mb-2 px-1 shrink-0">
-                      <span className="text-[#555] text-[10px] tracking-widest uppercase font-semibold">All Products</span>
+                      <span className="text-[var(--text-muted)] text-[10px] tracking-widest uppercase font-semibold">All Products</span>
                       <div className="flex items-center gap-2">
                         {draggingSource === "group" && (
                           <span className="text-[9px] text-orange-500/50 animate-pulse">drop here to remove →</span>
                         )}
-                        <span className="text-[#333] text-[10px]">{poolProducts.length}</span>
+                        <span className="text-[var(--text-disabled)] text-[10px]">{poolProducts.length}</span>
                       </div>
                     </div>
                     <div className="relative mb-2 shrink-0">
-                      <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-[#333]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="11" height="11">
+                      <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-disabled)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="11" height="11">
                         <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35" strokeLinecap="round"/>
                       </svg>
                       <input
@@ -845,7 +845,7 @@ export default function GroupsPage() {
                         value={prodSearch}
                         onChange={(e) => setProdSearch(e.target.value)}
                         placeholder="Search products…"
-                        className="w-full bg-[#0e0e0e] border border-[#1a1a1a] rounded-lg pl-8 pr-3 py-1.5 text-[11px] text-white outline-none focus:border-[#2a2a2a] transition-colors placeholder:text-[#333]"
+                        className="w-full bg-[var(--bg-surface-2)] border border-[var(--border-faint)] rounded-lg pl-8 pr-3 py-1.5 text-[11px] text-[var(--text-primary)] outline-none focus:border-[var(--border-default)] transition-colors placeholder:text-[var(--text-disabled)]"
                       />
                     </div>
 
@@ -872,11 +872,11 @@ export default function GroupsPage() {
             </>
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center p-8">
-              <div className="w-14 h-14 rounded-2xl bg-[#0e0e0e] border border-[#1a1a1a] flex items-center justify-center mb-1">
-                <span className="text-[#333] text-2xl">⊞</span>
+              <div className="w-14 h-14 rounded-2xl bg-[var(--bg-surface-2)] border border-[var(--border-faint)] flex items-center justify-center mb-1">
+                <span className="text-[var(--text-disabled)] text-2xl">⊞</span>
               </div>
-              <p className="text-[#3a3a3a] text-[13px] font-medium">Select a group</p>
-              <p className="text-[#2a2a2a] text-[11px] max-w-xs leading-relaxed">
+              <p className="text-[var(--text-faint)] text-[13px] font-medium">Select a group</p>
+              <p className="text-[var(--text-disabled)] text-[11px] max-w-xs leading-relaxed">
                 Choose a group from the left panel to view its details and assign products
               </p>
             </div>

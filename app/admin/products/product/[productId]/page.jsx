@@ -97,15 +97,15 @@ export default function ProductFormPage() {
     }
   }
 
-  if (loading) return <div className="text-[#555] text-sm">Loading...</div>;
+  if (loading) return <div className="text-[var(--text-muted)] text-sm">Loading...</div>;
 
   return (
     <div>
-      <div className="flex items-center gap-2 text-xs text-[#444] mb-6">
-        <button onClick={() => router.back()} className="hover:text-white transition-colors">← Back</button>
+      <div className="flex items-center gap-2 text-xs text-[var(--text-faint)] mb-6">
+        <button onClick={() => router.back()} className="hover:text-[var(--text-primary)] transition-colors">← Back</button>
       </div>
 
-      <h1 className="text-white text-2xl font-bold tracking-tight mb-8">
+      <h1 className="text-[var(--text-primary)] text-2xl font-bold tracking-tight mb-8">
         {isNew ? "Add Product" : "Edit Product"}
       </h1>
 
@@ -114,32 +114,32 @@ export default function ProductFormPage() {
 
           {/* Left */}
           <div className="flex-1 flex flex-col gap-5">
-            <div className="bg-[#111] border border-[#1f1f1f] rounded-xl p-6 flex flex-col gap-5">
+            <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl p-6 flex flex-col gap-5">
               <div className="flex flex-col gap-1.5">
-                <label className="text-[#666] text-[11px] tracking-widest uppercase">Name *</label>
+                <label className="text-[var(--text-tertiary)] text-[11px] tracking-widest uppercase">Name *</label>
                 <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Product name" required
-                  className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:border-[#444] transition-colors placeholder:text-[#333]" />
+                  className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg px-4 py-2.5 text-[var(--text-primary)] text-sm outline-none focus:border-[var(--border-strong)] transition-colors placeholder:text-[var(--text-disabled)]" />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[#666] text-[11px] tracking-widest uppercase">Description</label>
+                <label className="text-[var(--text-tertiary)] text-[11px] tracking-widest uppercase">Description</label>
                 <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Product description..." rows={4}
-                  className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:border-[#444] transition-colors placeholder:text-[#333] resize-none" />
+                  className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg px-4 py-2.5 text-[var(--text-primary)] text-sm outline-none focus:border-[var(--border-strong)] transition-colors placeholder:text-[var(--text-disabled)] resize-none" />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[#666] text-[11px] tracking-widest uppercase">Price</label>
+                <label className="text-[var(--text-tertiary)] text-[11px] tracking-widest uppercase">Price</label>
                 <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="0.00" step="0.01" min="0"
-                  className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:border-[#444] transition-colors placeholder:text-[#333]" />
+                  className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg px-4 py-2.5 text-[var(--text-primary)] text-sm outline-none focus:border-[var(--border-strong)] transition-colors placeholder:text-[var(--text-disabled)]" />
               </div>
             </div>
 
             {/* Specs */}
-            <div className="bg-[#111] border border-[#1f1f1f] rounded-xl p-6">
+            <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl p-6">
               <div className="flex items-center justify-between mb-4">
-                <label className="text-[#666] text-[11px] tracking-widest uppercase">Specifications</label>
+                <label className="text-[var(--text-tertiary)] text-[11px] tracking-widest uppercase">Specifications</label>
                 <button type="button" onClick={addDetailRow}
-                  className="text-xs text-[#666] border border-[#2a2a2a] px-3 py-1 rounded-lg hover:text-white hover:border-[#444] transition-colors">
+                  className="text-xs text-[var(--text-tertiary)] border border-[var(--border-default)] px-3 py-1 rounded-lg hover:text-[var(--text-primary)] hover:border-[var(--border-strong)] transition-colors">
                   + Add Row
                 </button>
               </div>
@@ -147,10 +147,10 @@ export default function ProductFormPage() {
                 {details.map((detail, i) => (
                   <div key={i} className="flex gap-2">
                     <input type="text" value={detail.key} onChange={(e) => updateDetail(i, "key", e.target.value)} placeholder="e.g. Weight"
-                      className="flex-1 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-[#444] transition-colors placeholder:text-[#333]" />
+                      className="flex-1 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg px-3 py-2 text-[var(--text-primary)] text-sm outline-none focus:border-[var(--border-strong)] transition-colors placeholder:text-[var(--text-disabled)]" />
                     <input type="text" value={detail.value} onChange={(e) => updateDetail(i, "value", e.target.value)} placeholder="e.g. 500g"
-                      className="flex-1 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-[#444] transition-colors placeholder:text-[#333]" />
-                    <button type="button" onClick={() => removeDetailRow(i)} className="text-[#444] hover:text-red-400 transition-colors px-2">✕</button>
+                      className="flex-1 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg px-3 py-2 text-[var(--text-primary)] text-sm outline-none focus:border-[var(--border-strong)] transition-colors placeholder:text-[var(--text-disabled)]" />
+                    <button type="button" onClick={() => removeDetailRow(i)} className="text-[var(--text-faint)] hover:text-red-400 transition-colors px-2">✕</button>
                   </div>
                 ))}
               </div>
@@ -159,16 +159,16 @@ export default function ProductFormPage() {
 
           {/* Right */}
           <div className="w-72 flex flex-col gap-5">
-            <div className="bg-[#111] border border-[#1f1f1f] rounded-xl p-6 flex flex-col gap-3">
-              <label className="text-[#666] text-[11px] tracking-widest uppercase">Image</label>
+            <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl p-6 flex flex-col gap-3">
+              <label className="text-[var(--text-tertiary)] text-[11px] tracking-widest uppercase">Image</label>
               <ImageUpload value={image} onChange={setImage} height="h-52" />
             </div>
 
-            <div className="bg-[#111] border border-[#1f1f1f] rounded-xl p-6">
+            <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl p-6">
               <div className="flex items-center justify-between">
-                <label className="text-[#666] text-[11px] tracking-widest uppercase">Active</label>
+                <label className="text-[var(--text-tertiary)] text-[11px] tracking-widest uppercase">Active</label>
                 <button type="button" onClick={() => setIsActive(!isActive)}
-                  className={`w-10 h-5 rounded-full transition-colors relative ${isActive ? "bg-white" : "bg-[#2a2a2a]"}`}>
+                  className={`w-10 h-5 rounded-full transition-colors relative ${isActive ? "bg-[var(--invert-bg)]" : "bg-[var(--bg-elevated-2)]"}`}>
                   <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-black transition-all ${isActive ? "left-5" : "left-0.5"}`} />
                 </button>
               </div>
@@ -180,11 +180,11 @@ export default function ProductFormPage() {
 
         <div className="flex gap-3 mt-6">
           <button type="button" onClick={() => router.back()}
-            className="text-sm text-[#666] border border-[#2a2a2a] rounded-lg px-6 py-2.5 hover:text-white hover:border-[#444] transition-colors">
+            className="text-sm text-[var(--text-tertiary)] border border-[var(--border-default)] rounded-lg px-6 py-2.5 hover:text-[var(--text-primary)] hover:border-[var(--border-strong)] transition-colors">
             Cancel
           </button>
           <button type="submit" disabled={saving}
-            className="text-sm bg-white text-black font-semibold rounded-lg px-6 py-2.5 hover:bg-neutral-200 transition-colors disabled:opacity-50">
+            className="text-sm bg-[var(--invert-bg)] text-[var(--invert-text)] font-semibold rounded-lg px-6 py-2.5 hover:bg-[var(--invert-hover)] transition-colors disabled:opacity-50">
             {saving ? "Saving..." : isNew ? "Add Product" : "Save Changes"}
           </button>
         </div>

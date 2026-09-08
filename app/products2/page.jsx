@@ -11,7 +11,7 @@ function GroupsContent() {
   const { t } = useLanguage();
   const router = useRouter();
 
-  const [groups, setGroups]                 = useState([]);
+  const [allProducts, setAllProducts]       = useState([]);
   const [loading, setLoading]               = useState(true);
   const [stack, setStack]                   = useState([]);
   const [currentItems, setCurrentItems]     = useState([]);
@@ -19,69 +19,56 @@ function GroupsContent() {
   const [breadcrumbs, setBreadcrumbs]       = useState([]);
   const fetchedRef = useRef(false);
 
+  // Categories/groups are hidden — load the flat "all products" list directly.
   useEffect(() => {
     if (fetchedRef.current) return;
     fetchedRef.current = true;
-    async function fetchGroups() {
+    async function fetchAllProducts() {
       try {
-        const res  = await fetch(`${API}/api/public/groups`);
+        const res  = await fetch(`${API}/api/public/sector-products/all`);
         const data = await res.json();
         const list = Array.isArray(data) ? data : [];
-        setGroups(list);
+        setAllProducts(list);
         setCurrentItems(list);
         setBreadcrumbs([]);
-        setStack([{ type: "groups", items: list }]);
+        setStack([{ type: "products", items: list }]);
       } catch (err) {
         console.error(err);
-        setGroups([]);
+        setAllProducts([]);
         setCurrentItems([]);
       } finally {
         setLoading(false);
       }
     }
-    fetchGroups();
+    fetchAllProducts();
   }, []);
 
-  const handleGroupClick = useCallback(async (group) => {
-    if (stack.length === 1 || group.isGroup || group._count?.subProducts > 0 || group.subProducts?.length > 0) {
+  const handleItemClick = useCallback(async (item) => {
+    const hasChildren = item.isGroup || item._count?.subProducts > 0 || item.subProducts?.length > 0;
+    if (hasChildren) {
       setCurrentLoading(true);
-      setBreadcrumbs((prev) => [...prev, { label: group.name, id: group.id }]);
+      setBreadcrumbs((prev) => [...prev, { label: item.name, id: item.id }]);
       try {
-        let items = [];
-        if (stack.length === 1) {
-          const res  = await fetch(`${API}/api/public/groups/${group.id}`);
-          const data = await res.json();
-          items = Array.isArray(data.products) ? data.products : [];
-        } else {
-          const res  = await fetch(`${API}/api/public/products/${group.id}/subproducts`);
-          const data = await res.json();
-          items = Array.isArray(data) ? data : [];
-        }
+        const res  = await fetch(`${API}/api/public/products/${item.id}/subproducts`);
+        const data = await res.json();
+        const items = Array.isArray(data) ? data : [];
         setCurrentItems(items);
-        setStack((prev) => [...prev, { type: "subProducts", id: group.id, label: group.name, items }]);
+        setStack((prev) => [...prev, { type: "subProducts", id: item.id, label: item.name, items }]);
       } catch (err) {
         setCurrentItems([]);
       } finally {
         setCurrentLoading(false);
       }
     } else {
-      router.push(`/products/${group.id}`);
+      router.push(`/products/${item.id}`);
     }
-  }, [router, stack]);
-
-  const handleProductClick = useCallback((product) => {
-    if (product.isGroup || product._count?.subProducts > 0 || product.subProducts?.length > 0) {
-      handleGroupClick(product);
-    } else {
-      router.push(`/products/${product.id}`);
-    }
-  }, [handleGroupClick, router]);
+  }, [router]);
 
   const handleBreadcrumbClick = useCallback((index) => {
     if (index < 0) {
-      setCurrentItems(groups);
+      setCurrentItems(allProducts);
       setBreadcrumbs([]);
-      setStack([{ type: "groups", items: groups }]);
+      setStack([{ type: "products", items: allProducts }]);
     } else {
       const newCrumbs = breadcrumbs.slice(0, index + 1);
       const newStack  = stack.slice(0, index + 2);
@@ -89,7 +76,7 @@ function GroupsContent() {
       setStack(newStack);
       setCurrentItems(newStack[newStack.length - 1]?.items || []);
     }
-  }, [breadcrumbs, stack, groups]);
+  }, [breadcrumbs, stack, allProducts]);
 
   const handleBack = useCallback(() => {
     if (stack.length <= 1) return;
@@ -124,7 +111,7 @@ function GroupsContent() {
             onClick={() => handleBreadcrumbClick(-1)}
             className={`font-medium transition-colors ${isRoot ? "text-[#071e3d] font-semibold" : "hover:text-[#0a4c8a]"}`}
           >
-            {t.nav_categories}
+            {t.all_products}
           </button>
           {breadcrumbs.map((crumb, i) => (
             <span key={i} className="flex items-center gap-1.5">
@@ -182,9 +169,8 @@ function GroupsContent() {
               <GroupCard
                 key={item.id}
                 item={item}
-                isRoot={isRoot}
                 t={t}
-                onClick={() => isRoot ? handleGroupClick(item) : handleProductClick(item)}
+                onClick={() => handleItemClick(item)}
               />
             ))}
           </div>
@@ -194,7 +180,7 @@ function GroupsContent() {
   );
 }
 
-function GroupCard({ item, isRoot, t, onClick }) {
+function GroupCard({ item, t, onClick }) {
   const hasChildren =
     item.isGroup ||
     (item._count?.subProducts > 0) ||
@@ -228,9 +214,9 @@ function GroupCard({ item, isRoot, t, onClick }) {
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none" />
 
         {/* "Group" badge */}
-        {(isRoot || hasChildren) && (
+        {hasChildren && (
           <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-md px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-[#1e88e5] border border-[#dde4ef]">
-            {isRoot ? t.nav_categories : `${item._count?.subProducts ?? 0}`}
+            {item._count?.subProducts ?? 0}
           </div>
         )}
       </div>
@@ -241,11 +227,7 @@ function GroupCard({ item, isRoot, t, onClick }) {
           {item.name}
         </h3>
         <p className="text-[10px] text-[#b0b8c4] mt-1 flex items-center gap-0.5">
-          {isRoot
-            ? t.nav_categories
-            : hasChildren
-              ? t.variants_label
-              : t.view_details}
+          {hasChildren ? t.variants_label : t.view_details}
           <svg viewBox="0 0 24 24" fill="currentColor" width="9" height="9">
             <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z" />
           </svg>

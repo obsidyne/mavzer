@@ -1,6 +1,7 @@
 
 
 import { AuthProvider } from "../context/authContext";
+import { ThemeProvider } from "../context/themeContext";
 import AdminShell from "../components/admin/Adminshell";
 
 import "../globals.css"
@@ -9,9 +10,11 @@ import "../globals.css"
 export default function AdminLayout({ children }) {
   return (
     <AuthProvider>
-      <AdminShell>
-        {children}
-      </AdminShell>
+      <ThemeProvider>
+        <AdminShell>
+          {children}
+        </AdminShell>
+      </ThemeProvider>
     </AuthProvider>
   );
 }

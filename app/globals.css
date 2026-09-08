@@ -6,5 +6,63 @@ body {
   /* background: var(--background); */
   /* color: var(--foreground); */
   font-family: Arial, Helvetica, sans-serif;
-  
+
+}
+
+/* ── Admin panel theme tokens ──────────────────────────────────────────────
+   Scoped to .admin-root so the public site is unaffected. Defaults to light;
+   [data-theme="dark"] switches the whole scale via light-dark(). */
+.admin-root {
+  color-scheme: light;
+
+  --bg-page: light-dark(#f4f5f7, #0d0d0d);
+  --bg-sidebar: light-dark(#ffffff, #0a0a0a);
+  --bg-surface: light-dark(#ffffff, #111111);
+  --bg-surface-2: light-dark(#fbfbfc, #0e0e0e);
+  --bg-elevated: light-dark(#eef0f3, #1a1a1a);
+  --bg-elevated-2: light-dark(#e2e5ea, #2a2a2a);
+  --bg-muted: light-dark(#eceef1, #222222);
+  --bg-deep: light-dark(#f4f5f7, #080808);
+
+  --border-faint: light-dark(#e8eaed, #1a1a1a);
+  --border-subtle: light-dark(#e2e5ea, #1f1f1f);
+  --border-default: light-dark(#d7dbe1, #2a2a2a);
+  --border-mid: light-dark(#cdd2da, #333333);
+  --border-strong: light-dark(#b8bfc9, #444444);
+
+  --text-primary: light-dark(#14161a, #ffffff);
+  --text-secondary: light-dark(#3f4451, #cccccc);
+  --text-tertiary: light-dark(#5b6270, #999999);
+  --text-muted: light-dark(#7c8492, #555555);
+  --text-faint: light-dark(#9aa1ac, #444444);
+  --text-disabled: light-dark(#b6bcc5, #333333);
+
+  --invert-bg: light-dark(#14161a, #ffffff);
+  --invert-text: light-dark(#ffffff, #000000);
+  --invert-hover: light-dark(#2a2d34, #e5e5e5);
+
+  --accent: #1e88e5;
+  --accent-hover: #1565c0;
+
+  --badge-green-bg: light-dark(#e6f7ec, #052e16);
+  --badge-green-text: light-dark(#15803d, #4ade80);
+  --badge-green-border: light-dark(#a7e3b8, #14532d);
+
+  --badge-blue-bg: light-dark(#e8f1fc, #0f1629);
+  --badge-blue-text: light-dark(#1d5fb0, #6b8fd4);
+  --badge-blue-border: light-dark(#bcd8f5, #1a2550);
+
+  --badge-purple-bg: light-dark(#f1ecfb, #130f29);
+  --badge-purple-text: light-dark(#6d3fc4, #9b7de8);
+  --badge-purple-border: light-dark(#d9c9f5, #1e1650);
+
+  --badge-red-bg: light-dark(#fdecec, #1a0a0a);
+  --badge-red-text: light-dark(#c0392b, #f87171);
+  --badge-red-border: light-dark(#f3bcbc, #3a1414);
+
+  background: var(--bg-page);
+}
+
+.admin-root[data-theme="dark"] {
+  color-scheme: dark;
 }

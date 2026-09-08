@@ -122,19 +122,19 @@ export default function Products2GroupPage() {
   // Can add a sub-group only if children would be depth 1 (layer 4 can be a group → its children are layer 5 leaves)
   const canAddGroup = childDepth <= 1;
 
-  if (loading) return <div className="text-[#555] text-sm">Loading...</div>;
+  if (loading) return <div className="text-[var(--text-muted)] text-sm">Loading...</div>;
 
   return (
     <div>
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs text-[#444] mb-6 flex-wrap">
+      <div className="flex items-center gap-2 text-xs text-[var(--text-faint)] mb-6 flex-wrap">
         {breadcrumbs.map((crumb, i) => (
           <span key={i} className="flex items-center gap-2">
             {i > 0 && <span>›</span>}
             {i === breadcrumbs.length - 1 ? (
-              <span className="text-white">{crumb.label}</span>
+              <span className="text-[var(--text-primary)]">{crumb.label}</span>
             ) : (
-              <button onClick={() => router.push(crumb.href)} className="hover:text-white transition-colors">
+              <button onClick={() => router.push(crumb.href)} className="hover:text-[var(--text-primary)] transition-colors">
                 {crumb.label}
               </button>
             )}
@@ -146,14 +146,14 @@ export default function Products2GroupPage() {
       <div className="flex items-start justify-between mb-8">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-white text-2xl font-bold tracking-tight">
+            <h1 className="text-[var(--text-primary)] text-2xl font-bold tracking-tight">
               {currentGroup?.name}
             </h1>
             <span className="text-[10px] px-2.5 py-1 rounded-full bg-blue-950 text-blue-400 font-medium">
               Layer {(currentGroup?.depth ?? 0) + 4}
             </span>
           </div>
-          <p className="text-[#555] text-sm mt-1">
+          <p className="text-[var(--text-muted)] text-sm mt-1">
             {childDepth === 1
               ? "Sub-products in this group (layer 4)"
               : "Sub-products in this group (layer 5 — deepest level)"
@@ -165,7 +165,7 @@ export default function Products2GroupPage() {
         <div className="relative">
           <button
             onClick={() => setAddMenuOpen(!addMenuOpen)}
-            className="bg-white text-black text-sm font-semibold px-4 py-2 rounded-lg hover:bg-neutral-200 transition-colors flex items-center gap-2"
+            className="bg-[var(--invert-bg)] text-[var(--invert-text)] text-sm font-semibold px-4 py-2 rounded-lg hover:bg-[var(--invert-hover)] transition-colors flex items-center gap-2"
           >
             + Add Product <span className="text-xs opacity-60">▾</span>
           </button>
@@ -173,23 +173,23 @@ export default function Products2GroupPage() {
           {addMenuOpen && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setAddMenuOpen(false)} />
-              <div className="absolute right-0 top-full mt-2 z-20 w-56 bg-[#111] border border-[#2a2a2a] rounded-xl overflow-hidden shadow-xl">
+              <div className="absolute right-0 top-full mt-2 z-20 w-56 bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-xl overflow-hidden shadow-xl">
                 <button
                   onClick={handleAddSingle}
-                  className="w-full text-left px-4 py-3 text-sm text-white hover:bg-[#1a1a1a] transition-colors"
+                  className="w-full text-left px-4 py-3 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition-colors"
                 >
                   <p className="font-medium">New Single Product</p>
-                  <p className="text-[#555] text-xs mt-0.5">Leaf product with specs &amp; price</p>
+                  <p className="text-[var(--text-muted)] text-xs mt-0.5">Leaf product with specs &amp; price</p>
                 </button>
                 {canAddGroup && (
                   <>
-                    <div className="border-t border-[#1f1f1f]" />
+                    <div className="border-t border-[var(--border-subtle)]" />
                     <button
                       onClick={handleAddGroup}
-                      className="w-full text-left px-4 py-3 text-sm text-white hover:bg-[#1a1a1a] transition-colors"
+                      className="w-full text-left px-4 py-3 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition-colors"
                     >
                       <p className="font-medium">New Sub-Group</p>
-                      <p className="text-[#555] text-xs mt-0.5">Group with layer-5 products inside</p>
+                      <p className="text-[var(--text-muted)] text-xs mt-0.5">Group with layer-5 products inside</p>
                     </button>
                   </>
                 )}
@@ -201,11 +201,11 @@ export default function Products2GroupPage() {
 
       {/* Products grid */}
       {products.length === 0 ? (
-        <div className="flex flex-col items-center justify-center border border-dashed border-[#2a2a2a] rounded-xl py-20">
-          <p className="text-[#444] text-sm">No sub-products yet</p>
+        <div className="flex flex-col items-center justify-center border border-dashed border-[var(--border-default)] rounded-xl py-20">
+          <p className="text-[var(--text-faint)] text-sm">No sub-products yet</p>
           <button
             onClick={() => setAddMenuOpen(true)}
-            className="mt-4 text-white text-sm border border-[#2a2a2a] px-4 py-2 rounded-lg hover:border-[#444] transition-colors"
+            className="mt-4 text-[var(--text-primary)] text-sm border border-[var(--border-default)] px-4 py-2 rounded-lg hover:border-[var(--border-strong)] transition-colors"
           >
             Add first sub-product
           </button>

@@ -82,8 +82,8 @@ export default function ClientsPage() {
 
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-xl font-bold text-white">müşteriler</h1>
-          {/* <p className="text-[#555] text-sm mt-0.5">Manage client logos shown on the references page</p> */}
+          <h1 className="text-xl font-bold text-[var(--text-primary)]">müşteriler</h1>
+          {/* <p className="text-[var(--text-muted)] text-sm mt-0.5">Manage client logos shown on the references page</p> */}
         </div>
         <button onClick={openAdd} className="bg-[#1e88e5] text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#1565c0] transition-colors">
           + müşteri ekle
@@ -92,31 +92,31 @@ export default function ClientsPage() {
 
       {loading ? (
         <div className="grid grid-cols-4 gap-4">
-          {[1,2,3,4].map((i) => <div key={i} className="h-40 bg-[#1a1a1a] rounded-xl animate-pulse" />)}
+          {[1,2,3,4].map((i) => <div key={i} className="h-40 bg-[var(--bg-elevated)] rounded-xl animate-pulse" />)}
         </div>
       ) : clients.length === 0 ? (
-        <div className="border border-dashed border-[#2a2a2a] rounded-xl py-20 text-center">
-          <p className="text-[#444] text-sm">No clients yet</p>
+        <div className="border border-dashed border-[var(--border-default)] rounded-xl py-20 text-center">
+          <p className="text-[var(--text-faint)] text-sm">No clients yet</p>
           <button onClick={openAdd} className="mt-3 text-[#1e88e5] text-sm hover:underline">Add your first client</button>
         </div>
       ) : (
         <div className="grid grid-cols-4 gap-4">
           {clients.map((client) => (
-            <div key={client.id} className="bg-[#111] rounded-xl overflow-hidden border border-[#1f1f1f]">
+            <div key={client.id} className="bg-[var(--bg-surface)] rounded-xl overflow-hidden border border-[var(--border-subtle)]">
               <div className="relative h-32 bg-white flex items-center justify-center p-4">
                 <img src={client.logo} alt={client.name} className="max-w-full max-h-full object-contain" />
                 <button
                   onClick={() => toggleActive(client)}
-                  className={`absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-full border ${client.isActive ? "bg-green-500/20 border-green-500/40 text-green-600" : "bg-[#f4f4f4] border-[#ddd] text-[#aaa]"}`}
+                  className={`absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-full border ${client.isActive ? "bg-green-500/20 border-green-500/40 text-green-600" : "bg-[#f4f4f4] border-[#ddd] text-[#6b7280]"}`}
                 >
                   {client.isActive ? "Active" : "Inactive"}
                 </button>
               </div>
               <div className="p-3">
-                <p className="text-white text-[13px] font-semibold truncate">{client.name}</p>
+                <p className="text-[var(--text-primary)] text-[13px] font-semibold truncate">{client.name}</p>
                 <div className="flex gap-2 mt-2">
-                  <button onClick={() => openEdit(client)} className="flex-1 py-1.5 text-xs text-[#aaa] border border-[#2a2a2a] rounded-lg hover:border-[#444] hover:text-white transition-colors">Edit</button>
-                  <button onClick={() => handleDelete(client.id)} className="flex-1 py-1.5 text-xs text-red-400 border border-[#2a2a2a] rounded-lg hover:border-red-500/40 hover:bg-red-500/10 transition-colors">Delete</button>
+                  <button onClick={() => openEdit(client)} className="flex-1 py-1.5 text-xs text-[var(--text-secondary)] border border-[var(--border-default)] rounded-lg hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] transition-colors">Edit</button>
+                  <button onClick={() => handleDelete(client.id)} className="flex-1 py-1.5 text-xs text-red-400 border border-[var(--border-default)] rounded-lg hover:border-red-500/40 hover:bg-red-500/10 transition-colors">Delete</button>
                 </div>
               </div>
             </div>
@@ -127,10 +127,10 @@ export default function ClientsPage() {
       {/* Modal */}
       {modal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-[#111] border border-[#1f1f1f] rounded-2xl w-full max-w-md p-6">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl w-full max-w-md p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-white font-bold text-[15px]">{modal.mode === "add" ? "Add Client" : "Edit Client"}</h2>
-              <button onClick={() => setModal(null)} className="text-[#555] hover:text-white transition-colors">
+              <h2 className="text-[var(--text-primary)] font-bold text-[15px]">{modal.mode === "add" ? "Add Client" : "Edit Client"}</h2>
+              <button onClick={() => setModal(null)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
                   <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round"/>
                 </svg>
@@ -139,18 +139,18 @@ export default function ClientsPage() {
 
             <div className="flex flex-col gap-4">
               <div>
-                <label className="text-[#555] text-[11px] uppercase tracking-widest font-bold block mb-1.5">Client Name</label>
+                <label className="text-[var(--text-muted)] text-[11px] uppercase tracking-widest font-bold block mb-1.5">Client Name</label>
                 <input
                   type="text"
                   value={form.name}
                   onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                   placeholder="e.g. Burger King"
-                  className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-[#333] outline-none focus:border-[#444]"
+                  className="w-full bg-[var(--bg-sidebar)] border border-[var(--border-default)] rounded-lg px-3 py-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-disabled)] outline-none focus:border-[var(--border-strong)]"
                 />
               </div>
 
               <div>
-                <label className="text-[#555] text-[11px] uppercase tracking-widest font-bold block mb-2">Logo</label>
+                <label className="text-[var(--text-muted)] text-[11px] uppercase tracking-widest font-bold block mb-2">Logo</label>
                 <ImageUpload value={form.logo} onChange={(url) => setForm((f) => ({ ...f, logo: url }))} />
                 {form.logo && (
                   <div className="mt-2 h-16 bg-white rounded-lg flex items-center justify-center p-2">
@@ -160,29 +160,29 @@ export default function ClientsPage() {
               </div>
 
               <div>
-                <label className="text-[#555] text-[11px] uppercase tracking-widest font-bold block mb-1.5">Order</label>
+                <label className="text-[var(--text-muted)] text-[11px] uppercase tracking-widest font-bold block mb-1.5">Order</label>
                 <input
                   type="number"
                   value={form.order}
                   onChange={(e) => setForm((f) => ({ ...f, order: parseInt(e.target.value) || 0 }))}
                   min={0}
-                  className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2.5 text-sm text-white outline-none focus:border-[#444]"
+                  className="w-full bg-[var(--bg-sidebar)] border border-[var(--border-default)] rounded-lg px-3 py-2.5 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--border-strong)]"
                 />
               </div>
 
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setForm((f) => ({ ...f, isActive: !f.isActive }))}
-                  className={`w-10 h-5 rounded-full transition-colors relative ${form.isActive ? "bg-[#1e88e5]" : "bg-[#2a2a2a]"}`}
+                  className={`w-10 h-5 rounded-full transition-colors relative ${form.isActive ? "bg-[#1e88e5]" : "bg-[var(--bg-elevated-2)]"}`}
                 >
                   <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all ${form.isActive ? "left-5" : "left-0.5"}`} />
                 </button>
-                <span className="text-sm text-[#aaa]">{form.isActive ? "Active" : "Inactive"}</span>
+                <span className="text-sm text-[var(--text-secondary)]">{form.isActive ? "Active" : "Inactive"}</span>
               </div>
             </div>
 
             <div className="flex gap-3 mt-6">
-              <button onClick={() => setModal(null)} className="flex-1 py-2.5 text-sm text-[#aaa] border border-[#2a2a2a] rounded-lg hover:border-[#444] transition-colors">Cancel</button>
+              <button onClick={() => setModal(null)} className="flex-1 py-2.5 text-sm text-[var(--text-secondary)] border border-[var(--border-default)] rounded-lg hover:border-[var(--border-strong)] transition-colors">Cancel</button>
               <button onClick={handleSave} disabled={saving} className="flex-1 py-2.5 text-sm font-semibold bg-[#1e88e5] text-white rounded-lg hover:bg-[#1565c0] disabled:opacity-50 transition-colors">
                 {saving ? "Saving..." : "Save"}
               </button>

@@ -186,19 +186,19 @@ export default function ProductsGridPage() {
   const currentDepth = isCategory ? 0 : (currentNode?.data?.depth ?? 0) + 1;
   const canAddGroup = currentDepth < 2;
 
-  if (loading) return <div className="text-[#555] text-sm">Loading...</div>;
+  if (loading) return <div className="text-[var(--text-muted)] text-sm">Loading...</div>;
 
   return (
     <div>
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs text-[#444] mb-6 flex-wrap">
+      <div className="flex items-center gap-2 text-xs text-[var(--text-faint)] mb-6 flex-wrap">
         {breadcrumbs.map((crumb, i) => (
           <span key={i} className="flex items-center gap-2">
             {i > 0 && <span>›</span>}
             {i === breadcrumbs.length - 1 ? (
-              <span className="text-white">{crumb.label}</span>
+              <span className="text-[var(--text-primary)]">{crumb.label}</span>
             ) : (
-              <button onClick={() => router.push(crumb.href)} className="hover:text-white transition-colors">
+              <button onClick={() => router.push(crumb.href)} className="hover:text-[var(--text-primary)] transition-colors">
                 {crumb.label}
               </button>
             )}
@@ -209,10 +209,10 @@ export default function ProductsGridPage() {
       {/* Header */}
       <div className="flex items-start justify-between mb-8">
         <div>
-          <h1 className="text-white text-2xl font-bold tracking-tight">
+          <h1 className="text-[var(--text-primary)] text-2xl font-bold tracking-tight">
             {breadcrumbs[breadcrumbs.length - 1]?.label}
           </h1>
-          <p className="text-[#555] text-sm mt-1">
+          <p className="text-[var(--text-muted)] text-sm mt-1">
             {isCategory ? "Products in this category" : "Sub-products in this group"}
           </p>
         </div>
@@ -221,7 +221,7 @@ export default function ProductsGridPage() {
         <div className="relative">
           <button
             onClick={() => setAddMenuOpen(!addMenuOpen)}
-            className="bg-white text-black text-sm font-semibold px-4 py-2 rounded-lg hover:bg-neutral-200 transition-colors flex items-center gap-2"
+            className="bg-[var(--invert-bg)] text-[var(--invert-text)] text-sm font-semibold px-4 py-2 rounded-lg hover:bg-[var(--invert-hover)] transition-colors flex items-center gap-2"
           >
             + Add Product <span className="text-xs">▾</span>
           </button>
@@ -229,34 +229,34 @@ export default function ProductsGridPage() {
           {addMenuOpen && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setAddMenuOpen(false)} />
-              <div className="absolute right-0 top-full mt-2 z-20 w-56 bg-[#111] border border-[#2a2a2a] rounded-xl overflow-hidden">
+              <div className="absolute right-0 top-full mt-2 z-20 w-56 bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-xl overflow-hidden">
                 <button
                   onClick={handleAddNew}
-                  className="w-full text-left px-4 py-3 text-sm text-white hover:bg-[#1a1a1a] transition-colors"
+                  className="w-full text-left px-4 py-3 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition-colors"
                 >
                   <p className="font-medium">New Single Product</p>
-                  <p className="text-[#555] text-xs mt-0.5">Create with full details</p>
+                  <p className="text-[var(--text-muted)] text-xs mt-0.5">Create with full details</p>
                 </button>
-                <div className="border-t border-[#1f1f1f]" />
+                <div className="border-t border-[var(--border-subtle)]" />
                 {canAddGroup && (
                   <>
                     <button
                       onClick={handleAddGroup}
-                      className="w-full text-left px-4 py-3 text-sm text-white hover:bg-[#1a1a1a] transition-colors"
+                      className="w-full text-left px-4 py-3 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition-colors"
                     >
                       <p className="font-medium">New Product Group</p>
-                      <p className="text-[#555] text-xs mt-0.5">Has sub-products</p>
+                      <p className="text-[var(--text-muted)] text-xs mt-0.5">Has sub-products</p>
                     </button>
-                    <div className="border-t border-[#1f1f1f]" />
+                    <div className="border-t border-[var(--border-subtle)]" />
                   </>
                 )}
                 {isCategory && (
                   <button
                     onClick={handleAddExisting}
-                    className="w-full text-left px-4 py-3 text-sm text-white hover:bg-[#1a1a1a] transition-colors"
+                    className="w-full text-left px-4 py-3 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition-colors"
                   >
                     <p className="font-medium">Add Existing Product</p>
-                    <p className="text-[#555] text-xs mt-0.5">Link a product from another category</p>
+                    <p className="text-[var(--text-muted)] text-xs mt-0.5">Link a product from another category</p>
                   </button>
                 )}
               </div>
@@ -267,11 +267,11 @@ export default function ProductsGridPage() {
 
       {/* Grid */}
       {products.length === 0 ? (
-        <div className="flex flex-col items-center justify-center border border-dashed border-[#2a2a2a] rounded-xl py-20">
-          <p className="text-[#444] text-sm">No products yet</p>
+        <div className="flex flex-col items-center justify-center border border-dashed border-[var(--border-default)] rounded-xl py-20">
+          <p className="text-[var(--text-faint)] text-sm">No products yet</p>
           <button
             onClick={() => setAddMenuOpen(true)}
-            className="mt-4 text-white text-sm border border-[#2a2a2a] px-4 py-2 rounded-lg hover:border-[#444] transition-colors"
+            className="mt-4 text-[var(--text-primary)] text-sm border border-[var(--border-default)] px-4 py-2 rounded-lg hover:border-[var(--border-strong)] transition-colors"
           >
             Add your first product
           </button>
@@ -314,7 +314,7 @@ export default function ProductsGridPage() {
       {/* ── Smart Delete Modal ── */}
       {deleteModal && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
+          <div className="bg-[var(--invert-bg)] rounded-2xl shadow-2xl w-full max-w-md p-8">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center shrink-0">
                 <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" width="20" height="20">
@@ -323,7 +323,7 @@ export default function ProductsGridPage() {
               </div>
               <div>
                 <h3 className="text-[15px] font-bold text-[#071e3d]">Delete Product</h3>
-                <p className="text-[12px] text-[#9aa3af]">This product exists in {deleteModal.categoryCount} categories</p>
+                <p className="text-[12px] text-[var(--text-tertiary)]">This product exists in {deleteModal.categoryCount} categories</p>
               </div>
             </div>
 
@@ -343,7 +343,7 @@ export default function ProductsGridPage() {
                 </div>
                 <div>
                   <p className="text-[13px] font-semibold text-[#071e3d]">Remove from this category only</p>
-                  <p className="text-[11px] text-[#9aa3af]">Product stays in other categories</p>
+                  <p className="text-[11px] text-[var(--text-tertiary)]">Product stays in other categories</p>
                 </div>
               </button>
 
@@ -358,13 +358,13 @@ export default function ProductsGridPage() {
                 </div>
                 <div>
                   <p className="text-[13px] font-semibold text-[#071e3d]">Delete from everywhere</p>
-                  <p className="text-[11px] text-[#9aa3af]">Permanently removes the product and all sub-products</p>
+                  <p className="text-[11px] text-[var(--text-tertiary)]">Permanently removes the product and all sub-products</p>
                 </div>
               </button>
 
               <button
                 onClick={() => setDeleteModal(null)}
-                className="w-full px-4 py-2.5 text-[12px] text-[#9aa3af] hover:text-[#071e3d] transition-colors"
+                className="w-full px-4 py-2.5 text-[12px] text-[var(--text-tertiary)] hover:text-[#071e3d] transition-colors"
               >
                 Cancel
               </button>

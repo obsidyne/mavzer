@@ -8,7 +8,7 @@ import { fileURLToPath } from "url";
 import path from "path";
 
 import authRoutes          from "./server/routes/auth.routes.js";
-import sectorRoutes        from "./server/routes/sectors.routes.js";
+import sectorRoutes        from "./server/routes/sectorCrud.routes.js";
 import categoryRoutes      from "./server//routes/categories.routes.js";
 import productRoutes       from "./server/routes/products.routes.js";
 import publicRoutes        from "./server/routes/public.routes.js";

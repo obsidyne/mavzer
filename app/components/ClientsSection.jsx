@@ -1,19 +1,31 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 
-const CLIENTS = [
-  { img: '/client1.webp', name: 'Client 1' },
-  { img: '/client2.webp', name: 'Client 2' },
-  { img: '/client3.webp', name: 'Client 3' },
-  { img: '/client4.webp', name: 'Client 4' },
+const API = process.env.NEXT_PUBLIC_API_URL;
+
+const FALLBACK_CLIENTS = [
+  { logo: '/client1.webp', name: 'Client 1' },
+  { logo: '/client2.webp', name: 'Client 2' },
+  { logo: '/client3.webp', name: 'Client 3' },
+  { logo: '/client4.webp', name: 'Client 4' },
 ];
 
-const REPEATED = [...CLIENTS, ...CLIENTS, ...CLIENTS, ...CLIENTS, ...CLIENTS, ...CLIENTS];
 const SPEED = 0.28;
 
-function CarouselTrack({ trackRef, wrapRef }) {
+// Repeat the list enough times for a seamless loop, regardless of how many clients there are.
+// Must stay an even number of copies: the scroll animation resets at half the track width,
+// which only lines up seamlessly if the first half mirrors the second half exactly.
+function buildRepeated(clients) {
+  if (clients.length === 0) return [];
+  let repeats = Math.max(4, Math.ceil(18 / clients.length));
+  if (repeats % 2 !== 0) repeats += 1;
+  return Array.from({ length: repeats }, () => clients).flat();
+}
+
+function CarouselTrack({ trackRef, wrapRef, clients }) {
+  const repeated = buildRepeated(clients);
   return (
     <div ref={wrapRef} className="relative w-full overflow-hidden cursor-default">
       {/* Fade edges — narrower on mobile, wider on desktop */}
@@ -25,13 +37,13 @@ function CarouselTrack({ trackRef, wrapRef }) {
         className="flex items-center gap-8 sm:gap-12 w-max py-4"
         style={{ willChange: 'transform' }}
       >
-        {REPEATED.map((client, i) => (
+        {repeated.map((client, i) => (
           <div
             key={i}
             className="flex-shrink-0 w-[130px] h-[65px] sm:w-[160px] sm:h-[80px] lg:w-[180px] lg:h-[90px] flex items-center justify-center"
           >
             <img
-              src={client.img}
+              src={client.logo}
               alt={client.name}
               className="max-w-[110px] sm:max-w-[140px] lg:max-w-[160px] max-h-[60px] sm:max-h-[70px] lg:max-h-[80px] w-full object-contain"
             />
@@ -44,10 +56,18 @@ function CarouselTrack({ trackRef, wrapRef }) {
 
 export default function ClientsSection() {
   const { t } = useLanguage();
+  const [clients, setClients] = useState(FALLBACK_CLIENTS);
   const track1Ref = useRef(null);
   const wrap1Ref  = useRef(null);
   const rafRef    = useRef(null);
   const stateRef  = useRef({ pos1: 0, paused1: false });
+
+  useEffect(() => {
+    fetch(`${API}/api/public/clients`)
+      .then((res) => res.json())
+      .then((data) => { if (Array.isArray(data) && data.length > 0) setClients(data); })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const track = track1Ref.current;
@@ -91,7 +111,7 @@ export default function ClientsSection() {
         </p>
       </div>
       <div className="mb-5">
-        <CarouselTrack trackRef={track1Ref} wrapRef={wrap1Ref} />
+        <CarouselTrack trackRef={track1Ref} wrapRef={wrap1Ref} clients={clients} />
       </div>
     </section>
   );

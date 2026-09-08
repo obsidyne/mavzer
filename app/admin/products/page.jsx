@@ -63,12 +63,12 @@ export default function SectorsPage() {
       {/* Header */}
       <div className="flex items-start justify-between mb-8">
         <div>
-          <h1 className="text-white text-2xl font-bold tracking-tight">Products</h1>
-          <p className="text-[#555] text-sm mt-1">Manage your sectors, categories and products</p>
+          <h1 className="text-[var(--text-primary)] text-2xl font-bold tracking-tight">Products</h1>
+          <p className="text-[var(--text-muted)] text-sm mt-1">Manage your sectors, categories and products</p>
         </div>
         <button
           onClick={handleAdd}
-          className="bg-white text-black text-sm font-semibold px-4 py-2 rounded-lg hover:bg-neutral-200 transition-colors"
+          className="bg-[var(--invert-bg)] text-[var(--invert-text)] text-sm font-semibold px-4 py-2 rounded-lg hover:bg-[var(--invert-hover)] transition-colors"
         >
           + Add Sector
         </button>
@@ -76,13 +76,13 @@ export default function SectorsPage() {
 
       {/* Grid */}
       {loading ? (
-        <div className="text-[#555] text-sm">Loading...</div>
+        <div className="text-[var(--text-muted)] text-sm">Loading...</div>
       ) : sectors.length === 0 ? (
-        <div className="flex flex-col items-center justify-center border border-dashed border-[#2a2a2a] rounded-xl py-20">
-          <p className="text-[#444] text-sm">No sectors yet</p>
+        <div className="flex flex-col items-center justify-center border border-dashed border-[var(--border-default)] rounded-xl py-20">
+          <p className="text-[var(--text-faint)] text-sm">No sectors yet</p>
           <button
             onClick={handleAdd}
-            className="mt-4 text-white text-sm border border-[#2a2a2a] px-4 py-2 rounded-lg hover:border-[#444] transition-colors"
+            className="mt-4 text-[var(--text-primary)] text-sm border border-[var(--border-default)] px-4 py-2 rounded-lg hover:border-[var(--border-strong)] transition-colors"
           >
             Add your first sector
           </button>
