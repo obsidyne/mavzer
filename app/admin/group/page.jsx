@@ -613,12 +613,14 @@ export default function GroupsPage() {
         <div>
           <h1 className="text-[var(--text-primary)] text-2xl font-bold tracking-tight">Kategoriler</h1>
         </div>
+        {/* "Add Category" button hidden — category creation is disabled from the admin UI.
         <button
           onClick={() => { setEditingGroup(null); setModalOpen(true); }}
           className="bg-[var(--invert-bg)] text-[var(--invert-text)] text-sm font-semibold px-4 py-2 rounded-lg hover:bg-[var(--invert-hover)] transition-colors shrink-0"
         >
           + Kategori Ekle
         </button>
+        */}
       </div>
 
       {error && (
@@ -669,6 +671,7 @@ export default function GroupsPage() {
                 <p className="text-[var(--text-faint)] text-[12px]">
                   {groupSearch ? "No groups match" : "No groups yet"}
                 </p>
+                {/* "Add first category" shortcut hidden along with the header add button.
                 {!groupSearch && (
                   <button
                     onClick={() => { setEditingGroup(null); setModalOpen(true); }}
@@ -677,6 +680,7 @@ export default function GroupsPage() {
                     İlk kategoriyi ekle
                   </button>
                 )}
+                */}
               </div>
             ) : (
               filteredGroups.map((g, index) => (

@@ -55,8 +55,8 @@ export default function Footer() {
             </p>
             <p>
               <span className="text-white/20 text-[11px]">{t.footer_created} </span>
-              <a href="https://www.asarmedia.com.tr" className="text-white/50 text-[11px] hover:text-white transition-colors">
-                AsarMedia
+              <a href="https://www.asarcreative.com.tr/" className="text-white/50 text-[11px] hover:text-white transition-colors">
+                AsarCreative
               </a>
             </p>
           </div>

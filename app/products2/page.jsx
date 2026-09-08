@@ -7,6 +7,13 @@ import { useLanguage } from "../context/LanguageContext";
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
+// Name of the category/group whose products are shown as the default "all products" view.
+const ALL_CATEGORY_NAMES = ["all products", "tüm ürünler"];
+
+function findAllCategoryGroup(groups) {
+  return groups.find((g) => ALL_CATEGORY_NAMES.includes((g.name || "").trim().toLowerCase())) || null;
+}
+
 function GroupsContent() {
   const { t } = useLanguage();
   const router = useRouter();
@@ -19,15 +26,29 @@ function GroupsContent() {
   const [breadcrumbs, setBreadcrumbs]       = useState([]);
   const fetchedRef = useRef(false);
 
-  // Categories/groups are hidden — load the flat "all products" list directly.
+  // Categories are hidden — load products from the "All Products" category directly.
   useEffect(() => {
     if (fetchedRef.current) return;
     fetchedRef.current = true;
     async function fetchAllProducts() {
       try {
-        const res  = await fetch(`${API}/api/public/sector-products/all`);
-        const data = await res.json();
-        const list = Array.isArray(data) ? data : [];
+        const groupsRes  = await fetch(`${API}/api/public/groups`);
+        const groupsData = await groupsRes.json();
+        const groups = Array.isArray(groupsData) ? groupsData : [];
+        const allCategory = findAllCategoryGroup(groups);
+
+        let list = [];
+        if (allCategory) {
+          const res  = await fetch(`${API}/api/public/groups/${allCategory.id}`);
+          const data = await res.json();
+          list = Array.isArray(data.products) ? data.products : [];
+        } else {
+          // Fallback: no "All Products" category exists yet — show every active product.
+          const res  = await fetch(`${API}/api/public/sector-products/all`);
+          const data = await res.json();
+          list = Array.isArray(data) ? data : [];
+        }
+
         setAllProducts(list);
         setCurrentItems(list);
         setBreadcrumbs([]);
@@ -111,7 +132,7 @@ function GroupsContent() {
             onClick={() => handleBreadcrumbClick(-1)}
             className={`font-medium transition-colors ${isRoot ? "text-[#071e3d] font-semibold" : "hover:text-[#0a4c8a]"}`}
           >
-            {t.all_products}
+            {t.nav_products}
           </button>
           {breadcrumbs.map((crumb, i) => (
             <span key={i} className="flex items-center gap-1.5">
